@@ -220,7 +220,7 @@ namespace Unickq.SeleniumHelper.Plugins
                 new CodeSnippetStatement(DefaultMethodIndent +
                                          "try {" +
                                          "((Unickq.SeleniumHelper.WebDriverGrid.ICustomRemoteWebDriver) this.driver).UpdateTestResult();" +
-                                         "} catch (System.Exception e) {System.Console.WriteLine(e.Message);}"));
+                                         "} catch (System.Exception) {}"));
             generationContext.TestCleanupMethod.Statements.Add(
                 new CodeSnippetStatement(DefaultMethodIndent +
                                          "try {" +

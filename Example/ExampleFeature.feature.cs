@@ -90,7 +90,7 @@ namespace Example
         public virtual void CheckWebsiteTitle(string uRL, string @string, string[] exampleTags)
         {
             string[] @__tags = new string[] {
-                    "Browser:IE_local",
+                    "Browser:Chrome_local",
                     "Browser:BrowserStack_Win10_Chrome",
                     "Browser:TestingBot_ElCapitan_Safari",
                     "Browser:SauceLabs_Win7_Firefox"};
@@ -104,14 +104,14 @@ this.ScenarioSetup(scenarioInfo);
 #line 8
  testRunner.Given(string.Format("I have opened {0}", uRL), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 9
- testRunner.Then(string.Format("the title should contain {0}", @string), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then(string.Format("the title should contain \'{0}\'", @string), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Check website title: http://google.com")]
-        [NUnit.Framework.TestCaseAttribute("IE_local", Category="IE_local", TestName="CheckWebsiteTitle_HttpGoogle_Com on IE_local")]
+        [NUnit.Framework.TestCaseAttribute("Chrome_local", Category="Chrome_local", TestName="CheckWebsiteTitle_HttpGoogle_Com on Chrome_local")]
         [NUnit.Framework.TestCaseAttribute("BrowserStack_Win10_Chrome", Category="BrowserStack_Win10_Chrome", TestName="CheckWebsiteTitle_HttpGoogle_Com on BrowserStack_Win10_Chrome")]
         [NUnit.Framework.TestCaseAttribute("TestingBot_ElCapitan_Safari", Category="TestingBot_ElCapitan_Safari", TestName="CheckWebsiteTitle_HttpGoogle_Com on TestingBot_ElCapitan_Safari")]
         [NUnit.Framework.TestCaseAttribute("SauceLabs_Win7_Firefox", Category="SauceLabs_Win7_Firefox", TestName="CheckWebsiteTitle_HttpGoogle_Com on SauceLabs_Win7_Firefox")]

@@ -12,9 +12,8 @@ namespace Example
         {
             Browser.Current.Navigate().GoToUrl(url);
         }
-        
-        [Then(@"the titls should contains (.*)")]
-        public void ThenTheTitlsShouldContains(string part)
+        [Then(@"the title should contain '(.*)'")]
+        public void ThenTheTitleShouldContain(string part)
         {
             StringAssert.Contains(part.ToLower(), Browser.Current.Title.ToLower());
         }
