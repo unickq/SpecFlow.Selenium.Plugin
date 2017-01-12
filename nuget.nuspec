@@ -3,9 +3,9 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Unickq.SeleniumHelper</id>
-    <version>version</version>
+    <version>$version$</version>
     <title>Unickq.SeleniumHelper</title>
-    <authors>unickq, Daniel Romero</authors>
+    <authors>Nick Chursin, Daniel Romero</authors>
     <owners>unickq</owners>
     <iconUrl>http://techtalk.github.io/SpecFlow/specflow.png</iconUrl>
     <licenseUrl>https://opensource.org/licenses/MIT</licenseUrl>
@@ -28,6 +28,6 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="SpecflowSelenium\bin\Release\Baseclass.Contrib.SpecFlow.Selenium.NUnit.SpecFlowPlugin.dll" target="" />
+    <file src="SpecflowSelenium\bin\Release\Unickq.SeleniumHelper.SpecFlowPlugin.dll" target="lib\" />
   </files>
 </package>

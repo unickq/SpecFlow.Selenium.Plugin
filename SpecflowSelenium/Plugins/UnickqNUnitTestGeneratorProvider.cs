@@ -51,7 +51,7 @@ namespace Unickq.SeleniumHelper.Plugins
                     {
                         new CodeAttributeArgument("Category", new CodePrimitiveExpression(browser)),
                         new CodeAttributeArgument("TestName",
-                            new CodePrimitiveExpression(string.Format("{0} on {1}", testMethod.Name, browser)))
+                            new CodePrimitiveExpression($"{testMethod.Name} on {browser}"))
                     })
                     .ToArray();
 

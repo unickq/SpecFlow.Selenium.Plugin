@@ -1,24 +1,12 @@
 ﻿Feature: ExampleFeature
 
-@Browser:BrowserStack
-@Browser:TestingBot
-@Browser:SauceLabs
-#@Ignore
-Scenario Outline: Check website titles
+@Browser:IE_local
+@Browser:BrowserStack_Win10_Chrome
+@Browser:TestingBot_ElCapitan_Safari
+@Browser:SauceLabs_Win7_Firefox
+Scenario Outline: Check website title
 	Given I have opened <URL>
-	Then the titls should contains <titlePart>
+	Then the title should contain <string>
 Examples: 
-| URL               | titlePart |
-| http://google.com | google    |
-#| http://apple.com  | apple     |
-#
-#@Browser:Chrome
-#@Browser:Firefox
-#@Ignore
-#Scenario Outline: Check website titles with ignored tag
-#	Given I have opened <URL>
-#	Then the titls should contains <titlePart>
-#Examples: 
-#| URL					| titlePart |
-#| http://microsoft.com  | ms		|
-
+| URL               | string |
+| http://google.com | google |
