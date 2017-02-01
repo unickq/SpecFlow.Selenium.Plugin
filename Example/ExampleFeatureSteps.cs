@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
+using OpenQA.Selenium;
 using TechTalk.SpecFlow;
 using Unickq.SeleniumHelper;
 
@@ -10,7 +12,10 @@ namespace Example
         [Given(@"I have opened (.*)")]
         public void GivenIHaveOpened(string url)
         {
-            Browser.Current.Navigate().GoToUrl(url);
+            string language;
+            ScenarioContext.Current.TryGetValue("GoogleTranslate", out language);
+            Browser.Current.Navigate().GoToUrl(url + $"?hl={language}");
+            Console.WriteLine(Browser.Current.FindElement(By.Id("gt-appname")).Text);
         }
         [Then(@"the title should contain '(.*)'")]
         public void ThenTheTitleShouldContain(string part)

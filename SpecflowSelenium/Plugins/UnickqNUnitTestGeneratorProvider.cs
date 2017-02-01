@@ -1,4 +1,5 @@
-﻿using System.CodeDom;
+﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using TechTalk.SpecFlow.Generator;
@@ -21,7 +22,6 @@ namespace Unickq.SeleniumHelper.Plugins
         private const string IgnoreAttr = "NUnit.Framework.IgnoreAttribute";
         private const string DescriptionAttr = "NUnit.Framework.DescriptionAttribute";
         private readonly CodeDomHelper _codeDomHelper;
-        private bool _scenarioSetupMethodsAdded;
 
         public UnickqNUnitTestGeneratorProvider(CodeDomHelper codeDomHelper)
         {
@@ -31,63 +31,131 @@ namespace Unickq.SeleniumHelper.Plugins
         public bool SupportsRowTests => true;
         public bool SupportsAsyncTests => false;
 
+        /// <summary>
+        /// Initialization Methods to Generate. MethodName => List of Argument Names
+        /// </summary>
+        private readonly Dictionary<string, List<string>> _initializeMethodsToGenerate = new Dictionary<string, List<string>>();
+
+        /// <summary>
+        /// List of unique field Names to Generate
+        /// </summary>
+        private readonly HashSet<string> _fieldsToGenerate = new HashSet<string>();
+
+        private bool _hasBrowser;
+
+        private bool _scenarioSetupMethodsAdded;
+
         public void SetTestMethodCategories(TestClassGenerationContext generationContext,
             CodeMemberMethod testMethod, IEnumerable<string> scenarioCategories)
         {
-            var categories = scenarioCategories as string[] ?? scenarioCategories.ToArray();
-            _codeDomHelper.AddAttributeForEachValue(testMethod, CategoryAttr,
-                categories.Where(cat => !cat.StartsWith("Browser:")));
+            var categories = scenarioCategories as IList<string> ?? scenarioCategories.ToList();
+            _codeDomHelper.AddAttributeForEachValue(testMethod, CategoryAttr, categories.Where(cat => !cat.StartsWith("Browser:") && !cat.Contains(":")));
 
-            var hasBrowser = false;
+            var categoryTags = new Dictionary<string, List<string>>();
 
-            foreach (
-                var browser in
-                categories.Where(cat => cat.StartsWith("Browser:")).Select(cat => cat.Replace("Browser:", "")))
+            var hasTags = false;
+
+
+            foreach (var tag in categories.Where(cat => cat.Contains(":")).Select(cat => cat.Split(':')))
             {
-                testMethod.UserData.Add("Browser:" + browser, browser);
-
-                var withBrowserArgs = new[] {new CodeAttributeArgument(new CodePrimitiveExpression(browser))}
-                    .Concat(new[]
-                    {
-                        new CodeAttributeArgument("Category", new CodePrimitiveExpression(browser)),
-                        new CodeAttributeArgument("TestName",
-                            new CodePrimitiveExpression($"{testMethod.Name} on {browser}"))
-                    })
-                    .ToArray();
-
-                _codeDomHelper.AddAttribute(testMethod, RowAttr, withBrowserArgs);
-
-                hasBrowser = true;
+                if (tag.Length != 2)
+                    continue;
+                hasTags = true;
+                if (tag[0].Equals("Browser", StringComparison.OrdinalIgnoreCase))
+                {
+                    _hasBrowser = true;
+                }
+                testMethod.UserData.Add(tag[0] + ":" + tag[1], tag[1]);
+                List<string> tagValues;
+                if (!categoryTags.TryGetValue(tag[0], out tagValues))
+                {
+                    tagValues = new List<string>();
+                    categoryTags[tag[0]] = tagValues;
+                }
+                tagValues.Add(tag[1]);
             }
 
-            if (hasBrowser)
+            if (hasTags)
             {
-                if (!_scenarioSetupMethodsAdded)
+                //TestName and TestCategory Building
+                //List of list of tags different values
+                var values = new List<List<string>>();
+                foreach (var kvp in categoryTags)
                 {
-                    generationContext.ScenarioInitializeMethod.Statements.Add(
-                        new CodeSnippetStatement(DefaultMethodIndent + "if(this.driver != null)"));
-                    generationContext.ScenarioInitializeMethod.Statements.Add(
-                        new CodeSnippetStatement(DefaultMethodIndent +
-                                                 "ScenarioContext.Current.Add(\"Driver\", this.driver);"));
-                    generationContext.ScenarioInitializeMethod.Statements.Add(
-                        new CodeSnippetStatement(DefaultMethodIndent + "if(this.container != null)"));
-                    generationContext.ScenarioInitializeMethod.Statements.Add(
-                        new CodeSnippetStatement(DefaultMethodIndent +
-                                                 "  ScenarioContext.Current.Add(\"Container\", this.container);"));
-                    _scenarioSetupMethodsAdded = true;
+                    values.Add(kvp.Value);
+                }
+                var combinations = new List<List<string>>();
+                //Generate an exhaustive list of values combinations
+                GeneratePermutations(values, combinations, 0, new List<string>());
+
+                foreach (var combination in combinations)
+                {
+                    //Each combination is a different TestCase
+                    var withTagArgs =
+                        combination.Select(s => new CodeAttributeArgument(new CodePrimitiveExpression(s))).ToList()
+                            .Concat(new[]
+                            {
+                                new CodeAttributeArgument("Category",
+                                    new CodePrimitiveExpression(string.Join(",", combination))),
+                                new CodeAttributeArgument("TestName",
+                                    new CodePrimitiveExpression($"{testMethod.Name} with {string.Join(",", combination)}"))
+                            })
+                            .ToArray();
+
+                    _codeDomHelper.AddAttribute(testMethod, RowAttr, withTagArgs);
                 }
 
+                var i = 0;
+
+                var orderedTags = new List<string>();
+                foreach (var kvp in categoryTags)
+                {
+                    //Add the category name to category list
+                    orderedTags.Add(kvp.Key);
+                    //Mark the field to be generated
+                    _fieldsToGenerate.Add(kvp.Key);
+                    //Add a parameter to the testMethod
+                    testMethod.Parameters.Insert(i,
+                        new CodeParameterDeclarationExpression("System.String",
+                            kvp.Key.ToLowerInvariant()));
+                    i = i + 1;
+                }
+
+                var methodName = "InitializeSelenium" + string.Join("", orderedTags);
+                var initializeSeleniumArgs = string.Join(",", orderedTags).ToLowerInvariant();
+                //Create the call to the initialization Method
                 testMethod.Statements.Insert(0,
-                    new CodeSnippetStatement(DefaultMethodIndent + "InitializeSelenium(browser);"));
-                testMethod.Parameters.Insert(0, new CodeParameterDeclarationExpression("System.string", "browser"));
+                    new CodeSnippetStatement(methodName + "(" + initializeSeleniumArgs + ");"));
+                List<string> nothing;
+                if (!_initializeMethodsToGenerate.TryGetValue(methodName, out nothing))
+                {
+                    //Mark the initialization method to be generated
+                    _initializeMethodsToGenerate[methodName] = orderedTags.Select(s => s.ToLowerInvariant()).ToList();
+                }
+            }
+
+        }
+
+        private void GeneratePermutations(IReadOnlyList<List<string>> lists, ICollection<List<string>> result, int depth, List<string> current)
+        {
+            //TODO rajouter les CodePrimitiveExpression
+            if (depth == lists.Count)
+            {
+                result.Add(current);
+                return;
+            }
+
+            for (var i = 0; i < lists[depth].Count; i++)
+            {
+                var newList = new List<string>(current) {lists[depth][i]};
+                GeneratePermutations(lists, result, depth + 1, newList);
             }
         }
 
         public void SetRow(TestClassGenerationContext generationContext,
             CodeMemberMethod testMethod, IEnumerable<string> arguments, IEnumerable<string> tags, bool isIgnored)
         {
-            var args = arguments.Select(
-                arg => new CodeAttributeArgument(new CodePrimitiveExpression(arg))).ToList();
+            var args = arguments.Select(arg => new CodeAttributeArgument(new CodePrimitiveExpression(arg))).ToList();
 
             var exampleTagExpressionList = tags.Select(t => new CodePrimitiveExpression(t)).ToArray();
             var exampleTagsExpression = exampleTagExpressionList.Length == 0
@@ -97,39 +165,56 @@ namespace Unickq.SeleniumHelper.Plugins
 
             if (isIgnored) args.Add(new CodeAttributeArgument("Ignored", new CodePrimitiveExpression(true)));
 
-            var browsers = testMethod.UserData.Keys.OfType<string>()
-                .Where(key => key.StartsWith("Browser:"))
-                .Select(key => (string) testMethod.UserData[key]).ToArray();
+            var categories = testMethod.UserData.Keys.OfType<string>()
+                 .Where(key => key.Contains(":"));
 
-            if (browsers.Any())
+            var userDataKeys = categories as IList<string> ?? categories.ToList();
+            if (userDataKeys.Any())
             {
-                foreach (
-                    var codeAttributeDeclaration in
-                    testMethod.CustomAttributes.Cast<CodeAttributeDeclaration>()
-                        .Where(attr => attr.Name == RowAttr && attr.Arguments.Count == 3)
-                        .ToList())
-                    testMethod.CustomAttributes.Remove(codeAttributeDeclaration);
-
-                foreach (var browser in browsers)
+                //List of list of tags different values
+                var values = new Dictionary<string, List<string>>();
+                foreach (var userDataKey in userDataKeys)
                 {
-                    var argsString =
-                        string.Concat(
-                            args.Take(args.Count - 1)
-                                .Select(arg => $"\"{((CodePrimitiveExpression) arg.Value).Value}\" ,"));
+                    var catName = userDataKey.Substring(0, userDataKey.IndexOf(':'));
+                    List<string> val;
+                    if (!values.TryGetValue(catName, out val))
+                    {
+                        val = new List<string>();
+                        values[catName] = val;
+                    }
+                    val.Add((string)testMethod.UserData[userDataKey]);
+                }
+
+                List<List<string>> combinations = new List<List<string>>();
+                //Generate an exhaustive list of values combinations
+                GeneratePermutations(values.Values.ToList(), combinations, 0, new List<string>());
+
+                //Remove TestCase attributes
+                foreach (var codeAttributeDeclaration in testMethod.CustomAttributes.Cast<CodeAttributeDeclaration>()
+                    .Where(attr => attr.Name == RowAttr && attr.Arguments.Count == 2 + values.Keys.Count).ToList())
+                {
+                    testMethod.CustomAttributes.Remove(codeAttributeDeclaration);
+                }
+
+                foreach (var combination in combinations)
+                {
+                    var argsString = string.Concat(args.Take(args.Count - 1).Select(arg =>
+                        $"\"{((CodePrimitiveExpression) arg.Value).Value}\" ,"));
                     argsString = argsString.TrimEnd(' ', ',');
 
-                    var withBrowserArgs = new[] {new CodeAttributeArgument(new CodePrimitiveExpression(browser))}
+                    //Each combination is a different TestCase
+                    var withTagArgs = combination.Select(s => new CodeAttributeArgument(new CodePrimitiveExpression(s))).ToList()
                         .Concat(args)
-                        .Concat(new[]
-                        {
-                            new CodeAttributeArgument("Category", new CodePrimitiveExpression(browser)),
-                            new CodeAttributeArgument("TestName",
-                                new CodePrimitiveExpression($"{testMethod.Name} on {browser} with: {argsString}"))
-                        })
+                        .Concat(new[] {
+                                new CodeAttributeArgument("Category", new CodePrimitiveExpression(string.Join(",",combination))),
+                                new CodeAttributeArgument("TestName", new CodePrimitiveExpression(
+                                    $"{testMethod.Name} with {string.Join(",", combination)} and {argsString}"))
+                            })
                         .ToArray();
 
-                    _codeDomHelper.AddAttribute(testMethod, RowAttr, withBrowserArgs);
+                   _codeDomHelper.AddAttribute(testMethod, RowAttr, withTagArgs);
                 }
+
             }
             else
             {
@@ -233,9 +318,37 @@ namespace Unickq.SeleniumHelper.Plugins
                 new CodeSnippetStatement(DefaultMethodIndent + "ScenarioContext.Current.Remove(\"Driver\");"));
             generationContext.TestCleanupMethod.Statements.Add(
                 new CodeSnippetStatement(DefaultMethodIndent + "ScenarioContext.Current.Remove(\"Container\");"));
-            generationContext.TestCleanupMethod.Statements.Add(
-                new CodeSnippetStatement(DefaultMethodIndent +
-                                         "  System.Console.WriteLine(NUnit.Framework.TestContext.CurrentContext.Result.Outcome.Status.ToString());"));
+
+            foreach (var field in _fieldsToGenerate)
+            {
+                if (!field.Equals("Browser", StringComparison.OrdinalIgnoreCase))
+                {
+                    generationContext.TestClass.Members.Add(new CodeMemberField("System.String", "_" + field.ToLowerInvariant()));
+                    generationContext.TestCleanupMethod.Statements.Add(new CodeSnippetStatement("            ScenarioContext.Current.Remove(\"" + field + "\");"));
+                }
+            }
+
+            CreateInitializeSeleniumMethod(generationContext);
+
+            if (!_scenarioSetupMethodsAdded)
+            {
+                if (_hasBrowser)
+                {
+                    generationContext.ScenarioInitializeMethod.Statements.Add(new CodeSnippetStatement("            if(this.driver != null)"));
+                    generationContext.ScenarioInitializeMethod.Statements.Add(new CodeSnippetStatement("                ScenarioContext.Current.Add(\"Driver\", this.driver);"));
+                    generationContext.ScenarioInitializeMethod.Statements.Add(new CodeSnippetStatement("            if(this.container != null)"));
+                    generationContext.ScenarioInitializeMethod.Statements.Add(new CodeSnippetStatement("                ScenarioContext.Current.Add(\"Container\", this.container);"));
+                }
+                foreach (var field in _fieldsToGenerate)
+                {
+                    if (!field.Equals("Browser", StringComparison.OrdinalIgnoreCase))
+                    {
+                        generationContext.ScenarioInitializeMethod.Statements.Add(new CodeSnippetStatement("            if(this._" + field.ToLowerInvariant() + " != null)"));
+                        generationContext.ScenarioInitializeMethod.Statements.Add(new CodeSnippetStatement("                ScenarioContext.Current.Add(\"" + field + "\", this._" + field.ToLowerInvariant() + ");"));
+                    }
+                }
+                _scenarioSetupMethodsAdded = true;
+            }
         }
 
         public UnitTestGeneratorTraits GetTraits()
@@ -243,15 +356,28 @@ namespace Unickq.SeleniumHelper.Plugins
             return UnitTestGeneratorTraits.None;
         }
 
-        private static void CreateInitializeSeleniumMethod(
+        private void CreateInitializeSeleniumMethod(
             TestClassGenerationContext generationContext)
         {
-            var initializeSelenium = new CodeMemberMethod {Name = "InitializeSelenium"};
-            initializeSelenium.Parameters.Add(new CodeParameterDeclarationExpression("System.String", "browser"));
-            initializeSelenium.Statements.Add(
-                new CodeSnippetStatement(DefaultMethodIndent +
-                                         "this.driver = this.container.ResolveNamed<OpenQA.Selenium.IWebDriver>(browser);"));
-            generationContext.TestClass.Members.Add(initializeSelenium);
+            foreach (var kvp in _initializeMethodsToGenerate)
+            {
+                var initializeSelenium = new CodeMemberMethod();
+                initializeSelenium.Name = kvp.Key;
+                foreach (var paramName in kvp.Value)
+                {
+                    initializeSelenium.Parameters.Add(new CodeParameterDeclarationExpression("System.String", paramName));
+                    if (paramName.Equals("browser", StringComparison.OrdinalIgnoreCase))
+                    {
+                        initializeSelenium.Statements.Add(new CodeSnippetStatement("            this.driver = this.container.ResolveNamed<OpenQA.Selenium.IWebDriver>(" + paramName + ");"));
+                    }
+                    else
+                    {
+                        initializeSelenium.Statements.Add(new CodeSnippetStatement("            this._" + paramName + " = " + paramName + ";"));
+                    }
+                }
+
+                generationContext.TestClass.Members.Add(initializeSelenium);
+            }
         }
     }
 }
