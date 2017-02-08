@@ -50,7 +50,7 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
             {
                 resultStr = "passed";
             }
-            var reason = $"{result.Outcome.Status} {result.Message}";
+            var reason = $"{result.Outcome.Status} - { result.Message.Replace(Environment.NewLine, " ").Trim()}";
             var reqString = $"{{\"status\":\"{resultStr}\", \"reason\":\"{reason}\"}}";
             var uri = new Uri($"https://www.browserstack.com/automate/sessions/{SessionId}.json");
             var requestData = Encoding.UTF8.GetBytes(reqString);
