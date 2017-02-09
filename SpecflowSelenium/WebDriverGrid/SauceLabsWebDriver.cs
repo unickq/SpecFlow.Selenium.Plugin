@@ -23,7 +23,7 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
         private static readonly string IedriverVersion = ConfigurationManager.AppSettings["saucelabs.iedriverVersion"];
         private static readonly string AppiumVersion = ConfigurationManager.AppSettings["saucelabs.appiumVersion"];
         private static readonly string App = ConfigurationManager.AppSettings["saucelabs.app"];
-        private static readonly string Build = ConfigurationManager.AppSettings["saucelabs.build"];
+        private static string Build = ConfigurationManager.AppSettings["saucelabs.build"];
         private static readonly string CustomData = ConfigurationManager.AppSettings["saucelabs.customData"];
         private static readonly string MaxDuration = ConfigurationManager.AppSettings["saucelabs.maxDuration"];
         private static readonly string CommandTimeout = ConfigurationManager.AppSettings["saucelabs.commandTimeout"];
@@ -75,6 +75,8 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
                    !string.IsNullOrEmpty(Name)
                    ? Name
                    : TestContext.CurrentContext.Test.Name);
+
+            if (Build.Equals("@@debug")) Build = DateTime.Now.ToString("yyyy/MM/dd hhtt");
 
             if (!string.IsNullOrEmpty(SeleniumVersion)) capabilities.Add("seleniumVersion", SeleniumVersion);
             if (!string.IsNullOrEmpty(ChromedriverVersion)) capabilities.Add("chromedriverVersion", ChromedriverVersion);

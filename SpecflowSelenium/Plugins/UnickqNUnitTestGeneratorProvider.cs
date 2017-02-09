@@ -121,7 +121,7 @@ namespace Unickq.SeleniumHelper.Plugins
                     i = i + 1;
                 }
 
-                var methodName = "InitializeSelenium" + string.Join("", orderedTags);
+                var methodName = DefaultMethodIndent + "InitializeSelenium" + string.Join("", orderedTags);
                 var initializeSeleniumArgs = string.Join(",", orderedTags).ToLowerInvariant();
                 //Create the call to the initialization Method
                 testMethod.Statements.Insert(0,
@@ -324,7 +324,7 @@ namespace Unickq.SeleniumHelper.Plugins
                 if (!field.Equals("Browser", StringComparison.OrdinalIgnoreCase))
                 {
                     generationContext.TestClass.Members.Add(new CodeMemberField("System.String", "_" + field.ToLowerInvariant()));
-                    generationContext.TestCleanupMethod.Statements.Add(new CodeSnippetStatement("            ScenarioContext.Current.Remove(\"" + field + "\");"));
+                    generationContext.TestCleanupMethod.Statements.Add(new CodeSnippetStatement(DefaultMethodIndent + "ScenarioContext.Current.Remove(\"" + field + "\");"));
                 }
             }
 
@@ -334,17 +334,17 @@ namespace Unickq.SeleniumHelper.Plugins
             {
                 if (_hasBrowser)
                 {
-                    generationContext.ScenarioInitializeMethod.Statements.Add(new CodeSnippetStatement("            if(this.driver != null)"));
-                    generationContext.ScenarioInitializeMethod.Statements.Add(new CodeSnippetStatement("                ScenarioContext.Current.Add(\"Driver\", this.driver);"));
-                    generationContext.ScenarioInitializeMethod.Statements.Add(new CodeSnippetStatement("            if(this.container != null)"));
-                    generationContext.ScenarioInitializeMethod.Statements.Add(new CodeSnippetStatement("                ScenarioContext.Current.Add(\"Container\", this.container);"));
+                    generationContext.ScenarioInitializeMethod.Statements.Add(new CodeSnippetStatement(DefaultMethodIndent + "if(this.driver != null)"));
+                    generationContext.ScenarioInitializeMethod.Statements.Add(new CodeSnippetStatement(DefaultMethodIndent + "  ScenarioContext.Current.Add(\"Driver\", this.driver);"));
+                    generationContext.ScenarioInitializeMethod.Statements.Add(new CodeSnippetStatement(DefaultMethodIndent + "if(this.container != null)"));
+                    generationContext.ScenarioInitializeMethod.Statements.Add(new CodeSnippetStatement(DefaultMethodIndent + "  ScenarioContext.Current.Add(\"Container\", this.container);"));
                 }
                 foreach (var field in _fieldsToGenerate)
                 {
                     if (!field.Equals("Browser", StringComparison.OrdinalIgnoreCase))
                     {
-                        generationContext.ScenarioInitializeMethod.Statements.Add(new CodeSnippetStatement("            if(this._" + field.ToLowerInvariant() + " != null)"));
-                        generationContext.ScenarioInitializeMethod.Statements.Add(new CodeSnippetStatement("                ScenarioContext.Current.Add(\"" + field + "\", this._" + field.ToLowerInvariant() + ");"));
+                        generationContext.ScenarioInitializeMethod.Statements.Add(new CodeSnippetStatement(DefaultMethodIndent + "if(this._" + field.ToLowerInvariant() + " != null)"));
+                        generationContext.ScenarioInitializeMethod.Statements.Add(new CodeSnippetStatement(DefaultMethodIndent + "  ScenarioContext.Current.Add(\"" + field + "\", this._" + field.ToLowerInvariant() + ");"));
                     }
                 }
                 _scenarioSetupMethodsAdded = true;
@@ -368,11 +368,11 @@ namespace Unickq.SeleniumHelper.Plugins
                     initializeSelenium.Parameters.Add(new CodeParameterDeclarationExpression("System.String", paramName));
                     if (paramName.Equals("browser", StringComparison.OrdinalIgnoreCase))
                     {
-                        initializeSelenium.Statements.Add(new CodeSnippetStatement("            this.driver = this.container.ResolveNamed<OpenQA.Selenium.IWebDriver>(" + paramName + ");"));
+                        initializeSelenium.Statements.Add(new CodeSnippetStatement(DefaultMethodIndent + "this.driver = this.container.ResolveNamed<OpenQA.Selenium.IWebDriver>(" + paramName + ");"));
                     }
                     else
                     {
-                        initializeSelenium.Statements.Add(new CodeSnippetStatement("            this._" + paramName + " = " + paramName + ";"));
+                        initializeSelenium.Statements.Add(new CodeSnippetStatement(DefaultMethodIndent + "this._" + paramName + " = " + paramName + ";"));
                     }
                 }
 

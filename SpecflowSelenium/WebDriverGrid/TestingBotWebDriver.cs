@@ -33,7 +33,7 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
         private static readonly string Name = ConfigurationManager.AppSettings["testingbot.name"];
         private static readonly string ScreenResolution = ConfigurationManager.AppSettings["testingbot.screen-resolution"];
         private static readonly string AvoidProxy = ConfigurationManager.AppSettings["testingbot.avoidProxy"];
-        private static readonly string Build = ConfigurationManager.AppSettings["testingbot.build"];
+        private static string Build = ConfigurationManager.AppSettings["testingbot.build"];
         private static readonly string Extra = ConfigurationManager.AppSettings["testingbot.extra"];
         private static readonly string Idletimeout = ConfigurationManager.AppSettings["testingbot.idletimeout"];
         private static readonly string Public = ConfigurationManager.AppSettings["testingbot.public"];
@@ -70,6 +70,8 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
                 ? Name
                 : TestContext.CurrentContext.Test.Name);
 
+            if (Build.Equals("@@debug")) Build = DateTime.Now.ToString("yyyy/MM/dd hhtt");
+
             if (!string.IsNullOrEmpty(Screenshot)) capabilities.Add("screenshot", Screenshot);
             if (!string.IsNullOrEmpty(Video)) capabilities.Add("screenrecorder", Video);
             if (!string.IsNullOrEmpty(SeleniumVersion)) capabilities.Add("selenium-version", SeleniumVersion);
@@ -94,6 +96,8 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
             if (!string.IsNullOrEmpty(Sikuli)) capabilities.Add("sikuli", Sikuli);
             if (!string.IsNullOrEmpty(Hosts)) capabilities.Add("hosts", Hosts);
             if (!string.IsNullOrEmpty(RecordLogs)) capabilities.Add("recordLogs", RecordLogs);
+
+
             return capabilities;
         }
 
