@@ -121,16 +121,29 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
             }
             string reason = $"{result.Outcome.Status} - {fixedErrorMessage}";
             var reqString = $"{{\"status\":\"{resultStr}\", \"reason\":\"{reason.Trim()}\"}}";
+            try
+            {
+                Publish(reqString);
+            }
+            catch (Exception)
+            {
+                reqString = $"{{\"status\":\"{resultStr}\", \"reason\":\"{TestContext.CurrentContext.Result.Outcome}\"}}";
+                Publish(reqString);
+            }
+        }
+
+        public void Publish(string reqString)
+        {
             var uri = new Uri($"https://www.browserstack.com/automate/sessions/{SessionId}.json");
             var requestData = Encoding.UTF8.GetBytes(reqString);
             var myWebRequest = WebRequest.Create(uri);
-            var myHttpWebRequest = (HttpWebRequest) myWebRequest;
+            var myHttpWebRequest = (HttpWebRequest)myWebRequest;
             myWebRequest.ContentType = "application/json";
             myWebRequest.Method = "PUT";
             myWebRequest.ContentLength = requestData.Length;
             using (var st = myWebRequest.GetRequestStream()) st.Write(requestData, 0, requestData.Length);
             var networkCredential = new NetworkCredential(SecretUser, SecretKey);
-            var myCredentialCache = new CredentialCache {{uri, "Basic", networkCredential}};
+            var myCredentialCache = new CredentialCache { { uri, "Basic", networkCredential } };
             myHttpWebRequest.PreAuthenticate = true;
             myHttpWebRequest.Credentials = myCredentialCache;
             myWebRequest.GetResponse().Close();
