@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Net;
 using System.Text;
-using System.Text.RegularExpressions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 
@@ -40,6 +39,9 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
         private static readonly string Compatibility = ConfigurationManager.AppSettings["browserstack.ie.compatibility"];
         private static readonly string Driver = ConfigurationManager.AppSettings["browserstack.ie.driver"];
         private static readonly string IeEnablePopups = ConfigurationManager.AppSettings["browserstack.ie.enablePopups"];
+
+        private static readonly string EdgeEnablePopups =
+            ConfigurationManager.AppSettings["browserstack.edge.enablePopups"];
 
         private static readonly string SafariEnablePopups =
             ConfigurationManager.AppSettings["browserstack.safari.enablePopups"];
@@ -95,6 +97,7 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
             if (!string.IsNullOrEmpty(Compatibility)) capabilities.Add("browserstack.ie.compatibility", Compatibility);
             if (!string.IsNullOrEmpty(Driver)) capabilities.Add("browserstack.ie.driver", Driver);
             if (!string.IsNullOrEmpty(IeEnablePopups)) capabilities.Add("browserstack.ie.enablePopups", IeEnablePopups);
+            if (!string.IsNullOrEmpty(EdgeEnablePopups)) capabilities.Add("browserstack.edge.enablePopups", EdgeEnablePopups);
             if (!string.IsNullOrEmpty(SafariEnablePopups))
                 capabilities.Add("browserstack.safari.enablePopups", SafariEnablePopups);
             if (!string.IsNullOrEmpty(SafariAllowAllCookies))
