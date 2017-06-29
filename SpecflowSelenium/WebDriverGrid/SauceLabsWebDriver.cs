@@ -55,7 +55,7 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
         public override void UpdateTestResult()
         {
             var passed = TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Passed;
-            ((IJavaScriptExecutor)Browser.Current).ExecuteScript("sauce:test-result=" + (passed ? "passed" : "failed"));
+            Publish("{\"passed\":"+ passed.ToString().ToLower() + "}");                 
         }
 
         private static Dictionary<string, string> Auth(string userName, string accessKey, Dictionary<string, string> capabilities)
@@ -70,7 +70,7 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
                     ? Name
                     : TestContext.CurrentContext.Test.Name);
 
-            if (Build.Equals("@@debug")) Build = DateTime.Now.ToString("yyyy/MM/dd hhtt");
+            Build = BuildTransform(Build);
 
             if (!string.IsNullOrEmpty(SeleniumVersion)) capabilities.Add("seleniumVersion", SeleniumVersion);
             if (!string.IsNullOrEmpty(ChromedriverVersion)) capabilities.Add("chromedriverVersion", ChromedriverVersion);
@@ -97,6 +97,6 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
             return capabilities;
         }
 
-        protected override Uri Uri => new Uri($"https://api.testingbot.com/v1/tests/{SessionId}.json");
+        protected override Uri Uri => new Uri($"https://saucelabs.com/rest/v1/{SecretUser}/jobs/{SessionId}");
     }
 }

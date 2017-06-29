@@ -15,7 +15,7 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
         private static readonly string Name = ConfigurationManager.AppSettings["browserstack.name"];
         private static readonly string Resolution = ConfigurationManager.AppSettings["browserstack.resolution"];
         private static readonly string Project = ConfigurationManager.AppSettings["browserstack.project"];
-        private static string _build = ConfigurationManager.AppSettings["browserstack.build"];
+        private static string Build = ConfigurationManager.AppSettings["browserstack.build"];
         private static readonly string Debug = ConfigurationManager.AppSettings["browserstack.debug"];
         private static readonly string Video = ConfigurationManager.AppSettings["browserstack.video"];
         private static readonly string Local = ConfigurationManager.AppSettings["browserstack.local"];
@@ -74,10 +74,10 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
                     ? Name
                     : TestContext.CurrentContext.Test.Name);
 
-            if (_build.Equals("@@debug")) _build = DateTime.Now.ToString("yyyy/MM/dd hhtt");
+            Build = BuildTransform(Build);
 
             if (!string.IsNullOrEmpty(Resolution)) capabilities.Add("browserstack.resolution", Resolution);
-            if (!string.IsNullOrEmpty(_build)) capabilities.Add("build", _build);
+            if (!string.IsNullOrEmpty(Build)) capabilities.Add("build", Build);
             if (!string.IsNullOrEmpty(Project)) capabilities.Add("project", Project);
             if (!string.IsNullOrEmpty(Debug)) capabilities.Add("browserstack.debug", Debug);
             if (!string.IsNullOrEmpty(Video)) capabilities.Add("browserstack.video", Video);

@@ -20,9 +20,9 @@ namespace Example.Features
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "2.2.0.0")]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [NUnit.Framework.TestFixtureAttribute()]
-    [NUnit.Framework.DescriptionAttribute("ExampleFeature feature")]
+    [NUnit.Framework.DescriptionAttribute("f2")]
     [NUnit.Framework.ParallelizableAttribute()]
-    public partial class ExampleFeatureFeatureFeature
+    public partial class F2Feature
     {
         
         private TechTalk.SpecFlow.ITestRunner testRunner;
@@ -38,7 +38,7 @@ namespace Example.Features
             builder.RegisterModule(new ConfigurationSettingsReader());
             this.container = builder.Build();
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "ExampleFeature feature", null, ProgrammingLanguage.CSharp, ((string[])(null)));
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "f2", null, ProgrammingLanguage.CSharp, ((string[])(null)));
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -81,16 +81,19 @@ namespace Example.Features
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Check website title")]
-        [NUnit.Framework.TestCaseAttribute("Chrome_local", "https://translate.google.com/", "Google", null, Category="Chrome_local", TestName="CheckWebsiteTitle with Chrome_local and \"https://translate.google.com/\" ,\"Google\"" +
-            "")]
-        [NUnit.Framework.TestCaseAttribute("Firefox_local", "https://translate.google.com/", "Google", null, Category="Firefox_local", TestName="CheckWebsiteTitle with Firefox_local and \"https://translate.google.com/\" ,\"Google" +
-            "\"")]
+        [NUnit.Framework.TestCaseAttribute("BrowserStack_Win10_Chrome", "https://translate.google.com/", "Google", null, Category="BrowserStack_Win10_Chrome", TestName="CheckWebsiteTitle with BrowserStack_Win10_Chrome and \"https://translate.google.co" +
+            "m/\" ,\"Google\"")]
+        [NUnit.Framework.TestCaseAttribute("TestingBot_ElCapitan_Safari", "https://translate.google.com/", "Google", null, Category="TestingBot_ElCapitan_Safari", TestName="CheckWebsiteTitle with TestingBot_ElCapitan_Safari and \"https://translate.google." +
+            "com/\" ,\"Google\"")]
+        [NUnit.Framework.TestCaseAttribute("SauceLabs_Win7_Firefox", "https://translate.google.com/", "Google", null, Category="SauceLabs_Win7_Firefox", TestName="CheckWebsiteTitle with SauceLabs_Win7_Firefox and \"https://translate.google.com/\"" +
+            " ,\"Google\"")]
         public virtual void CheckWebsiteTitle(string browser, string uRL, string @string, string[] exampleTags)
         {
 InitializeSeleniumBrowser(browser);
             string[] @__tags = new string[] {
-                    "Browser:Chrome_local",
-                    "Browser:Firefox_local"};
+                    "Browser:BrowserStack_Win10_Chrome",
+                    "Browser:TestingBot_ElCapitan_Safari",
+                    "Browser:SauceLabs_Win7_Firefox"};
             if ((exampleTags != null))
             {
                 @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Configuration;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
-using OpenQA.Selenium;
 
 namespace Unickq.SeleniumHelper.WebDriverGrid
 {
@@ -67,7 +66,7 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
                     ? Name
                     : TestContext.CurrentContext.Test.Name);
 
-            if (Build.Equals("@@debug")) Build = DateTime.Now.ToString("yyyy/MM/dd hhtt");
+            Build = BuildTransform(Build);
 
             if (!string.IsNullOrEmpty(Screenshot)) capabilities.Add("screenshot", Screenshot);
             if (!string.IsNullOrEmpty(Video)) capabilities.Add("screenrecorder", Video);
@@ -98,12 +97,15 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
             return capabilities;
         }
 
+
         public override void UpdateTestResult()
         {
             var passed = TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Passed;
-            ((IJavaScriptExecutor)Browser.Current).ExecuteScript("tb:test-result=" + (passed ? "passed" : "failed"));
+            Publish("{\"test[success]\":" + passed.ToString().ToLower() + "," +
+                     "\"testid\":\"" + SessionId+ "}");
         }
 
-        protected override Uri Uri => new Uri($"https://api.testingbot.com/v1/tests/{SessionId}.json");
+
+        protected override Uri Uri => new Uri($"https://api.testingbot.com/v1/tests/{SecretKey}");
     }
 }

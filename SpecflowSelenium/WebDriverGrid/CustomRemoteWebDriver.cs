@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Net;
 using System.Reflection;
 using System.Text;
+using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using OpenQA.Selenium.Remote;
 
 namespace Unickq.SeleniumHelper.WebDriverGrid
@@ -11,6 +13,7 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
     {
         protected void Publish(string reqString)
         {
+            Console.WriteLine(reqString);
             var uri = Uri;
             var requestData = Encoding.UTF8.GetBytes(reqString);
             var myWebRequest = WebRequest.Create(uri);
@@ -26,9 +29,8 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
             myWebRequest.GetResponse().Close();
         }
 
-  
-
         public abstract void UpdateTestResult();
+
         protected string SecretUser { get; set; }
         protected string SecretKey { get; set; }
         protected abstract Uri Uri { get; }
@@ -60,6 +62,15 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
                     capabilities.SetCapability(capability.Key, capability.Value);
 
             return capabilities;
+        }
+
+        protected static string BuildTransform(string str)
+        {
+            if (str == null) return null;
+            if (str.Equals("@@debug")) str = DateTime.Now.ToString("yyyy/MM/dd hhtt");
+            if (str.Equals("@@user")) str = Environment.UserName;
+            if (str.Equals("@@machine")) str = Environment.MachineName;
+            return str;
         }
     }
 }
