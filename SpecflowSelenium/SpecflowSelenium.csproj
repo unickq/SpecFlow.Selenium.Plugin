@@ -66,8 +66,7 @@
     <Compile Include="Browser.cs" />
     <Compile Include="Plugins\GeneratorPlugin.cs" />
     <Compile Include="WebDriverGrid\BrowserStackWebDriver.cs" />
-    <Compile Include="WebDriverGrid\ICustomRemoteWebDriver.cs" />
-    <Compile Include="RemoteWebDriver.cs" />
+    <Compile Include="WebDriverGrid\CustomRemoteWebDriver.cs" />
     <Compile Include="Plugins\RuntimePlugin.cs" />
     <Compile Include="WebDriverGrid\SauceLabsWebDriver.cs" />
     <Compile Include="Plugins\UnickqNUnitTestGeneratorProvider.cs" />

@@ -1,18 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Net;
-using System.Text;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 
 namespace Unickq.SeleniumHelper.WebDriverGrid
 {
-    public class BrowserStackWebDriver : RemoteWebDriver, ICustomRemoteWebDriver
+    public class BrowserStackWebDriver : CustomRemoteWebDriver
     {
-        public new string SessionId => base.SessionId.ToString();
-        public string SecretUser { get; }
-        public string SecretKey { get; }
         private const string ApiUrl = "http://hub-cloud.browserstack.com/wd/hub/";
 
         private static readonly string BrowserstackUser = ConfigurationManager.AppSettings["browserstack.user"];
@@ -20,7 +15,7 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
         private static readonly string Name = ConfigurationManager.AppSettings["browserstack.name"];
         private static readonly string Resolution = ConfigurationManager.AppSettings["browserstack.resolution"];
         private static readonly string Project = ConfigurationManager.AppSettings["browserstack.project"];
-        private static string Build = ConfigurationManager.AppSettings["browserstack.build"];
+        private static string _build = ConfigurationManager.AppSettings["browserstack.build"];
         private static readonly string Debug = ConfigurationManager.AppSettings["browserstack.debug"];
         private static readonly string Video = ConfigurationManager.AppSettings["browserstack.video"];
         private static readonly string Local = ConfigurationManager.AppSettings["browserstack.local"];
@@ -79,10 +74,10 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
                     ? Name
                     : TestContext.CurrentContext.Test.Name);
 
-            if (Build.Equals("@@debug")) Build = DateTime.Now.ToString("yyyy/MM/dd hhtt");
+            if (_build.Equals("@@debug")) _build = DateTime.Now.ToString("yyyy/MM/dd hhtt");
 
             if (!string.IsNullOrEmpty(Resolution)) capabilities.Add("browserstack.resolution", Resolution);
-            if (!string.IsNullOrEmpty(Build)) capabilities.Add("build", Build);
+            if (!string.IsNullOrEmpty(_build)) capabilities.Add("build", _build);
             if (!string.IsNullOrEmpty(Project)) capabilities.Add("project", Project);
             if (!string.IsNullOrEmpty(Debug)) capabilities.Add("browserstack.debug", Debug);
             if (!string.IsNullOrEmpty(Video)) capabilities.Add("browserstack.video", Video);
@@ -106,7 +101,7 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
             return capabilities;
         }
 
-        public void UpdateTestResult()
+        public override void UpdateTestResult()
         {
             var result = TestContext.CurrentContext.Result;
             var resultStr = "passed";
@@ -135,21 +130,6 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
             }
         }
 
-        public void Publish(string reqString)
-        {
-            var uri = new Uri($"https://www.browserstack.com/automate/sessions/{SessionId}.json");
-            var requestData = Encoding.UTF8.GetBytes(reqString);
-            var myWebRequest = WebRequest.Create(uri);
-            var myHttpWebRequest = (HttpWebRequest)myWebRequest;
-            myWebRequest.ContentType = "application/json";
-            myWebRequest.Method = "PUT";
-            myWebRequest.ContentLength = requestData.Length;
-            using (var st = myWebRequest.GetRequestStream()) st.Write(requestData, 0, requestData.Length);
-            var networkCredential = new NetworkCredential(SecretUser, SecretKey);
-            var myCredentialCache = new CredentialCache { { uri, "Basic", networkCredential } };
-            myHttpWebRequest.PreAuthenticate = true;
-            myHttpWebRequest.Credentials = myCredentialCache;
-            myWebRequest.GetResponse().Close();
-        }
+        protected override Uri Uri => new Uri($"https://www.browserstack.com/automate/sessions/{SessionId}.json");
     }
 }

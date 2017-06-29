@@ -289,7 +289,7 @@ namespace Unickq.SeleniumHelper.Plugins
             generationContext.TestCleanupMethod.Statements.Add(
                 GenerateCodeSnippetStatement(
                     "try {" +
-                    "((Unickq.SeleniumHelper.WebDriverGrid.ICustomRemoteWebDriver) this.driver).UpdateTestResult();" +
+                    "((Unickq.SeleniumHelper.WebDriverGrid.CustomRemoteWebDriver) driver).UpdateTestResult();" +
                     "} catch (System.Exception) {}"));
             generationContext.TestCleanupMethod.Statements.Add(
                 GenerateCodeSnippetStatement(

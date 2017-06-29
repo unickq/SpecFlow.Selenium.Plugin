@@ -57,7 +57,7 @@ namespace Example.Features
         [NUnit.Framework.TearDownAttribute()]
         public virtual void ScenarioTearDown()
         {
-            try {((Unickq.SeleniumHelper.WebDriverGrid.ICustomRemoteWebDriver) this.driver).UpdateTestResult();} catch (System.Exception) {}
+            try {((Unickq.SeleniumHelper.WebDriverGrid.CustomRemoteWebDriver) driver).UpdateTestResult();} catch (System.Exception) {}
             try {System.Threading.Thread.Sleep(50); this.driver.Quit(); } catch (System.Exception) {}
             driver = null;
             testRunner.ScenarioContext.Remove("Driver");

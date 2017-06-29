@@ -7,11 +7,8 @@ using OpenQA.Selenium;
 
 namespace Unickq.SeleniumHelper.WebDriverGrid
 {
-    public class SauceLabsWebDriver : RemoteWebDriver, ICustomRemoteWebDriver
+    public class SauceLabsWebDriver : CustomRemoteWebDriver
     {
-        private new string SessionId => base.SessionId.ToString();
-        public string SecretUser { get; }
-        public string SecretKey { get; }
         private const string ApiUrl = "http://ondemand.saucelabs.com:80/wd/hub";
 
         private static readonly string SaucelabsUser = ConfigurationManager.AppSettings["saucelabs.username"];
@@ -41,7 +38,6 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
         private static readonly string CaptureHtml = ConfigurationManager.AppSettings["saucelabs.captureHtml"];
         private static readonly string WebdriverRemoteQuietExceptions = ConfigurationManager.AppSettings["saucelabs.webdriverRemoteQuietExceptions"];
 
-
         public SauceLabsWebDriver(string browser, Dictionary<string, string> capabilities)
             : base(ApiUrl, browser, Auth(SaucelabsUser, SaucelabsKey, capabilities))
         {
@@ -56,13 +52,11 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
             SecretKey = accessKey;
         }
 
-        public void UpdateTestResult()
+        public override void UpdateTestResult()
         {
             var passed = TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Passed;
             ((IJavaScriptExecutor)Browser.Current).ExecuteScript("sauce:test-result=" + (passed ? "passed" : "failed"));
         }
-
-        string ICustomRemoteWebDriver.SessionId => SessionId;
 
         private static Dictionary<string, string> Auth(string userName, string accessKey, Dictionary<string, string> capabilities)
         {
@@ -72,9 +66,9 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
             capabilities.Add("accessKey", accessKey);
 
             capabilities.Add("name",
-                   !string.IsNullOrEmpty(Name)
-                   ? Name
-                   : TestContext.CurrentContext.Test.Name);
+                !string.IsNullOrEmpty(Name)
+                    ? Name
+                    : TestContext.CurrentContext.Test.Name);
 
             if (Build.Equals("@@debug")) Build = DateTime.Now.ToString("yyyy/MM/dd hhtt");
 
@@ -102,5 +96,7 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
             if (!string.IsNullOrEmpty(WebdriverRemoteQuietExceptions)) capabilities.Add("webdriverRemoteQuietExceptions", WebdriverRemoteQuietExceptions);
             return capabilities;
         }
+
+        protected override Uri Uri => new Uri($"https://api.testingbot.com/v1/tests/{SessionId}.json");
     }
 }
