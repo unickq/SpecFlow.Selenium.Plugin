@@ -6,6 +6,6 @@ namespace Unickq.SeleniumHelper
     [Binding]
     public static class Browser
     {
-        public static IWebDriver Current => (IWebDriver) ScenarioContext.Current["Driver"];
+        public static IWebDriver Current => ScenarioContext.Current.Get<IWebDriver>("Driver");
     }
 }
