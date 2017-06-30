@@ -5,22 +5,22 @@
     <id>Unickq.SeleniumHelper</id>
     <version>$version$</version>
     <title>Unickq.SeleniumHelper</title>
-    <authors>Nick Chursin, Daniel Romero</authors>
+    <authors>Nick Chursin</authors>
     <owners>unickq</owners>
     <iconUrl>http://techtalk.github.io/SpecFlow/specflow.png</iconUrl>
     <licenseUrl>https://opensource.org/licenses/MIT</licenseUrl>
     <projectUrl>https://github.com/unickq/Unickq.SeleniumHelper</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <summary>Test class generator to drive automated web ui tests with Selenium and SpecFlow 2.1.0</summary>
+    <summary>Test class generator to drive automated web ui tests with Selenium and SpecFlow 2.2.0</summary>
     <description>
-      Test class generator to drive automated web ui tests with Selenium and SpecFlow 2.1.0. Works with BroswerStack, SauceLabs, TestingBot and any WebDriver grid.  Based on Baseclass.Contrib.SpecFlow.Selenium.NUnit.
+      Test class generator to drive automated web ui tests with Selenium and SpecFlow 2.2.0. Works with BroswerStack, SauceLabs, TestingBot, CrossbrowserTesting and any WebDriver grid.  Based on Baseclass.Contrib.SpecFlow.Selenium.NUnit.
     </description>
     <tags>Selenium NUnit SpecFlow Gherkin Web Testing webtesting saucelabs browserstack testingbot</tags>
     <frameworkAssemblies>
       <frameworkAssembly assemblyName="System.Configuration" />
     </frameworkAssemblies>
     <dependencies>
-      <dependency id="SpecFlow" version="2.1.0" />
+      <dependency id="SpecFlow" version="2.2.0" />
       <dependency id="NUnit" version="3.0.0" />
       <dependency id="Autofac" version="3.3.0" />
       <dependency id="Autofac.Configuration" version="3.3.0" />
