@@ -9,6 +9,7 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
     public class TestingBotWebDriver : CustomRemoteWebDriver
     {
         private const string ApiUrl = "http://hub.testingbot.com/wd/hub/";
+        protected override Uri Uri => new Uri($"https://api.testingbot.com/v1/tests/{SecretKey}");
 
         public TestingBotWebDriver(string browser, string key, string secret, Dictionary<string, string> capabilities)
             : base(ApiUrl, browser, Auth(key, secret, capabilities))
@@ -101,11 +102,8 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
         public override void UpdateTestResult()
         {
             var passed = TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Passed;
-            Publish("{\"test[success]\":" + passed.ToString().ToLower() + "," +
-                     "\"testid\":\"" + SessionId+ "}");
+            Publish("test[success]=1");
+            
         }
-
-
-        protected override Uri Uri => new Uri($"https://api.testingbot.com/v1/tests/{SecretKey}");
     }
 }

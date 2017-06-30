@@ -9,6 +9,7 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
     public class BrowserStackWebDriver : CustomRemoteWebDriver
     {
         private const string ApiUrl = "http://hub-cloud.browserstack.com/wd/hub/";
+        protected override Uri Uri => new Uri($"https://www.browserstack.com/automate/sessions/{SessionId}.json");
 
         private static readonly string BrowserstackUser = ConfigurationManager.AppSettings["browserstack.user"];
         private static readonly string BrowserstackKey = ConfigurationManager.AppSettings["browserstack.key"];
@@ -56,7 +57,7 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
         public BrowserStackWebDriver(string browser, string browserstackUser, string browserstackKey,
             Dictionary<string, string> capabilities)
             : base(ApiUrl, browser, Auth(browserstackUser, browserstackKey, capabilities))
-        {
+        {     
             SecretUser = browserstackUser;
             SecretKey = browserstackKey;
         }
@@ -77,8 +78,8 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
             Build = BuildTransform(Build);
 
             if (!string.IsNullOrEmpty(Resolution)) capabilities.Add("browserstack.resolution", Resolution);
-            if (!string.IsNullOrEmpty(Build)) capabilities.Add("build", Build);
-            if (!string.IsNullOrEmpty(Project)) capabilities.Add("project", Project);
+            if (!string.IsNullOrEmpty(Build)) capabilities.Add("browserstack.build", Build);
+            if (!string.IsNullOrEmpty(Project)) capabilities.Add("browserstack.project", Project);
             if (!string.IsNullOrEmpty(Debug)) capabilities.Add("browserstack.debug", Debug);
             if (!string.IsNullOrEmpty(Video)) capabilities.Add("browserstack.video", Video);
             if (!string.IsNullOrEmpty(Local)) capabilities.Add("browserstack.local", Local);
@@ -129,7 +130,5 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
                 Publish(reqString);
             }
         }
-
-        protected override Uri Uri => new Uri($"https://www.browserstack.com/automate/sessions/{SessionId}.json");
     }
 }

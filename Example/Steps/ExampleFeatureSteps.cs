@@ -4,7 +4,7 @@ using OpenQA.Selenium;
 using TechTalk.SpecFlow;
 using Unickq.SeleniumHelper;
 
-namespace Example
+namespace Example.Steps
 {
     [Binding]
     public class ExampleFeatureSteps : SeleniumHelperBinding

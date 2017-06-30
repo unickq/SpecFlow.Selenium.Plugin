@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Net;
 using System.Reflection;
 using System.Text;
-using NUnit.Framework;
-using NUnit.Framework.Interfaces;
 using OpenQA.Selenium.Remote;
 
 namespace Unickq.SeleniumHelper.WebDriverGrid
@@ -35,12 +33,12 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
         protected string SecretKey { get; set; }
         protected abstract Uri Uri { get; }
 
-        public CustomRemoteWebDriver(string url, string browser)
+        protected CustomRemoteWebDriver(string url, string browser)
             : base(new Uri(url), GetCapabilities(browser))
         {
         }
 
-        public CustomRemoteWebDriver(string url, string browser, Dictionary<string, string> capabilities)
+        protected CustomRemoteWebDriver(string url, string browser, Dictionary<string, string> capabilities)
             : base(new Uri(url), GetCapabilities(browser, capabilities))
         {
         }
@@ -57,9 +55,9 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
             if (capabilities == null)
                 throw new NotSupportedException("Can't find DesiredCapabilities with name " + browserName);
 
-            if (additionalCapabilities != null)
-                foreach (var capability in additionalCapabilities)
-                    capabilities.SetCapability(capability.Key, capability.Value);
+            if (additionalCapabilities == null) return capabilities;
+            foreach (var capability in additionalCapabilities)
+                capabilities.SetCapability(capability.Key, capability.Value);
 
             return capabilities;
         }

@@ -83,6 +83,8 @@ namespace Example.Features
         [NUnit.Framework.DescriptionAttribute("Check website title")]
         [NUnit.Framework.TestCaseAttribute("BrowserStack_Win10_Chrome", "https://translate.google.com/", "Google", null, Category="BrowserStack_Win10_Chrome", TestName="CheckWebsiteTitle with BrowserStack_Win10_Chrome and \"https://translate.google.co" +
             "m/\" ,\"Google\"")]
+        [NUnit.Framework.TestCaseAttribute("Cbt_Win10_Chrome", "https://translate.google.com/", "Google", null, Category="Cbt_Win10_Chrome", TestName="CheckWebsiteTitle with Cbt_Win10_Chrome and \"https://translate.google.com/\" ,\"Goo" +
+            "gle\"")]
         [NUnit.Framework.TestCaseAttribute("TestingBot_ElCapitan_Safari", "https://translate.google.com/", "Google", null, Category="TestingBot_ElCapitan_Safari", TestName="CheckWebsiteTitle with TestingBot_ElCapitan_Safari and \"https://translate.google." +
             "com/\" ,\"Google\"")]
         [NUnit.Framework.TestCaseAttribute("SauceLabs_Win7_Firefox", "https://translate.google.com/", "Google", null, Category="SauceLabs_Win7_Firefox", TestName="CheckWebsiteTitle with SauceLabs_Win7_Firefox and \"https://translate.google.com/\"" +
@@ -92,6 +94,7 @@ namespace Example.Features
 InitializeSeleniumBrowser(browser);
             string[] @__tags = new string[] {
                     "Browser:BrowserStack_Win10_Chrome",
+                    "Browser:Cbt_Win10_Chrome",
                     "Browser:TestingBot_ElCapitan_Safari",
                     "Browser:SauceLabs_Win7_Firefox"};
             if ((exampleTags != null))

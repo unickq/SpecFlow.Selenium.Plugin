@@ -3,6 +3,7 @@
 #@Browser:Chrome_local
 #@Browser:Firefox_local
 @Browser:BrowserStack_Win10_Chrome
+@Browser:Cbt_Win10_Chrome
 @Browser:TestingBot_ElCapitan_Safari
 @Browser:SauceLabs_Win7_Firefox
 #@GoogleTranslate:FR
