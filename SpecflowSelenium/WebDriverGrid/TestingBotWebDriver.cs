@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
+using System.Net;
+using System.Text;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
-using OpenQA.Selenium;
 
 namespace Unickq.SeleniumHelper.WebDriverGrid
 {
-    public class TestingBotWebDriver : RemoteWebDriver, ICustomRemoteWebDriver
+    public class TestingBotWebDriver : CustomRemoteWebDriver
     {
-        public new string SessionId => base.SessionId.ToString();
-        public string SecretUser { get; }
-        public string SecretKey { get; }
         private const string ApiUrl = "http://hub.testingbot.com/wd/hub/";
+        protected override Uri Uri => new Uri($"https://api.testingbot.com/v1/tests/{SessionId}");
 
         public TestingBotWebDriver(string browser, string key, string secret, Dictionary<string, string> capabilities)
             : base(ApiUrl, browser, Auth(key, secret, capabilities))
@@ -38,8 +38,8 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
         private static readonly string Idletimeout = ConfigurationManager.AppSettings["testingbot.idletimeout"];
         private static readonly string Public = ConfigurationManager.AppSettings["testingbot.public"];
         private static readonly string TimeZone = ConfigurationManager.AppSettings["testingbot.timeZone"];
-        private static readonly string UserExtension  = ConfigurationManager.AppSettings["testingbot.user-extension"];
-        private static readonly string LoadExtension  = ConfigurationManager.AppSettings["testingbot.load-extension"];
+        private static readonly string UserExtension = ConfigurationManager.AppSettings["testingbot.user-extension"];
+        private static readonly string LoadExtension = ConfigurationManager.AppSettings["testingbot.load-extension"];
         private static readonly string Groups = ConfigurationManager.AppSettings["testingbot.load-groups"];
         private static readonly string Prerun = ConfigurationManager.AppSettings["testingbot.prerun"];
         private static readonly string Upload = ConfigurationManager.AppSettings["testingbot.upload"];
@@ -67,10 +67,10 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
 
             capabilities.Add("name",
                 !string.IsNullOrEmpty(Name)
-                ? Name
-                : TestContext.CurrentContext.Test.Name);
+                    ? Name
+                    : TestContext.CurrentContext.Test.Name);
 
-            if (Build.Equals("@@debug")) Build = DateTime.Now.ToString("yyyy/MM/dd hhtt");
+            Build = BuildTransform(Build);
 
             if (!string.IsNullOrEmpty(Screenshot)) capabilities.Add("screenshot", Screenshot);
             if (!string.IsNullOrEmpty(Video)) capabilities.Add("screenrecorder", Video);
@@ -101,10 +101,33 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
             return capabilities;
         }
 
-        public void UpdateTestResult()
+
+        public override void UpdateTestResult()
         {
-            var passed = TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Passed;
-            ((IJavaScriptExecutor)Browser.Current).ExecuteScript("tb:test-result=" + (passed ? "passed" : "failed"));
+            var success = TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Passed;
+            var request = (HttpWebRequest)WebRequest.Create(Uri);
+            request.ContentType = "application/x-www-form-urlencoded";
+            request.Method = "PUT";
+            var usernamePassword = SecretUser + ":" + SecretKey;
+            var mycache = new CredentialCache
+            {
+                {
+                    Uri, "Basic",
+                    new NetworkCredential(SecretUser, SecretKey)
+                }
+            };
+            request.Credentials = mycache;
+            request.Headers.Add("Authorization",
+                "Basic " + Convert.ToBase64String(new ASCIIEncoding().GetBytes(usernamePassword)));
+
+            using (var writer = new StreamWriter(request.GetRequestStream()))
+            {
+                writer.Write(
+                    "test[success]=" + (success ? "1" : "0") +
+                    "&test[status_message]=" + TestContext.CurrentContext.Result.Message);
+            }
+            var response = request.GetResponse();
+            response.Close();
         }
     }
 }

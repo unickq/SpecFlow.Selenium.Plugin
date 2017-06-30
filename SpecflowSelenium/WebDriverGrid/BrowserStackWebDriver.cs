@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Net;
-using System.Text;
+using System.Dynamic;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 
 namespace Unickq.SeleniumHelper.WebDriverGrid
 {
-    public class BrowserStackWebDriver : RemoteWebDriver, ICustomRemoteWebDriver
+    public class BrowserStackWebDriver : CustomRemoteWebDriver
     {
-        public new string SessionId => base.SessionId.ToString();
-        public string SecretUser { get; }
-        public string SecretKey { get; }
         private const string ApiUrl = "http://hub-cloud.browserstack.com/wd/hub/";
+        protected override Uri Uri => new Uri($"https://www.browserstack.com/automate/sessions/{SessionId}.json");
 
         private static readonly string BrowserstackUser = ConfigurationManager.AppSettings["browserstack.user"];
         private static readonly string BrowserstackKey = ConfigurationManager.AppSettings["browserstack.key"];
@@ -36,9 +34,14 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
             ConfigurationManager.AppSettings["browserstack.selenium_version"];
 
         private static readonly string NoFlash = ConfigurationManager.AppSettings["browserstack.ie.noFlash"];
-        private static readonly string Compatibility = ConfigurationManager.AppSettings["browserstack.ie.compatibility"];
+
+        private static readonly string Compatibility =
+            ConfigurationManager.AppSettings["browserstack.ie.compatibility"];
+
         private static readonly string Driver = ConfigurationManager.AppSettings["browserstack.ie.driver"];
-        private static readonly string IeEnablePopups = ConfigurationManager.AppSettings["browserstack.ie.enablePopups"];
+
+        private static readonly string IeEnablePopups =
+            ConfigurationManager.AppSettings["browserstack.ie.enablePopups"];
 
         private static readonly string EdgeEnablePopups =
             ConfigurationManager.AppSettings["browserstack.edge.enablePopups"];
@@ -69,8 +72,6 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
         private static Dictionary<string, string> Auth(string browserstackUser, string browserstackKey,
             Dictionary<string, string> capabilities)
         {
-            if (browserstackUser == null) throw new Exception("browserstack.user can't be found");
-            if (browserstackKey == null) throw new Exception("browserstack.key can't be found");
             capabilities.Add("browserstack.user", browserstackUser);
             capabilities.Add("browserstack.key", browserstackKey);
 
@@ -79,11 +80,11 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
                     ? Name
                     : TestContext.CurrentContext.Test.Name);
 
-            if (Build.Equals("@@debug")) Build = DateTime.Now.ToString("yyyy/MM/dd hhtt");
+            Build = BuildTransform(Build);
 
             if (!string.IsNullOrEmpty(Resolution)) capabilities.Add("browserstack.resolution", Resolution);
-            if (!string.IsNullOrEmpty(Build)) capabilities.Add("build", Build);
-            if (!string.IsNullOrEmpty(Project)) capabilities.Add("project", Project);
+            if (!string.IsNullOrEmpty(Build)) capabilities.Add("browserstack.build", Build);
+            if (!string.IsNullOrEmpty(Project)) capabilities.Add("browserstack.project", Project);
             if (!string.IsNullOrEmpty(Debug)) capabilities.Add("browserstack.debug", Debug);
             if (!string.IsNullOrEmpty(Video)) capabilities.Add("browserstack.video", Video);
             if (!string.IsNullOrEmpty(Local)) capabilities.Add("browserstack.local", Local);
@@ -97,7 +98,8 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
             if (!string.IsNullOrEmpty(Compatibility)) capabilities.Add("browserstack.ie.compatibility", Compatibility);
             if (!string.IsNullOrEmpty(Driver)) capabilities.Add("browserstack.ie.driver", Driver);
             if (!string.IsNullOrEmpty(IeEnablePopups)) capabilities.Add("browserstack.ie.enablePopups", IeEnablePopups);
-            if (!string.IsNullOrEmpty(EdgeEnablePopups)) capabilities.Add("browserstack.edge.enablePopups", EdgeEnablePopups);
+            if (!string.IsNullOrEmpty(EdgeEnablePopups))
+                capabilities.Add("browserstack.edge.enablePopups", EdgeEnablePopups);
             if (!string.IsNullOrEmpty(SafariEnablePopups))
                 capabilities.Add("browserstack.safari.enablePopups", SafariEnablePopups);
             if (!string.IsNullOrEmpty(SafariAllowAllCookies))
@@ -106,50 +108,32 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
             return capabilities;
         }
 
-        public void UpdateTestResult()
+        public override void UpdateTestResult()
         {
-            var result = TestContext.CurrentContext.Result;
-            var resultStr = "passed";
-            var fixedErrorMessage = DateTime.Now.ToString("G");
-            if (result.Outcome.Status != TestStatus.Passed)
+            var testResult = TestContext.CurrentContext.Result;
+            var resultStr = "failed";
+            if (testResult.Outcome.Status == TestStatus.Passed)
             {
-                resultStr = "failed";
-                fixedErrorMessage = result.Message
-                    .Replace(Environment.NewLine, string.Empty)
-                    .Replace("\"", "'")
-                    .Replace("{", string.Empty)
-                    .Replace("}", string.Empty)
-                    .Replace("[", string.Empty)
-                    .Replace("]", string.Empty);
+                resultStr = "passed";
             }
-            string reason = $"{result.Outcome.Status} - {fixedErrorMessage}";
-            var reqString = $"{{\"status\":\"{resultStr}\", \"reason\":\"{reason.Trim()}\"}}";
+
+            dynamic statusObj = new ExpandoObject();
+            statusObj.status = resultStr;
+            statusObj.reason = testResult.Message;
+            var settings = new JsonSerializerSettings
+            {
+                StringEscapeHandling = StringEscapeHandling.EscapeHtml
+            };
+            var json = JsonConvert.SerializeObject(statusObj, settings);
             try
             {
-                Publish(reqString);
+                Publish(json);
             }
             catch (Exception)
             {
-                reqString = $"{{\"status\":\"{resultStr}\", \"reason\":\"{TestContext.CurrentContext.Result.Outcome}\"}}";
-                Publish(reqString);
+                Publish($"{{\"status\":\"{resultStr}\", \"reason\":\"Unparsable reason\"}}");
+                Console.WriteLine($"Unparsable json for BrowserStack:\n{json}");
             }
-        }
-
-        public void Publish(string reqString)
-        {
-            var uri = new Uri($"https://www.browserstack.com/automate/sessions/{SessionId}.json");
-            var requestData = Encoding.UTF8.GetBytes(reqString);
-            var myWebRequest = WebRequest.Create(uri);
-            var myHttpWebRequest = (HttpWebRequest)myWebRequest;
-            myWebRequest.ContentType = "application/json";
-            myWebRequest.Method = "PUT";
-            myWebRequest.ContentLength = requestData.Length;
-            using (var st = myWebRequest.GetRequestStream()) st.Write(requestData, 0, requestData.Length);
-            var networkCredential = new NetworkCredential(SecretUser, SecretKey);
-            var myCredentialCache = new CredentialCache { { uri, "Basic", networkCredential } };
-            myHttpWebRequest.PreAuthenticate = true;
-            myHttpWebRequest.Credentials = myCredentialCache;
-            myWebRequest.GetResponse().Close();
         }
     }
 }

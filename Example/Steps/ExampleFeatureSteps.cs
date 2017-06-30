@@ -4,7 +4,7 @@ using OpenQA.Selenium;
 using TechTalk.SpecFlow;
 using Unickq.SeleniumHelper;
 
-namespace Example
+namespace Example.Steps
 {
     [Binding]
     public class ExampleFeatureSteps : SeleniumHelperBinding
@@ -21,7 +21,9 @@ namespace Example
         [Then(@"the title should contain '(.*)'")]
         public void ThenTheTitleShouldContain(string part)
         {
-            StringAssert.Contains(part.ToLower(), ScenarioContext.Get<IWebDriver>("Driver").Title.ToLower());
+            StringAssert.Contains(part.ToLower(), Browser.Title.ToLower());
+
+            Console.WriteLine(Browser.GetType().ToString());
         }
 
         public ExampleFeatureSteps(ScenarioContext scenarioContext) : base(scenarioContext)
