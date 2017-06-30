@@ -9,9 +9,10 @@ namespace Unickq.SeleniumHelper
         protected readonly ScenarioContext ScenarioContext;
         protected readonly IWebDriver Browser;
 
-        public SeleniumHelperBinding(ScenarioContext scenarioContext)
+        protected SeleniumHelperBinding(ScenarioContext scenarioContext)
         {
-            ScenarioContext = scenarioContext ?? throw new ArgumentNullException(nameof(scenarioContext));
+            if (scenarioContext == null) throw new ArgumentNullException("scenarioContext");
+            ScenarioContext = scenarioContext;
             Browser = scenarioContext.Get<IWebDriver>("Driver");
         }
 
