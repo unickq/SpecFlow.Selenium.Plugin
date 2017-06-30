@@ -13,7 +13,8 @@ namespace Example.Steps
         [Given(@"I have opened (.*)")]
         public void GivenIHaveOpened(string url)
         {
-            ScenarioContext.TryGetValue("GoogleTranslate", out string language);
+            string language;
+            ScenarioContext.TryGetValue("GoogleTranslate", out language);
             Browser.Navigate().GoToUrl(url + $"?hl={language}");
             var text = Browser.FindElement(By.Id("gt-appname")).Text;
             Console.WriteLine(text);
