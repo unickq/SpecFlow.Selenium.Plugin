@@ -82,9 +82,9 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
 
             Build = BuildTransform(Build);
 
-            if (!string.IsNullOrEmpty(Resolution)) capabilities.Add("browserstack.resolution", Resolution);
-            if (!string.IsNullOrEmpty(Build)) capabilities.Add("browserstack.build", Build);
-            if (!string.IsNullOrEmpty(Project)) capabilities.Add("browserstack.project", Project);
+            if (!string.IsNullOrEmpty(Resolution)) capabilities.Add("resolution", Resolution);
+            if (!string.IsNullOrEmpty(Build)) capabilities.Add("build", Build);
+            if (!string.IsNullOrEmpty(Project)) capabilities.Add("project", Project);
             if (!string.IsNullOrEmpty(Debug)) capabilities.Add("browserstack.debug", Debug);
             if (!string.IsNullOrEmpty(Video)) capabilities.Add("browserstack.video", Video);
             if (!string.IsNullOrEmpty(Local)) capabilities.Add("browserstack.local", Local);
