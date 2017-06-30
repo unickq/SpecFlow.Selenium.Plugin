@@ -21,7 +21,9 @@ namespace Example.Steps
         [Then(@"the title should contain '(.*)'")]
         public void ThenTheTitleShouldContain(string part)
         {
-            StringAssert.Contains(part.ToLower(), ScenarioContext.Get<IWebDriver>("Driver").Title.ToLower());
+            StringAssert.Contains(part.ToLower(), Browser.Title.ToLower());
+
+            Console.WriteLine(Browser.GetType().ToString());
         }
 
         public ExampleFeatureSteps(ScenarioContext scenarioContext) : base(scenarioContext)

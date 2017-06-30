@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Configuration;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
-using OpenQA.Selenium;
 
 namespace Unickq.SeleniumHelper.WebDriverGrid
 {

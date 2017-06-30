@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
+using System.Net;
+using System.Text;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 
@@ -9,7 +12,7 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
     public class TestingBotWebDriver : CustomRemoteWebDriver
     {
         private const string ApiUrl = "http://hub.testingbot.com/wd/hub/";
-        protected override Uri Uri => new Uri($"https://api.testingbot.com/v1/tests/{SecretKey}");
+        protected override Uri Uri => new Uri($"https://api.testingbot.com/v1/tests/{SessionId}");
 
         public TestingBotWebDriver(string browser, string key, string secret, Dictionary<string, string> capabilities)
             : base(ApiUrl, browser, Auth(key, secret, capabilities))
@@ -101,9 +104,30 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
 
         public override void UpdateTestResult()
         {
-            var passed = TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Passed;
-            Publish("test[success]=1");
-            
+            var success = TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Passed;
+            var request = (HttpWebRequest)WebRequest.Create(Uri);
+            request.ContentType = "application/x-www-form-urlencoded";
+            request.Method = "PUT";
+            var usernamePassword = SecretUser + ":" + SecretKey;
+            var mycache = new CredentialCache
+            {
+                {
+                    Uri, "Basic",
+                    new NetworkCredential(SecretUser, SecretKey)
+                }
+            };
+            request.Credentials = mycache;
+            request.Headers.Add("Authorization",
+                "Basic " + Convert.ToBase64String(new ASCIIEncoding().GetBytes(usernamePassword)));
+
+            using (var writer = new StreamWriter(request.GetRequestStream()))
+            {
+                writer.Write(
+                    "test[success]=" + (success ? "1" : "0") +
+                    "&test[status_message]=" + TestContext.CurrentContext.Result.Message);
+            }
+            var response = request.GetResponse();
+            response.Close();
         }
     }
 }

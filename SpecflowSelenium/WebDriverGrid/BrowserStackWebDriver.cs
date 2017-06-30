@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Dynamic;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 
@@ -32,9 +34,14 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
             ConfigurationManager.AppSettings["browserstack.selenium_version"];
 
         private static readonly string NoFlash = ConfigurationManager.AppSettings["browserstack.ie.noFlash"];
-        private static readonly string Compatibility = ConfigurationManager.AppSettings["browserstack.ie.compatibility"];
+
+        private static readonly string Compatibility =
+            ConfigurationManager.AppSettings["browserstack.ie.compatibility"];
+
         private static readonly string Driver = ConfigurationManager.AppSettings["browserstack.ie.driver"];
-        private static readonly string IeEnablePopups = ConfigurationManager.AppSettings["browserstack.ie.enablePopups"];
+
+        private static readonly string IeEnablePopups =
+            ConfigurationManager.AppSettings["browserstack.ie.enablePopups"];
 
         private static readonly string EdgeEnablePopups =
             ConfigurationManager.AppSettings["browserstack.edge.enablePopups"];
@@ -57,7 +64,7 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
         public BrowserStackWebDriver(string browser, string browserstackUser, string browserstackKey,
             Dictionary<string, string> capabilities)
             : base(ApiUrl, browser, Auth(browserstackUser, browserstackKey, capabilities))
-        {     
+        {
             SecretUser = browserstackUser;
             SecretKey = browserstackKey;
         }
@@ -65,8 +72,6 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
         private static Dictionary<string, string> Auth(string browserstackUser, string browserstackKey,
             Dictionary<string, string> capabilities)
         {
-            if (browserstackUser == null) throw new Exception("browserstack.user can't be found");
-            if (browserstackKey == null) throw new Exception("browserstack.key can't be found");
             capabilities.Add("browserstack.user", browserstackUser);
             capabilities.Add("browserstack.key", browserstackKey);
 
@@ -93,7 +98,8 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
             if (!string.IsNullOrEmpty(Compatibility)) capabilities.Add("browserstack.ie.compatibility", Compatibility);
             if (!string.IsNullOrEmpty(Driver)) capabilities.Add("browserstack.ie.driver", Driver);
             if (!string.IsNullOrEmpty(IeEnablePopups)) capabilities.Add("browserstack.ie.enablePopups", IeEnablePopups);
-            if (!string.IsNullOrEmpty(EdgeEnablePopups)) capabilities.Add("browserstack.edge.enablePopups", EdgeEnablePopups);
+            if (!string.IsNullOrEmpty(EdgeEnablePopups))
+                capabilities.Add("browserstack.edge.enablePopups", EdgeEnablePopups);
             if (!string.IsNullOrEmpty(SafariEnablePopups))
                 capabilities.Add("browserstack.safari.enablePopups", SafariEnablePopups);
             if (!string.IsNullOrEmpty(SafariAllowAllCookies))
@@ -104,30 +110,29 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
 
         public override void UpdateTestResult()
         {
-            var result = TestContext.CurrentContext.Result;
-            var resultStr = "passed";
-            var fixedErrorMessage = DateTime.Now.ToString("G");
-            if (result.Outcome.Status != TestStatus.Passed)
+            var testResult = TestContext.CurrentContext.Result;
+            var resultStr = "failed";
+            if (testResult.Outcome.Status == TestStatus.Passed)
             {
-                resultStr = "failed";
-                fixedErrorMessage = result.Message
-                    .Replace(Environment.NewLine, string.Empty)
-                    .Replace("\"", "'")
-                    .Replace("{", string.Empty)
-                    .Replace("}", string.Empty)
-                    .Replace("[", string.Empty)
-                    .Replace("]", string.Empty);
+                resultStr = "passed";
             }
-            string reason = $"{result.Outcome.Status} - {fixedErrorMessage}";
-            var reqString = $"{{\"status\":\"{resultStr}\", \"reason\":\"{reason.Trim()}\"}}";
+
+            dynamic statusObj = new ExpandoObject();
+            statusObj.status = resultStr;
+            statusObj.reason = testResult.Message;
+            var settings = new JsonSerializerSettings
+            {
+                StringEscapeHandling = StringEscapeHandling.EscapeHtml
+            };
+            var json = JsonConvert.SerializeObject(statusObj, settings);
             try
             {
-                Publish(reqString);
+                Publish(json);
             }
             catch (Exception)
             {
-                reqString = $"{{\"status\":\"{resultStr}\", \"reason\":\"{TestContext.CurrentContext.Result.Outcome}\"}}";
-                Publish(reqString);
+                Publish($"{{\"status\":\"{resultStr}\", \"reason\":\"Unparsable reason\"}}");
+                Console.WriteLine($"Unparsable json for BrowserStack:\n{json}");
             }
         }
     }

@@ -11,7 +11,6 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
     {
         protected void Publish(string reqString)
         {
-            Console.WriteLine(reqString);
             var uri = Uri;
             var requestData = Encoding.UTF8.GetBytes(reqString);
             var myWebRequest = WebRequest.Create(uri);
