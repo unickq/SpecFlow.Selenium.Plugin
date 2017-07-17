@@ -51,7 +51,7 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
             capabilities.Add("name",
                 !string.IsNullOrEmpty(Name)
                     ? Name
-                    : TestContext.CurrentContext.Test.Name);
+                    : FixedTestName);
 
             Build = BuildTransform(Build);
 
@@ -97,7 +97,6 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
             request.UserAgent = "HttpWebRequest";
             return request;
         }
-
         public string TakeSnapshot(string sessionId)
         {
             var request = GetCommonRequest(_cbtApiUrl + "/" + sessionId + "/snapshots", "POST");
@@ -124,7 +123,6 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
             stream.Close();
             request.GetResponse().Close();
         }
-
         public void SetScore(string sessionId, string score)
         {
             var encoding = new ASCIIEncoding();

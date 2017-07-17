@@ -68,7 +68,7 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
             capabilities.Add("name",
                 !string.IsNullOrEmpty(Name)
                     ? Name
-                    : TestContext.CurrentContext.Test.Name);
+                    : FixedTestName);
 
             Build = BuildTransform(Build);
 

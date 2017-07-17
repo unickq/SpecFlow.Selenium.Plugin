@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Reflection;
 using System.Text;
+using NUnit.Framework;
 using OpenQA.Selenium.Remote;
 
 namespace Unickq.SeleniumHelper.WebDriverGrid
@@ -68,6 +69,20 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
             if (str.Equals("@@user")) str = Environment.UserName;
             if (str.Equals("@@machine")) str = Environment.MachineName;
             return str;
+        }
+
+        protected static string FixedTestName
+        {
+            get
+            {
+                var name = TestContext.CurrentContext.Test.Name;
+                if (name.Length > 255)
+                {
+                    name = name.Substring(0, 252) + "...";
+                }
+                Console.WriteLine(name.Length);
+                return name;
+            }
         }
     }
 }
