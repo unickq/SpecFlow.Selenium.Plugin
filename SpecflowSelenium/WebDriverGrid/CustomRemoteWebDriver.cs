@@ -80,7 +80,6 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
                 {
                     name = name.Substring(0, 252) + "...";
                 }
-                Console.WriteLine(name.Length);
                 return name;
             }
         }
