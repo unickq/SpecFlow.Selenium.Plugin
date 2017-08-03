@@ -9,17 +9,10 @@ using NUnit.Framework.Interfaces;
 
 namespace Unickq.SeleniumHelper.WebDriverGrid
 {
-    public class TestingBotWebDriver : CustomRemoteWebDriver
+    public class TestingBotWebDriver : PaidWebDriver
     {
         private const string ApiUrl = "http://hub.testingbot.com/wd/hub/";
         protected override Uri Uri => new Uri($"https://api.testingbot.com/v1/tests/{SessionId}");
-
-        public TestingBotWebDriver(string browser, string key, string secret, Dictionary<string, string> capabilities)
-            : base(ApiUrl, browser, Auth(key, secret, capabilities))
-        {
-            SecretUser = key;
-            SecretKey = secret;
-        }
 
         private static readonly string TestingBotKey = ConfigurationManager.AppSettings["testingbot.key"];
         private static readonly string TestingBotSecret = ConfigurationManager.AppSettings["testingbot.secret"];
@@ -51,6 +44,12 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
         private static readonly string RecordLogs = ConfigurationManager.AppSettings["testingbot.recordLogs"];
 
 
+        public TestingBotWebDriver(string browser, string key, string secret, Dictionary<string, string> capabilities)
+            : base(ApiUrl, browser, Auth(key, secret, capabilities))
+        {
+            SecretUser = key;
+            SecretKey = secret;
+        }
         public TestingBotWebDriver(string browser, Dictionary<string, string> capabilities)
             : base(ApiUrl, browser, Auth(TestingBotKey, TestingBotSecret, capabilities))
         {

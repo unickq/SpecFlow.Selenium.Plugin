@@ -57,11 +57,11 @@ namespace Example.Features
         [NUnit.Framework.TearDownAttribute()]
         public virtual void ScenarioTearDown()
         {
-            try {((Unickq.SeleniumHelper.WebDriverGrid.CustomRemoteWebDriver) driver).UpdateTestResult();} catch (System.Exception) {}
+            try {((Unickq.SeleniumHelper.WebDriverGrid.PaidWebDriver) driver).UpdateTestResult();} catch (System.Exception) {}
             try {System.Threading.Thread.Sleep(50); this.driver.Quit(); } catch (System.Exception) {}
             driver = null;
-            testRunner.ScenarioContext.Remove("Driver");
-            testRunner.ScenarioContext.Remove("Container");
+            try {testRunner.ScenarioContext.Remove("Driver");} catch (System.NullReferenceException) {}
+            try {testRunner.ScenarioContext.Remove("Container");} catch (System.NullReferenceException) {}
             testRunner.OnScenarioEnd();
         }
         
@@ -81,22 +81,16 @@ namespace Example.Features
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Check website title")]
-        [NUnit.Framework.TestCaseAttribute("Chrome_local", "https://translate.google.com/", "Google", null, Category="Chrome_local", TestName="CheckWebsiteTitle with Chrome_local and \"https://translate.google.com/\" ,\"Google\"" +
+        [NUnit.Framework.TestCaseAttribute("RemoteChrome", "https://translate.google.com/", "Google", null, Category="RemoteChrome", TestName="CheckWebsiteTitle with RemoteChrome and \"https://translate.google.com/\" ,\"Google\"" +
             "")]
         [NUnit.Framework.TestCaseAttribute("BrowserStack_Win10_Chrome", "https://translate.google.com/", "Google", null, Category="BrowserStack_Win10_Chrome", TestName="CheckWebsiteTitle with BrowserStack_Win10_Chrome and \"https://translate.google.co" +
             "m/\" ,\"Google\"")]
-        [NUnit.Framework.TestCaseAttribute("TestingBot_ElCapitan_Safari", "https://translate.google.com/", "Google", null, Category="TestingBot_ElCapitan_Safari", TestName="CheckWebsiteTitle with TestingBot_ElCapitan_Safari and \"https://translate.google." +
-            "com/\" ,\"Google\"")]
-        [NUnit.Framework.TestCaseAttribute("SauceLabs_Win7_Firefox", "https://translate.google.com/", "Google", null, Category="SauceLabs_Win7_Firefox", TestName="CheckWebsiteTitle with SauceLabs_Win7_Firefox and \"https://translate.google.com/\"" +
-            " ,\"Google\"")]
         public virtual void CheckWebsiteTitle(string browser, string uRL, string @string, string[] exampleTags)
         {
 InitializeSeleniumBrowser(browser);
             string[] @__tags = new string[] {
-                    "Browser:Chrome_local",
-                    "Browser:BrowserStack_Win10_Chrome",
-                    "Browser:TestingBot_ElCapitan_Safari",
-                    "Browser:SauceLabs_Win7_Firefox"};
+                    "Browser:RemoteChrome",
+                    "Browser:BrowserStack_Win10_Chrome"};
             if ((exampleTags != null))
             {
                 @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));

@@ -6,7 +6,7 @@ using NUnit.Framework.Interfaces;
 
 namespace Unickq.SeleniumHelper.WebDriverGrid
 {
-    public class SauceLabsWebDriver : CustomRemoteWebDriver
+    public class SauceLabsWebDriver : PaidWebDriver
     {
         private const string ApiUrl = "http://ondemand.saucelabs.com:80/wd/hub";
 

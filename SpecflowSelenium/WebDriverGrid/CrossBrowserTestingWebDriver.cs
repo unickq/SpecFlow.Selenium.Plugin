@@ -10,7 +10,7 @@ using NUnit.Framework.Interfaces;
 
 namespace Unickq.SeleniumHelper.WebDriverGrid
 {
-    public class CrossBrowserTestingWebDriver : CustomRemoteWebDriver
+    public class CrossBrowserTestingWebDriver : PaidWebDriver
     {
         private const string ApiUrl = "http://hub.crossbrowsertesting.com:80/wd/hub";
         protected override Uri Uri => new Uri("https://crossbrowsertesting.com/api/v3/selenium");
@@ -27,7 +27,7 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
 
         public CrossBrowserTestingWebDriver(string browser, Dictionary<string, string> capabilities)
             : base(ApiUrl, browser, Auth(CbtUser, CbtKey, capabilities))
-        {
+        { 
             SecretUser = CbtUser;
             SecretKey = CbtKey;
         }
@@ -89,7 +89,7 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
 
         private HttpWebRequest GetCommonRequest(string url, string method)
         {
-            Console.WriteLine(url);
+//            Console.WriteLine(url);
             var request = (HttpWebRequest) WebRequest.Create(url);
             request.Method = method;
             request.Credentials = new NetworkCredential(_cbtUser, _cbtKey);
@@ -106,7 +106,7 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
             var responseString = new StreamReader(stream).ReadToEnd();
             var myregex = new Regex("(?<=\"hash\": \")((\\w|\\d)*)");
             var snapshotHash = myregex.Match(responseString).Value;
-            Console.WriteLine(snapshotHash);
+//            Console.WriteLine(snapshotHash);
             request.GetResponse().Close();
             return snapshotHash;
         }

@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Reflection;
 using System.Text;
 using NUnit.Framework;
-using OpenQA.Selenium.Remote;
 
 namespace Unickq.SeleniumHelper.WebDriverGrid
 {
-    public abstract class CustomRemoteWebDriver : RemoteWebDriver
+    public abstract class PaidWebDriver : RemoteWebDriver
     {
         protected void Publish(string reqString)
         {
@@ -33,35 +31,6 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
         protected string SecretKey { get; set; }
         protected abstract Uri Uri { get; }
 
-        protected CustomRemoteWebDriver(string url, string browser)
-            : base(new Uri(url), GetCapabilities(browser))
-        {
-        }
-
-        protected CustomRemoteWebDriver(string url, string browser, Dictionary<string, string> capabilities)
-            : base(new Uri(url), GetCapabilities(browser, capabilities))
-        {
-        }
-
-        private static DesiredCapabilities GetCapabilities(string browserName,
-            Dictionary<string, string> additionalCapabilities = null)
-        {
-            var capabilityCreationMethod = typeof(DesiredCapabilities).GetMethod(browserName,
-                BindingFlags.Public | BindingFlags.Static);
-            if (capabilityCreationMethod == null)
-                throw new NotSupportedException("Can't find DesiredCapabilities with name " + browserName);
-
-            var capabilities = capabilityCreationMethod.Invoke(null, null) as DesiredCapabilities;
-            if (capabilities == null)
-                throw new NotSupportedException("Can't find DesiredCapabilities with name " + browserName);
-
-            if (additionalCapabilities == null) return capabilities;
-            foreach (var capability in additionalCapabilities)
-                capabilities.SetCapability(capability.Key, capability.Value);
-
-            return capabilities;
-        }
-
         protected static string BuildTransform(string str)
         {
             if (str == null) return null;
@@ -82,6 +51,10 @@ namespace Unickq.SeleniumHelper.WebDriverGrid
                 }
                 return name;
             }
+        }
+
+        protected PaidWebDriver(string url, string browser, Dictionary<string, string> capabilities) : base(url, browser, capabilities)
+        {
         }
     }
 }

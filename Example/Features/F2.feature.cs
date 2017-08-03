@@ -57,11 +57,11 @@ namespace Example.Features
         [NUnit.Framework.TearDownAttribute()]
         public virtual void ScenarioTearDown()
         {
-            try {((Unickq.SeleniumHelper.WebDriverGrid.CustomRemoteWebDriver) driver).UpdateTestResult();} catch (System.Exception) {}
+            try {((Unickq.SeleniumHelper.WebDriverGrid.PaidWebDriver) driver).UpdateTestResult();} catch (System.Exception) {}
             try {System.Threading.Thread.Sleep(50); this.driver.Quit(); } catch (System.Exception) {}
             driver = null;
-            testRunner.ScenarioContext.Remove("Driver");
-            testRunner.ScenarioContext.Remove("Container");
+            try {testRunner.ScenarioContext.Remove("Driver");} catch (System.NullReferenceException) {}
+            try {testRunner.ScenarioContext.Remove("Container");} catch (System.NullReferenceException) {}
             testRunner.OnScenarioEnd();
         }
         

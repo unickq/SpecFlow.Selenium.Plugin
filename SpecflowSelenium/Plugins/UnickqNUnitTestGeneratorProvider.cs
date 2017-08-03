@@ -289,7 +289,7 @@ namespace Unickq.SeleniumHelper.Plugins
             generationContext.TestCleanupMethod.Statements.Add(
                 GenerateCodeSnippetStatement(
                     "try {" +
-                    "((Unickq.SeleniumHelper.WebDriverGrid.CustomRemoteWebDriver) driver).UpdateTestResult();" +
+                    "((Unickq.SeleniumHelper.WebDriverGrid.PaidWebDriver) driver).UpdateTestResult();" +
                     "} catch (System.Exception) {}"));
             generationContext.TestCleanupMethod.Statements.Add(
                 GenerateCodeSnippetStatement(
@@ -299,11 +299,18 @@ namespace Unickq.SeleniumHelper.Plugins
                     "} catch (System.Exception) {}"));
             generationContext.TestCleanupMethod.Statements.Add(
                 GenerateCodeSnippetStatement("driver = null;"));
-            generationContext.TestCleanupMethod.Statements.Add(
-                GenerateCodeSnippetStatement("testRunner.ScenarioContext.Remove(\"Driver\");"));
-            generationContext.TestCleanupMethod.Statements.Add(
-                GenerateCodeSnippetStatement("testRunner.ScenarioContext.Remove(\"Container\");"));
 
+            generationContext.TestCleanupMethod.Statements.Add(
+                GenerateCodeSnippetStatement(
+                    "try {" +
+                    "testRunner.ScenarioContext.Remove(\"Driver\");" +
+                    "} catch (System.NullReferenceException) {}"));
+            generationContext.TestCleanupMethod.Statements.Add(
+                GenerateCodeSnippetStatement(
+                    "try {" +
+                    "testRunner.ScenarioContext.Remove(\"Container\");" +
+                    "} catch (System.NullReferenceException) {}"));
+          
             foreach (var field in _fieldsToGenerate)
                 if (!field.Equals("Browser", StringComparison.OrdinalIgnoreCase))
                 {
