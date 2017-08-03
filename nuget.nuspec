@@ -13,9 +13,9 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>Test class generator to drive automated web ui tests with Selenium and SpecFlow 2.2.0</summary>
     <description>
-      Test class generator to drive automated web ui tests with Selenium and SpecFlow 2.2.0. Works with BroswerStack, SauceLabs, TestingBot, CrossbrowserTesting and any WebDriver grid.  Based on Baseclass.Contrib.SpecFlow.Selenium.NUnit.
+      Test class generator to drive automated web ui tests with Selenium and SpecFlow 2.2.0. Works with BrowserStack, SauceLabs, TestingBot, CrossbrowserTesting and any WebDriver grid.  Based on Baseclass.Contrib.SpecFlow.Selenium.NUnit.
     </description>
-    <tags>Selenium NUnit SpecFlow Gherkin Web Testing webtesting saucelabs browserstack testingbot</tags>
+    <tags>Selenium NUnit SpecFlow Gherkin Web Testing webtesting saucelabs browserstack testingbot crossbrowsertesting</tags>
     <frameworkAssemblies>
       <frameworkAssembly assemblyName="System.Configuration" />
     </frameworkAssemblies>
