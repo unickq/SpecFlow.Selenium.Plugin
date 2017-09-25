@@ -10,7 +10,7 @@
 // ------------------------------------------------------------------------------
 #region Designer generated code
 #pragma warning disable
-namespace Example.Features
+namespace Unickq.SpecFlow.Selenium.Example.Features
 {
     using TechTalk.SpecFlow;
     using Autofac;

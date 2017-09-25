@@ -6,8 +6,8 @@
     <ProjectGuid>{950A9182-CC76-4EB6-BC06-0E483F3FA6C8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Example</RootNamespace>
-    <AssemblyName>Example</AssemblyName>
+    <RootNamespace>Unickq.SpecFlow.Selenium.Example</RootNamespace>
+    <AssemblyName>Unickq.SpecFlow.Selenium.Example</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>

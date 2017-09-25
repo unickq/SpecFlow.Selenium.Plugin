@@ -3,10 +3,8 @@ using System.Threading;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using TechTalk.SpecFlow;
-using Unickq;
-using Unickq.SpecFlow.Selenium;
 
-namespace Example.Steps
+namespace Unickq.SpecFlow.Selenium.Example.Steps
 {
     [Binding]
     public class ExampleFeatureSteps
