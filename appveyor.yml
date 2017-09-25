@@ -13,7 +13,7 @@ before_build:
 build:
   verbosity: minimal
 before_package:
-- ps: "$version =\n[System.Reflection.Assembly]::LoadFile(\"$env:APPVEYOR_BUILD_FOLDER\\Unickq.SpecFlow.Selenium\\bin\\Release\\Unickq.SpecFlow.Selenium.SpecFlowPlugin.dll\").GetName().Version\n$versionStr = \"{0}.{1}.0-alfa{2}\" -f ($version.Major, $version.Minor, $version.Build)\n\n$content = (Get-Content $env:APPVEYOR_BUILD_FOLDER\\nuget.nuspec) \n$content = $content -replace '\\$version\\$',$versionStr\n\n$content | Out-File $env:APPVEYOR_BUILD_FOLDER\\nuget.compiled.nuspec"
+- ps: "$version =\n[System.Reflection.Assembly]::LoadFile(\"$env:APPVEYOR_BUILD_FOLDER\\Unickq.SpecFlow.Selenium.Plugin\\bin\\Release\\Unickq.SpecFlow.Selenium.SpecFlowPlugin.dll\").GetName().Version\n$versionStr = \"{0}.{1}.0-alfa{2}\" -f ($version.Major, $version.Minor, $version.Build)\n\n$content = (Get-Content $env:APPVEYOR_BUILD_FOLDER\\nuget.nuspec) \n$content = $content -replace '\\$version\\$',$versionStr\n\n$content | Out-File $env:APPVEYOR_BUILD_FOLDER\\nuget.compiled.nuspec"
 test:
   assemblies:
     only:
