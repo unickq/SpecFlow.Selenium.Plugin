@@ -1,9 +1,13 @@
 # Unickq.SpecFlow.Selenium.Plugin
    
+[![Build status](https://ci.appveyor.com/api/projects/status/24ct5aixw0thsii4?svg=true)](https://ci.appveyor.com/project/unickq/specflow-selenium-plugin)
+
 
 [![NuGet Unickq.SpecFlow.Selenium](http://flauschig.ch/nubadge.php?id=Unickq.SpecFlow.Selenium)](https://www.nuget.org/packages/Unickq.SpecFlow.Selenium)
+
 Old version:
 [![NuGet Unickq.SeleniumHelper](http://flauschig.ch/nubadge.php?id=Unickq.SeleniumHelper)](https://www.nuget.org/packages/Unickq.SeleniumHelper)
+
 SpecFlow plugin for WebDriver instances generation. Write your tests easily
 
 ### Features:
