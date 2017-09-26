@@ -1,25 +1,37 @@
-﻿version: 1.0.{build}
-skip_non_tags: false
+﻿version: 1.1.0.{build}
+
+environment:
+  packageVersion: 1.1.0
+  
+init:
+- ps: $env:buildVersion = "$env:packageVersion.$env:appveyor_build_number"
+- ps: if(!$env:appveyor_repo_tag_name){ $env:nugetVersion = $env:packageVersion+ "-beta-" + $env:appveyor_build_number } else { $env:nugetVersion = $env:appveyor_repo_tag_name}
+- ps: Update-AppveyorBuild -Version $env:buildVersion
+    
 image: Visual Studio 2017
 configuration: Release
 platform: Any CPU
+
 assembly_info:
   patch: true
   file: '**\AssemblyInfo.*'
-  assembly_version: '{version}'
-  assembly_file_version: '{version}'
-  assembly_informational_version: '{version}'
+  assembly_version: $(buildVersion)
+  assembly_file_version: $(buildVersion)
+  assembly_informational_version: $(nugetVersion)
+  
 before_build:
-- cmd: nuget restore
+- nuget restore
+
 build:
   verbosity: minimal
-before_package:
-- ps: "$version =\n[System.Reflection.Assembly]::LoadFile(\"$env:APPVEYOR_BUILD_FOLDER\\Unickq.SpecFlow.Selenium.Plugin\\bin\\Release\\Unickq.SpecFlow.Selenium.SpecFlowPlugin.dll\").GetName().Version\n$versionStr = \"{0}.{1}.{2}\" -f ($version.Major, $version.Minor, $version.Build)\n\n$content = (Get-Content $env:APPVEYOR_BUILD_FOLDER\\nuget.nuspec) \n$content = $content -replace '\\$version\\$',$versionStr\n\n$content | Out-File $env:APPVEYOR_BUILD_FOLDER\\nuget.compiled.nuspec"
+
 test:
   assemblies:
     only:
     - Unickq.SpecFlow.Selenium.Example.dll
-after_test:
-- cmd: NuGet pack nuget.compiled.nuspec
+    
+after_build:
+- ps: NuGet pack nuget.nuspec -version "$env:nugetVersion"
+
 artifacts:
 - path: '**\Unickq.SpecFlow.Selenium*.nupkg'
