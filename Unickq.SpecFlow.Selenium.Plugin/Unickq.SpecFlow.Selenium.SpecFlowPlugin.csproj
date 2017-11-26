@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net45</TargetFrameworks>
+    <PackageId>Unickq.SpecFlow.Selenium</PackageId>
+    <Version>0.1.1-beta1</Version>
+    <Authors>Nick Chursin</Authors>
+    <Description>Test class generator to drive automated web ui tests with Selenium and SpecFlow 2.2.0. Works with BrowserStack, SauceLabs, TestingBot, CrossbrowserTesting and any WebDriver grid.  Based on Baseclass.Contrib.SpecFlow.Selenium.NUnit.</Description>
+    <PackageProjectUrl></PackageProjectUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/allure-framework/allure-csharp/master/img/allure-specflow.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/unickq/allure-csharp-fork</RepositoryUrl>
+    <PackageTags>specflow selenium nunit</PackageTags>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <AssemblyName>Unickq.SpecFlow.Selenium.SpecFlowPlugin</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CSharp" Version="4.4.0" />
+    <PackageReference Include="NUnit" Version="3.9.0" />
+    <PackageReference Include="Selenium.WebDriver" Version="3.7.0" />
+    <PackageReference Include="SpecFlow.CustomPlugin" Version="2.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Configuration" />
+  </ItemGroup>
+</Project>
