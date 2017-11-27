@@ -12,6 +12,11 @@
     <PackageTags>specflow selenium nunit</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <AssemblyName>Unickq.SpecFlow.Selenium.SpecFlowPlugin</AssemblyName>
+    <RootNamespace>Unickq.SpecFlow.Selenium</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net45|AnyCPU'">
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

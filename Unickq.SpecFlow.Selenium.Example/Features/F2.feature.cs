@@ -78,16 +78,15 @@ namespace Unickq.SpecFlow.Selenium.Example.Features
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Check website title")]
-        [NUnit.Framework.TestCaseAttribute("Chrome_local", "https://translate.google.com/", "Google", null, Category="Chrome_local", TestName="CheckWebsiteTitle with Chrome_local and \"https://translate.google.com/\" ,\"Google\"" +
+        [NUnit.Framework.TestCaseAttribute("ChromeDebug", "https://translate.google.com/", "Google", null, Category="ChromeDebug", TestName="CheckWebsiteTitle with ChromeDebug and \"https://translate.google.com/\" ,\"Google\"")]
+        [NUnit.Framework.TestCaseAttribute("FirefoxDebug", "https://translate.google.com/", "Google", null, Category="FirefoxDebug", TestName="CheckWebsiteTitle with FirefoxDebug and \"https://translate.google.com/\" ,\"Google\"" +
             "")]
-        [NUnit.Framework.TestCaseAttribute("Chrome_local2", "https://translate.google.com/", "Google", null, Category="Chrome_local2", TestName="CheckWebsiteTitle with Chrome_local2 and \"https://translate.google.com/\" ,\"Google" +
-            "\"")]
         public virtual void CheckWebsiteTitle(string browser, string uRL, string @string, string[] exampleTags)
         {
 InitializeSeleniumBrowser(browser);
             string[] @__tags = new string[] {
-                    "Browser:Chrome_local",
-                    "Browser:Chrome_local2"};
+                    "Browser:ChromeDebug",
+                    "Browser:FirefoxDebug"};
             if ((exampleTags != null))
             {
                 @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
