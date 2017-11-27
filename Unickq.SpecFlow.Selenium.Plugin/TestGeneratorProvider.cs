@@ -45,8 +45,6 @@ namespace Unickq.SpecFlow.Selenium
             _codeDomHelper = codeDomHelper;
         }
 
-        public bool GenerateParallelCodeForFeature { get; set; }
-
         public void SetTestMethodCategories(TestClassGenerationContext generationContext,
             CodeMemberMethod testMethod, IEnumerable<string> scenarioCategories)
         {
