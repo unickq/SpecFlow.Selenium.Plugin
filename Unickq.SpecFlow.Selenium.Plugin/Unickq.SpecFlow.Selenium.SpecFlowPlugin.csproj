@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net45</TargetFrameworks>
     <PackageId>Unickq.SpecFlow.Selenium</PackageId>
-    <Version>1.1.1-beta1</Version>
+    <Version>1.1.1-beta2</Version>
     <Authors>Nick Chursin</Authors>
     <Description>Test class generator to drive automated web ui tests with Selenium and SpecFlow 2.2.0. Works with BrowserStack, SauceLabs, TestingBot, CrossbrowserTesting and any WebDriver grid.  Based on Baseclass.Contrib.SpecFlow.Selenium.NUnit.</Description>
     <PackageProjectUrl></PackageProjectUrl>
