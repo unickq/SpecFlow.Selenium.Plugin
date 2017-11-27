@@ -4,7 +4,7 @@ using OpenQA.Selenium.Firefox;
 
 namespace Unickq.SpecFlow.Selenium.Local
 {
-    public class Firefox : LocalDriver
+    public class FirefoxDriver : OpenQA.Selenium.Firefox.FirefoxDriver
     {
         private static FirefoxOptions SetOptions(Dictionary<string, object> capabilities)
         {
@@ -13,7 +13,7 @@ namespace Unickq.SpecFlow.Selenium.Local
             {
                 if (cap.Key.StartsWith("Capability", StringComparison.OrdinalIgnoreCase))
                 {
-                    var args = ParseWithDelimiter(cap.Value.ToString());              
+                    var args = Extensions.ParseWithDelimiter(cap.Value.ToString());              
                     options.AddAdditionalCapability(args[0], args[1]);
                 }
                 else if (cap.Key.Equals("Arguments", StringComparison.OrdinalIgnoreCase))
@@ -22,7 +22,7 @@ namespace Unickq.SpecFlow.Selenium.Local
                 }
                 else if (cap.Key.StartsWith("Preference", StringComparison.OrdinalIgnoreCase))
                 {
-                    var args = ParseWithDelimiter(cap.Value.ToString());
+                    var args = Extensions.ParseWithDelimiter(cap.Value.ToString());
                     options.SetPreference(args[0], args[1]);                    
                 }
                 else if (cap.Key.Equals("Extensions", StringComparison.OrdinalIgnoreCase))
@@ -49,7 +49,7 @@ namespace Unickq.SpecFlow.Selenium.Local
             return options;
         }
 
-        public Firefox(Dictionary<string, object> capabilities) : base(new FirefoxDriver(SetOptions(capabilities)))
+        public FirefoxDriver(Dictionary<string, object> capabilities) : base(SetOptions(capabilities))
         {
         }
     }

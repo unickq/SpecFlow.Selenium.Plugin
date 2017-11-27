@@ -4,9 +4,9 @@ using OpenQA.Selenium.Edge;
 
 namespace Unickq.SpecFlow.Selenium.Local
 {
-    public class Edge : LocalDriver
+    public class EdgeDriver : OpenQA.Selenium.Edge.EdgeDriver
     {
-        public Edge(Dictionary<string, object> capabilities) : base(new EdgeDriver(SetOptions(capabilities)))
+        public EdgeDriver(Dictionary<string, object> capabilities) : base(SetOptions(capabilities))
         {
         }
 
@@ -17,7 +17,7 @@ namespace Unickq.SpecFlow.Selenium.Local
             {
                 if (cap.Key.StartsWith("Capability", StringComparison.OrdinalIgnoreCase))
                 {
-                    var args = ParseWithDelimiter(cap.Value.ToString());
+                    var args = Extensions.ParseWithDelimiter(cap.Value.ToString());
                     options.AddAdditionalCapability(args[0], args[1]);
                 }
             }

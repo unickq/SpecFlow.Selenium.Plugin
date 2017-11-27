@@ -4,7 +4,7 @@ using OpenQA.Selenium.Chrome;
 
 namespace Unickq.SpecFlow.Selenium.Local
 {
-    public class Chrome : LocalDriver
+    public class ChromeDriver : OpenQA.Selenium.Chrome.ChromeDriver
     {
         private static ChromeOptions SetOptions(Dictionary<string, object> capabilities)
         {
@@ -25,7 +25,7 @@ namespace Unickq.SpecFlow.Selenium.Local
                 }
                 else if (cap.Key.StartsWith("UserProfilePreference", StringComparison.OrdinalIgnoreCase))
                 {
-                    var args = ParseWithDelimiter(cap.Value.ToString());
+                    var args = Extensions.ParseWithDelimiter(cap.Value.ToString());
                     options.AddUserProfilePreference(args[0], args[1]);        
                 }
                 else if (cap.Key.Equals("BinaryLocation", StringComparison.OrdinalIgnoreCase))
@@ -38,14 +38,14 @@ namespace Unickq.SpecFlow.Selenium.Local
                 }
                 else if (cap.Key.StartsWith("Capability", StringComparison.OrdinalIgnoreCase))
                 {
-                    var args = ParseWithDelimiter(cap.Value.ToString());
+                    var args = Extensions.ParseWithDelimiter(cap.Value.ToString());
                     options.AddAdditionalCapability(args[0], args[1]);
                 }
             }
             return options;
         }
 
-        public Chrome(Dictionary<string, object> capabilities) : base(new ChromeDriver(SetOptions(capabilities)))
+        public ChromeDriver(Dictionary<string, object> capabilities) : base(SetOptions(capabilities))
         {
         }
     }

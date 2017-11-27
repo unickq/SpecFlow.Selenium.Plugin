@@ -4,9 +4,9 @@ using OpenQA.Selenium.Safari;
 
 namespace Unickq.SpecFlow.Selenium.Local
 {
-    public class Safari : LocalDriver
+    public class SafariDriver : OpenQA.Selenium.Safari.SafariDriver
     {
-        public Safari(Dictionary<string, object> capabilities) : base(new SafariDriver(SetOptions(capabilities)))
+        public SafariDriver(Dictionary<string, object> capabilities) : base(SetOptions(capabilities))
         {
         }
 
@@ -17,7 +17,7 @@ namespace Unickq.SpecFlow.Selenium.Local
             {
                 if (cap.Key.StartsWith("Capability", StringComparison.OrdinalIgnoreCase))
                 {
-                    var args = ParseWithDelimiter(cap.Value.ToString());
+                    var args = Extensions.ParseWithDelimiter(cap.Value.ToString());
                     options.AddAdditionalCapability(args[0], args[1]);
                 }
                 else if (cap.Key.Equals("AcceptInsecureCertificates", StringComparison.OrdinalIgnoreCase))

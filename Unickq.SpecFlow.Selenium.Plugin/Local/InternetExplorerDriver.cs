@@ -4,9 +4,9 @@ using OpenQA.Selenium.IE;
 
 namespace Unickq.SpecFlow.Selenium.Local
 {
-    public class InternetExplorer : LocalDriver
+    public class InternetExplorerDriver : OpenQA.Selenium.IE.InternetExplorerDriver
     {
-        public InternetExplorer(Dictionary<string, object> capabilities) : base(new InternetExplorerDriver(SetOptions(capabilities)))
+        public InternetExplorerDriver(Dictionary<string, object> capabilities) : base(SetOptions(capabilities))
         {
         }
 
@@ -17,7 +17,7 @@ namespace Unickq.SpecFlow.Selenium.Local
             {
                 if (cap.Key.StartsWith("capability", StringComparison.OrdinalIgnoreCase))
                 {
-                    var args = ParseWithDelimiter(cap.Value.ToString());
+                    var args = Extensions.ParseWithDelimiter(cap.Value.ToString());
                     options.AddAdditionalCapability(args[0], args[1]);
                 }
                 else if (cap.Key.Equals("BrowserCommandLineArguments", StringComparison.OrdinalIgnoreCase))
