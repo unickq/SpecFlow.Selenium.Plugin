@@ -12,12 +12,14 @@ image: Visual Studio 2017
 configuration: Release
 platform: Any CPU
 
-assembly_info:
+dotnet_csproj:
   patch: true
-  file: '**\AssemblyInfo.*'
+  file: '**\Unickq.SpecFlow.Selenium.SpecFlowPlugin.csproj'
+  version: '{version}'
+  package_version: $(nugetVersion)
   assembly_version: $(buildVersion)
-  assembly_file_version: $(buildVersion)
-  assembly_informational_version: $(nugetVersion)
+  file_version: $(buildVersion)
+  informational_version: $(nugetVersion)
   
 before_build:
 - nuget restore
@@ -28,10 +30,7 @@ build:
 test:
   assemblies:
     only:
-    - Unickq.SpecFlow.Selenium.Example.dll
-    
-after_build:
-- ps: NuGet pack nuget.nuspec -version "$env:nugetVersion"
+    - Unickq.SpecFlow.Selenium.Example.dll   
 
 artifacts:
 - path: '**\Unickq.SpecFlow.Selenium*.nupkg'
