@@ -27,6 +27,6 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="Unickq.SpecFlow.Selenium.Plugin\bin\Release\Unickq.SpecFlow.Selenium.SpecFlowPlugin.dll" target="lib\" />
+    <file src="Unickq.SpecFlow.Selenium.Plugin\bin\Release\net45\Unickq.SpecFlow.Selenium.SpecFlowPlugin.dll" target="lib\net45" />
   </files>
 </package>

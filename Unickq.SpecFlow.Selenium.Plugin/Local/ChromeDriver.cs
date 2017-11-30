@@ -19,6 +19,10 @@ namespace Unickq.SpecFlow.Selenium.Local
                 {
                     options.AddArguments(cap.Value.ToString().Split(';'));
                 }
+                else if (cap.Key.Equals("Binary", StringComparison.OrdinalIgnoreCase))
+                {
+                    options.BinaryLocation = cap.Value.ToString();
+                }
                 else if (cap.Key.Equals("Extensions", StringComparison.OrdinalIgnoreCase))
                 {
                     options.AddExtensions(cap.Value.ToString().Split(';'));
