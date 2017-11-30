@@ -45,9 +45,13 @@ namespace Unickq.SpecFlow.Selenium.Local
                 {
                     profile.AcceptUntrustedCertificates = true;
                 }
+                else if (cap.Key.Equals("AcceptInsecureCertificates", StringComparison.OrdinalIgnoreCase))
+                {
+                    options.AcceptInsecureCertificates = true;
+                }
                 else if (cap.Key.Equals("AssumeUntrustedCertificateIssuer", StringComparison.OrdinalIgnoreCase))
                 {
-                    options.Profile.AssumeUntrustedCertificateIssuer = true;
+                    profile.AssumeUntrustedCertificateIssuer = true;
                 }               
             }
             options.Profile = profile;
