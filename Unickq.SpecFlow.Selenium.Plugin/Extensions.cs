@@ -1,6 +1,7 @@
 ﻿using System;
 using OpenQA.Selenium;
 using TechTalk.SpecFlow;
+using Unickq.SpecFlow.Selenium.WebDriverGrid;
 
 namespace Unickq.SpecFlow.Selenium
 {
@@ -26,6 +27,16 @@ namespace Unickq.SpecFlow.Selenium
                 throw new ArgumentException($"Preference count doesn't equal to 2. Please use '{splitter}' delimiter");
             }
             return new[] { prms[0], prms[1] };
+        }
+
+        public static string GetBrowserName(this IWebDriver driver)
+        {
+            if (driver == null) throw new ArgumentNullException(nameof(driver));
+            var browserName = driver.GetType().Name;
+            if (!(driver is PaidWebDriver dr)) return browserName;
+            var caps = dr.Capabilities;
+            browserName = $"Remote {caps.BrowserName.ToUpperInvariant()} {caps.Version}";
+            return browserName;
         }
     }
 }
