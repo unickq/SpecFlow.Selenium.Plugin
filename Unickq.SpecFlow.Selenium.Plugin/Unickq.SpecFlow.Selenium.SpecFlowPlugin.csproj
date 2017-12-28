@@ -1,23 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net45</TargetFrameworks>
+    <TargetFramework>net45</TargetFramework>
     <PackageId>Unickq.SpecFlow.Selenium</PackageId>
-    <Version>1.1.1-beta5</Version>
+    <Version>1.2.0</Version>
     <Authors>Nick Chursin</Authors>
     <Description>Test class generator to drive automated web ui tests with Selenium and SpecFlow 2.2.0. Works with BrowserStack, SauceLabs, TestingBot, CrossbrowserTesting and any WebDriver grid.  Based on Baseclass.Contrib.SpecFlow.Selenium.NUnit.</Description>
     <PackageProjectUrl></PackageProjectUrl>
     <PackageIconUrl></PackageIconUrl>
-    <RepositoryUrl>https://github.com/unickq/allure-csharp-fork</RepositoryUrl>
+    <RepositoryUrl>https://github.com/unickq/SpecFlow.Selenium.Plugin</RepositoryUrl>
     <PackageTags>specflow selenium nunit</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <AssemblyName>Unickq.SpecFlow.Selenium.SpecFlowPlugin</AssemblyName>
     <RootNamespace>Unickq.SpecFlow.Selenium</RootNamespace>
-    <AssemblyVersion>1.1.1.4</AssemblyVersion>
-    <FileVersion>1.1.1.4</FileVersion>
+    <AssemblyVersion>1.2.0.0</AssemblyVersion>
+    <FileVersion>1.2.0.0</FileVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net45|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <LangVersion>6</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <LangVersion>6</LangVersion>
   </PropertyGroup>
 
@@ -44,5 +48,11 @@
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Configuration" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="App.config.transform" Pack="true">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

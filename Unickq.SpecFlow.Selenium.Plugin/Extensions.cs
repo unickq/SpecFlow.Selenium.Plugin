@@ -33,9 +33,12 @@ namespace Unickq.SpecFlow.Selenium
         {
             if (driver == null) throw new ArgumentNullException(nameof(driver));
             var browserName = driver.GetType().Name;
-            if (!(driver is PaidWebDriver dr)) return browserName;
-            var caps = dr.Capabilities;
-            browserName = $"Remote {caps.BrowserName.ToUpperInvariant()} {caps.Version}";
+            var webDriver = driver as PaidWebDriver;
+            if (webDriver != null)
+            {
+                var caps = webDriver.Capabilities;
+                browserName = $"Remote {caps.BrowserName.ToUpperInvariant()} {caps.Version}";
+            }
             return browserName;
         }
     }
