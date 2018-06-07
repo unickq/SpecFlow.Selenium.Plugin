@@ -18,13 +18,6 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
         private static readonly string CbtUser = ConfigurationManager.AppSettings["cbt.user"];
         private static readonly string CbtKey = ConfigurationManager.AppSettings["cbt.key"];
 
-        private static readonly string Name = ConfigurationManager.AppSettings["cbt.name"];
-        private static readonly string Resolution = ConfigurationManager.AppSettings["cbt.screen_resolution"];
-        private static string Build = ConfigurationManager.AppSettings["cbt.build"];
-        private static readonly string Browser = ConfigurationManager.AppSettings["cbt.browser_api_name"];
-        private static readonly string Os = ConfigurationManager.AppSettings["cbt.os_api_name"];
-        private static readonly string RecordVideo = ConfigurationManager.AppSettings["cbt.record_video"];
-
         public CrossBrowserTestingWebDriver(string browser, Dictionary<string, string> capabilities)
             : base(ApiUrl, browser, Auth(CbtUser, CbtKey, capabilities))
         { 
@@ -48,18 +41,23 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
             capabilities.Add("username", cbtUser);
             capabilities.Add("password", cbtKey);
 
-            capabilities.Add("name",
-                !string.IsNullOrEmpty(Name)
-                    ? Name
-                    : FixedTestName);
+            foreach (var key in ConfigurationManager.AppSettings.AllKeys)
+            {
+                if (key.StartsWith("cbt.", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    var capabilityName = key.Replace("cbt.", string.Empty);
+                    var capabilityValue = ConfigurationManager.AppSettings[key];
+                    capabilities.Add(capabilityName, NameTransform(capabilityValue));
+                }
+            }
 
-            Build = BuildTransform(Build);
-
-            if (!string.IsNullOrEmpty(Resolution)) capabilities.Add("screen_resolution", Resolution);
-            if (!string.IsNullOrEmpty(Build)) capabilities.Add("build", Build);
-            if (!string.IsNullOrEmpty(Browser)) capabilities.Add("browser_api_name", Browser);
-            if (!string.IsNullOrEmpty(Os)) capabilities.Add("os_api_name", Os);
-            if (!string.IsNullOrEmpty(RecordVideo)) capabilities.Add("record_video", RecordVideo);
+            if (capabilities.ContainsKey("name"))
+            {
+                if (capabilities["name"].Equals(string.Empty))
+                {
+                    capabilities["name"] = FixedTestName;
+                }
+            }
             return capabilities;
         }
 

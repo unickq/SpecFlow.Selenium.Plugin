@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Security;
 using System.Text;
 using NUnit.Framework;
 
@@ -31,15 +32,6 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
         protected string SecretKey { get; set; }
         protected abstract Uri Uri { get; }
 
-        protected static string BuildTransform(string str)
-        {
-            if (str == null) return null;
-            if (str.Equals("@@debug")) str = DateTime.Now.ToString("yyyy/MM/dd hhtt");
-            if (str.Equals("@@user")) str = Environment.UserName;
-            if (str.Equals("@@machine")) str = Environment.MachineName;
-            return str;
-        }
-
         protected static string FixedTestName
         {
             get
@@ -52,6 +44,39 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
                 return name;
             }
         }
+
+        protected static string NameTransform(string str)
+        {
+            switch (str)
+            {
+                case null:
+                    return string.Empty;
+                case "@@datetime":
+                    return DateTime.Now.ToString("MM/dd/yyyy hh:mm");
+                case "@@time":
+                    return DateTime.Now.ToString("hh:mm");
+                case "@@user":
+                    return Environment.UserName;
+                case "@@machine":
+                    return Environment.MachineName;
+            }
+
+            if (str.StartsWith("@@env:"))
+            {
+                try
+                {
+                    var envVar = str.Replace("@@env:", string.Empty);
+                    var envVarValue = Environment.GetEnvironmentVariable(envVar);
+                    return string.IsNullOrEmpty(envVarValue) ? $"{envVar} is empty" : envVarValue;
+                }
+                catch (SecurityException)
+                {
+                    return string.Empty;
+                }
+            }
+
+            return str;
+        } 
 
         protected PaidWebDriver(string url, string browser, Dictionary<string, string> capabilities) : base(url, browser, capabilities)
         {

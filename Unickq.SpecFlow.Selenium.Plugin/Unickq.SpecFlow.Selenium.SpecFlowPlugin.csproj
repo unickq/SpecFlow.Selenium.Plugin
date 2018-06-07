@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net45</TargetFramework>
     <PackageId>Unickq.SpecFlow.Selenium</PackageId>
-    <Version>1.2.0</Version>
+    <Version>1.2.1</Version>
     <Authors>Nick Chursin</Authors>
     <Description>Test class generator to drive automated web ui tests with Selenium and SpecFlow 2.2.0. Works with BrowserStack, SauceLabs, TestingBot, CrossbrowserTesting and any WebDriver grid.  Based on Baseclass.Contrib.SpecFlow.Selenium.NUnit.</Description>
     <PackageProjectUrl>https://github.com/unickq/SpecFlow.Selenium.Plugin</PackageProjectUrl>
@@ -13,11 +13,17 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <AssemblyName>Unickq.SpecFlow.Selenium.SpecFlowPlugin</AssemblyName>
     <RootNamespace>Unickq.SpecFlow.Selenium</RootNamespace>
-    <AssemblyVersion>1.2.0.0</AssemblyVersion>
-    <FileVersion>1.2.0.0</FileVersion>
+    <AssemblyVersion>1.2.1.0</AssemblyVersion>
+    <FileVersion>1.2.1.0</FileVersion>
     <PackageLicenseUrl>https://github.com/unickq/SpecFlow.Selenium.Plugin/blob/master/LICENSE</PackageLicenseUrl>
     <Copyright>Nick Chursin</Copyright>
     <Company />
+    <PackageReleaseNotes>Updates for grid parsing logic:
+@@env:EnvVar
+@@time
+@@datetime
+@@machine
+@@user</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
