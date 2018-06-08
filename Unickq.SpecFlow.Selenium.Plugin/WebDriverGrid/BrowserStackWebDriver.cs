@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Dynamic;
@@ -36,27 +37,31 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
         {
             capabilities.Add("browserstack.user", browserstackUser);
             capabilities.Add("browserstack.key", browserstackKey);
-      
-            var list = new List<string> {"resolution", "build", "deviceOrientation", "project", "name", "acceptSslCerts"};
+
+            var list = new List<string>
+            {
+                "resolution",
+                "build",
+                "deviceOrientation",
+                "project",
+                "name",
+                "acceptSslCerts"
+            };
             foreach (var key in ConfigurationManager.AppSettings.AllKeys)
             {
                 if (key.StartsWith("browserstack.", StringComparison.InvariantCultureIgnoreCase))
                 {
                     var capabilityName = key.Replace("browserstack.", string.Empty);
                     var capabilityValue = ConfigurationManager.AppSettings[key];
-                    if (!list.Contains(capabilityName)) capabilityName = key;
-                    capabilities.Add(capabilityName, NameTransform(capabilityValue));
+                    if (!list.Contains(capabilityName))
+                        capabilityName = key;
+                    if (!capabilities.ContainsKey(capabilityName))
+                        capabilities.Add(capabilityName, NameTransform(capabilityValue));
                 }
             }
+            if (!capabilities.ContainsKey("name"))
+                capabilities.Add("name", FixedTestName);
 
-            if (capabilities.ContainsKey("name"))
-            {
-                if (capabilities["name"].Equals(string.Empty))
-                {
-                    capabilities["name"] = FixedTestName;
-                }
-            }
-            
             return capabilities;
         }
 

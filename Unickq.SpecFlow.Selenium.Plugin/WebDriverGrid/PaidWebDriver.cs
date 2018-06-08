@@ -67,7 +67,7 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
                 {
                     var envVar = str.Replace("@@env:", string.Empty);
                     var envVarValue = Environment.GetEnvironmentVariable(envVar);
-                    return string.IsNullOrEmpty(envVarValue) ? $"{envVar} is empty" : envVarValue;
+                    return string.IsNullOrEmpty(envVarValue) ? envVar : envVarValue;
                 }
                 catch (SecurityException)
                 {

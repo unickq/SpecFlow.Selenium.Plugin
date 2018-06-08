@@ -50,14 +50,8 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
                     capabilities.Add(capabilityName, NameTransform(capabilityValue));
                 }
             }
-
-            if (capabilities.ContainsKey("name"))
-            {
-                if (capabilities["name"].Equals(string.Empty))
-                {
-                    capabilities["name"] = FixedTestName;
-                }
-            }
+            if (!capabilities.ContainsKey("name"))
+                capabilities.Add("name", FixedTestName);
             return capabilities;
         }
 
