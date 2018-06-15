@@ -25,10 +25,7 @@ before_build:
 build:
   verbosity: minimal
 
-test:
-  assemblies:
-    only:
-    - Unickq.SpecFlow.Selenium.Example.dll   
+test: off
 
 artifacts:
 - path: '**\Unickq.SpecFlow.Selenium*.nupkg'
