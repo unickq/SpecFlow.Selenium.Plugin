@@ -13,7 +13,6 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <AssemblyName>Unickq.SpecFlow.Selenium.SpecFlowPlugin</AssemblyName>
     <RootNamespace>Unickq.SpecFlow.Selenium</RootNamespace>
-    <AssemblyVersion>1.2.3.0</AssemblyVersion>
     <FileVersion>1.2.3.0</FileVersion>
     <PackageLicenseUrl>https://github.com/unickq/SpecFlow.Selenium.Plugin/blob/master/LICENSE</PackageLicenseUrl>
     <Copyright>Nick Chursin</Copyright>
