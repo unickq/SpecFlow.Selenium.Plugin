@@ -12,11 +12,14 @@ namespace Unickq.SpecFlow.Selenium
 
         public static IWebDriver GetWebDriver(this ScenarioContext scenarioContext)
         {
-            if (scenarioContext.ContainsKey(Driver))
-            {
-                return scenarioContext.Get<IWebDriver>(Driver);
-            }
-            throw new SpecFlowException("Driver is not present in ScenarioContext");
+            IWebDriver driver;
+            scenarioContext.TryGetValue("Driver", out driver);         
+            return driver;
+//            if (scenarioContext.ContainsKey(Driver))
+//            {
+//                return scenarioContext.Get<IWebDriver>(Driver);
+//            }
+//            throw new SpecFlowException("Driver is not present in ScenarioContext");
         }
 
         public static string[] ParseWithDelimiter(string input, char splitter = '=')
