@@ -98,9 +98,12 @@ InitializeSeleniumBrowser(browser);
         
         private void InitializeSeleniumBrowser(string browser)
         {
-            driver = container.ResolveNamed<OpenQA.Selenium.IWebDriver>(browser);
+            try{
+driver = container.ResolveNamed<OpenQA.Selenium.IWebDriver>(browser);}catch(Autofac.Core.Registration.ComponentNotRegisteredException e){throw new SpecFlowSeleniumException($"Unable to register {browser}. Please check the name of componens");} catch(Autofac.Core.DependencyResolutionException e){throw new SpecFlowSeleniumException($"Unable to initalize {browser}. Please validate configuration parameters", e?.InnerException);} 
         }
     }
 }
 #pragma warning restore
 #endregion
+
+

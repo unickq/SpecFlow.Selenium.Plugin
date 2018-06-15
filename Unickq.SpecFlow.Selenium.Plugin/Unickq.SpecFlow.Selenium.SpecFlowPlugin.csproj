@@ -17,12 +17,7 @@
     <PackageLicenseUrl>https://github.com/unickq/SpecFlow.Selenium.Plugin/blob/master/LICENSE</PackageLicenseUrl>
     <Copyright>Nick Chursin</Copyright>
     <Company />
-    <PackageReleaseNotes>Updates for grid parsing logic:
-@@env:EnvVar
-@@time
-@@datetime
-@@machine
-@@user</PackageReleaseNotes>
+    <PackageReleaseNotes>Ihner exception handling</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

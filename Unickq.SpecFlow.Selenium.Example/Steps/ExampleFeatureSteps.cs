@@ -32,7 +32,8 @@ namespace Unickq.SpecFlow.Selenium.Example.Steps
         {
             if (scenarioContext == null) throw new ArgumentNullException(nameof(scenarioContext));
             ScenarioContext = scenarioContext;
-            Browser = scenarioContext.GetWebDriver();
+            Browser = scenarioContext.GetWebDriver() ?? new OpenQA.Selenium.Chrome.ChromeDriver();
+          
         }
 
         protected readonly ScenarioContext ScenarioContext;
