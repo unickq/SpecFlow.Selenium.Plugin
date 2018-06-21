@@ -393,8 +393,8 @@ namespace Unickq.SpecFlow.Selenium
                             GenerateCodeSnippetStatement(
                                 "try{\n" + 
                                 $"driver = container.ResolveNamed<OpenQA.Selenium.IWebDriver>({paramName});" + "}" +
-                                "catch(Autofac.Core.Registration.ComponentNotRegisteredException e){throw new SpecFlowSeleniumException($\"Unable to register {browser}. Please check the name of componens\");} " +
-                                "catch(Autofac.Core.DependencyResolutionException e){throw new SpecFlowSeleniumException($\"Unable to initalize {browser}. Please validate configuration parameters\", e?.InnerException);} " +
+                                "catch(Autofac.Core.Registration.ComponentNotRegisteredException e){throw new Unickq.SpecFlow.Selenium.SpecFlowSeleniumException($\"Unable to register {browser}. Please check the name of componens\");} " +
+                                "catch(Autofac.Core.DependencyResolutionException e){throw new Unickq.SpecFlow.Selenium.SpecFlowSeleniumException($\"Unable to initalize {browser}. Please validate configuration parameters\", e?.InnerException);} " +
                                 ""));
                     else
                         initializeSelenium.Statements.Add(
