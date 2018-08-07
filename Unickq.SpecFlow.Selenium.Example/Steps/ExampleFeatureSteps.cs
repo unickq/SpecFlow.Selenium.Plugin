@@ -15,11 +15,13 @@ namespace Unickq.SpecFlow.Selenium.Example.Steps
         {
             string language;
             ScenarioContext.TryGetValue("GoogleTranslate", out language);
+            Console.WriteLine(language);
             Browser.Navigate().GoToUrl(url + $"?hl={language}");
             var text = Browser.FindElement(By.Id("gt-appname")).Text;
             //            Console.WriteLine(text);
             Thread.Sleep(2000);
         }
+
         [Then(@"the title should contain '(.*)'")]
         public void ThenTheTitleShouldContain(string part)
         {

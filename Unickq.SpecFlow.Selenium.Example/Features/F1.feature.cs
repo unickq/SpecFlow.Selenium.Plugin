@@ -79,12 +79,17 @@ namespace Unickq.SpecFlow.Selenium.Example.Features
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Check website title")]
         [NUnit.Framework.TestCaseAttribute("ChromeDebug", "https://translate.google.com/", "Google", null, Category="ChromeDebug", TestName="CheckWebsiteTitle with ChromeDebug and \"https://translate.google.com/\" ,\"Google\"")]
-        [NUnit.Framework.TestCaseAttribute("ChromeDebug", "https://translate.google.com/", "Google", null, Category="ChromeDebug", TestName="CheckWebsiteTitle with ChromeDebug and \"https://translate.google.com/\" ,\"Google\"")]
+        [NUnit.Framework.TestCaseAttribute("BrowserStack_Win10_Chrome", "https://translate.google.com/", "Google", null, Category="BrowserStack_Win10_Chrome", TestName="CheckWebsiteTitle with BrowserStack_Win10_Chrome and \"https://translate.google.co" +
+            "m/\" ,\"Google\"")]
+        [NUnit.Framework.TestCaseAttribute("BrowserStack_Win10_IE", "https://translate.google.com/", "Google", null, Category="BrowserStack_Win10_IE", TestName="CheckWebsiteTitle with BrowserStack_Win10_IE and \"https://translate.google.com/\" " +
+            ",\"Google\"")]
         public virtual void CheckWebsiteTitle(string browser, string uRL, string @string, string[] exampleTags)
         {
 InitializeSeleniumBrowser(browser);
             string[] @__tags = new string[] {
-                    "Browser:ChromeDebug"};
+                    "Browser:ChromeDebug",
+                    "Browser:BrowserStack_Win10_Chrome",
+                    "Browser:BrowserStack_Win10_IE"};
             if ((exampleTags != null))
             {
                 @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
@@ -93,6 +98,19 @@ InitializeSeleniumBrowser(browser);
             this.ScenarioSetup(scenarioInfo);
             testRunner.Given(string.Format("I have opened {0}", uRL), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
             testRunner.Then(string.Format("the title should contain \'{0}\'", @string), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Check website title manual")]
+        [NUnit.Framework.CategoryAttribute("Manual")]
+        public virtual void CheckWebsiteTitleManual()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Check website title manual", new string[] {
+                        "Manual"});
+            this.ScenarioSetup(scenarioInfo);
+            testRunner.Given("I have opened <URL>", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+            testRunner.Then("the title should contain \'<string>\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
             this.ScenarioCleanup();
         }
         
@@ -105,5 +123,3 @@ driver = container.ResolveNamed<OpenQA.Selenium.IWebDriver>(browser);}catch(Auto
 }
 #pragma warning restore
 #endregion
-
-

@@ -81,5 +81,9 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
         protected PaidWebDriver(string url, string browser, Dictionary<string, string> capabilities) : base(url, browser, capabilities)
         {
         }
+
+        protected PaidWebDriver(string url, Dictionary<string, string> capabilities) : base(url, capabilities)
+        {
+        }
     }
 }

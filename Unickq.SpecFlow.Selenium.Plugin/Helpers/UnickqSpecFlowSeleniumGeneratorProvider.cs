@@ -8,7 +8,7 @@ using TechTalk.SpecFlow.Utils;
 
 namespace Unickq.SpecFlow.Selenium
 {
-    public class TestGeneratorProvider : IUnitTestGeneratorProvider
+    public class UnickqSpecFlowSeleniumGeneratorProvider : IUnitTestGeneratorProvider
     {
         private const string TestFixtureAttr = "NUnit.Framework.TestFixtureAttribute";
         private const string TestFixtureSetupAttr = "NUnit.Framework.OneTimeSetUp";
@@ -40,7 +40,7 @@ namespace Unickq.SpecFlow.Selenium
         private bool _hasBrowser;
         private bool _scenarioSetupMethodsAdded;
 
-        public TestGeneratorProvider(CodeDomHelper codeDomHelper)
+        public UnickqSpecFlowSeleniumGeneratorProvider(CodeDomHelper codeDomHelper)
         {
             _codeDomHelper = codeDomHelper;
         }

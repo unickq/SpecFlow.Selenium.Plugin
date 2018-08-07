@@ -27,6 +27,20 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
             SecretKey = accessKey;
         }
 
+        public SauceLabsWebDriver(string userName, string accessKey, Dictionary<string, string> capabilities)
+            : base(ApiUrl, Auth(userName, accessKey, capabilities))
+        {
+            SecretUser = userName;
+            SecretKey = accessKey;
+        }
+
+        public SauceLabsWebDriver(Dictionary<string, string> capabilities)
+            : base(ApiUrl, Auth(SaucelabsUser, SaucelabsKey, capabilities))
+        {
+            SecretUser = SaucelabsUser;
+            SecretKey = SaucelabsKey;
+        }
+
         public override void UpdateTestResult()
         {
             var passed = TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Passed;

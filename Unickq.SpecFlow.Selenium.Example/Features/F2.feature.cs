@@ -107,5 +107,3 @@ driver = container.ResolveNamed<OpenQA.Selenium.IWebDriver>(browser);}catch(Auto
 }
 #pragma warning restore
 #endregion
-
-

@@ -25,6 +25,20 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
             SecretKey = CbtKey;
         }
 
+        public CrossBrowserTestingWebDriver(string cbtUser, string cbtKey, Dictionary<string, string> capabilities)
+            : base(ApiUrl, Auth(cbtUser, cbtKey, capabilities))
+        {
+            SecretUser = cbtUser;
+            SecretKey = cbtKey;
+        }
+
+        public CrossBrowserTestingWebDriver(Dictionary<string, string> capabilities)
+            : base(ApiUrl, Auth(CbtUser, CbtKey, capabilities))
+        {
+            SecretUser = CbtUser;
+            SecretKey = CbtKey;
+        }
+
         public CrossBrowserTestingWebDriver(string browser, string cbtUser, string cbtKey,
             Dictionary<string, string> capabilities)
             : base(ApiUrl, browser, Auth(cbtUser, cbtKey, capabilities))
