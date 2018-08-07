@@ -4,6 +4,7 @@ using TechTalk.SpecFlow.Generator.UnitTestProvider;
 using TechTalk.SpecFlow.Infrastructure;
 using TechTalk.SpecFlow.Utils;
 using Unickq.SpecFlow.Selenium;
+using Unickq.SpecFlow.Selenium.Helpers;
 
 [assembly: GeneratorPlugin(typeof(GeneratorPlugin))]
 

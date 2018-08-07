@@ -6,7 +6,7 @@ using TechTalk.SpecFlow.Generator;
 using TechTalk.SpecFlow.Generator.UnitTestProvider;
 using TechTalk.SpecFlow.Utils;
 
-namespace Unickq.SpecFlow.Selenium
+namespace Unickq.SpecFlow.Selenium.Helpers
 {
     public class UnickqSpecFlowSeleniumGeneratorProvider : IUnitTestGeneratorProvider
     {
