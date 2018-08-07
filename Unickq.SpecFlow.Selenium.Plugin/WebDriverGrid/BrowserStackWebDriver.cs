@@ -24,6 +24,20 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
             SecretKey = BrowserstackKey;
         }
 
+        public BrowserStackWebDriver(string browserstackUser, string browserstackKey, Dictionary<string, string> capabilities)
+            : base(ApiUrl, Auth(browserstackUser, browserstackKey, capabilities))
+        {
+            SecretUser = browserstackUser;
+            SecretKey = browserstackKey;
+        }
+
+        public BrowserStackWebDriver(Dictionary<string, string> capabilities)
+            : base(ApiUrl, Auth(BrowserstackUser, BrowserstackKey, capabilities))
+        {
+            SecretUser = BrowserstackUser;
+            SecretKey = BrowserstackKey;
+        }
+
         public BrowserStackWebDriver(string browser, string browserstackUser, string browserstackKey,
             Dictionary<string, string> capabilities)
             : base(ApiUrl, browser, Auth(browserstackUser, browserstackKey, capabilities))

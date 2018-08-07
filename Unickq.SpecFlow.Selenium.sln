@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unickq.SpecFlow.Selenium.SpecFlowPlugin", "Unickq.SpecFlow.Selenium.Plugin\Unickq.SpecFlow.Selenium.SpecFlowPlugin.csproj", "{8B277E9F-1FDB-4D30-944B-A8C17308F62B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Unickq.SpecFlow.Selenium.SpecFlowPlugin", "Unickq.SpecFlow.Selenium.Plugin\Unickq.SpecFlow.Selenium.SpecFlowPlugin.csproj", "{8B277E9F-1FDB-4D30-944B-A8C17308F62B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B37E308A-6F8B-4328-A701-F67D044468E9}"
 	ProjectSection(SolutionItems) = preProject
@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unickq.SpecFlow.Selenium.Example", "Unickq.SpecFlow.Selenium.Example\Unickq.SpecFlow.Selenium.Example.csproj", "{950A9182-CC76-4EB6-BC06-0E483F3FA6C8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Unickq.SpecFlow.Selenium.Allure.SpecFlowPlugin", "Unickq.SpecFlow.Selenium.Allure.Plugin\Unickq.SpecFlow.Selenium.Allure.SpecFlowPlugin.csproj", "{08142A5A-5181-4E04-9FD0-75EF84FAA4AF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,6 +30,10 @@ Global
 		{950A9182-CC76-4EB6-BC06-0E483F3FA6C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{950A9182-CC76-4EB6-BC06-0E483F3FA6C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{950A9182-CC76-4EB6-BC06-0E483F3FA6C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08142A5A-5181-4E04-9FD0-75EF84FAA4AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08142A5A-5181-4E04-9FD0-75EF84FAA4AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08142A5A-5181-4E04-9FD0-75EF84FAA4AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08142A5A-5181-4E04-9FD0-75EF84FAA4AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,18 +1,19 @@
 ﻿Feature: F1
 
-#@Browser:RemoteChrome
-#@Browser:Cbt_Win10_Chrome
-@Browser:ChromeDebug
-#@Browser:BrowserStack_Win10_Chrome
-#@Browser:TestingBot_ElCapitan_Safari
-#@Browser:SauceLabs_Win7_Firefox
-#@GoogleTranslate:FR
-#@GoogleTranslate:DE
-#@GoogleTranslate:UK
+@GoogleTranslate:DE
+#@Lang:UA
+#@Browser:ChromeDebug
+@Browser:BrowserStack_Win10_Chrome
+@Browser:BrowserStack_Win10_Firefox
+#@Browser:BrowserStack_Win10_IE
 Scenario Outline: Check website title
 	Given I have opened <URL>
 	Then the title should contain '<string>'
-Examples: 
-| URL							| string |
-| https://translate.google.com/ | Google |
-| https://translate.google.com/ | Google |
+	Examples: 
+	| URL                           | string        |
+	| https://translate.google.com/ | Google        |
+
+@Manual
+Scenario: Check website title manual
+	Given I have opened <URL>
+	Then the title should contain '<string>'

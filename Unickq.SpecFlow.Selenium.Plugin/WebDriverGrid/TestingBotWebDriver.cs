@@ -30,6 +30,20 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
             SecretKey = TestingBotSecret;
         }
 
+        public TestingBotWebDriver(string key, string secret, Dictionary<string, string> capabilities)
+            : base(ApiUrl, Auth(key, secret, capabilities))
+        {
+            SecretUser = key;
+            SecretKey = secret;
+        }
+
+        public TestingBotWebDriver(Dictionary<string, string> capabilities)
+            : base(ApiUrl, Auth(TestingBotKey, TestingBotSecret, capabilities))
+        {
+            SecretUser = TestingBotKey;
+            SecretKey = TestingBotSecret;
+        }
+
         private static Dictionary<string, string> Auth(string key, string secret, Dictionary<string, string> capabilities)
         {
             if (key == null) throw new Exception("testingbot.key can't be found");
