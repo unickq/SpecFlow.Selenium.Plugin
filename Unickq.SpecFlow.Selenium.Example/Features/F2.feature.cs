@@ -13,8 +13,7 @@
 namespace Unickq.SpecFlow.Selenium.Example.Features
 {
     using TechTalk.SpecFlow;
-    using Autofac;
-    using Autofac.Configuration;
+    using Unickq.SpecFlow.Selenium.Helpers;
     
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "2.2.0.0")]
@@ -27,24 +26,22 @@ namespace Unickq.SpecFlow.Selenium.Example.Features
         
         private TechTalk.SpecFlow.ITestRunner testRunner;
         
-        private OpenQA.Selenium.IWebDriver driver;
-        
-        private IContainer container;
+        private UnickqSpecFlowSeleniumGeneratorHelper helper;
         
         [NUnit.Framework.OneTimeSetUp()]
         public virtual void FeatureSetup()
         {
-            var builder = new ContainerBuilder();
-            builder.RegisterModule(new ConfigurationSettingsReader());
-            container = builder.Build();
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
             TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "f2", null, ProgrammingLanguage.CSharp, ((string[])(null)));
             testRunner.OnFeatureStart(featureInfo);
+            helper = new UnickqSpecFlowSeleniumGeneratorHelper();
+            helper.FeatureSetup();
         }
         
         [NUnit.Framework.OneTimeTearDown()]
         public virtual void FeatureTearDown()
         {
+            helper.FeatureTearDown();
             testRunner.OnFeatureEnd();
             testRunner = null;
         }
@@ -52,23 +49,20 @@ namespace Unickq.SpecFlow.Selenium.Example.Features
         [NUnit.Framework.SetUpAttribute()]
         public virtual void TestInitialize()
         {
+            helper.SetUp();
         }
         
         [NUnit.Framework.TearDownAttribute()]
         public virtual void ScenarioTearDown()
         {
-            try {((Unickq.SpecFlow.Selenium.WebDriverGrid.PaidWebDriver) driver).UpdateTestResult();} catch (System.Exception) {}
-            try {System.Threading.Thread.Sleep(50); driver.Quit(); } catch (System.Exception) {}
-            driver = null;
-            try {testRunner.ScenarioContext.Remove("Driver");} catch (System.NullReferenceException) {}
+            helper.TearDown();
             testRunner.OnScenarioEnd();
         }
         
         public virtual void ScenarioSetup(TechTalk.SpecFlow.ScenarioInfo scenarioInfo)
         {
             testRunner.OnScenarioStart(scenarioInfo);
-            if(driver != null)
-              testRunner.ScenarioContext.Add("Driver", driver);
+            testRunner.ScenarioContext.Add("Driver", helper.Driver);
         }
         
         public virtual void ScenarioCleanup()
@@ -78,12 +72,11 @@ namespace Unickq.SpecFlow.Selenium.Example.Features
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Check website title")]
-        [NUnit.Framework.TestCaseAttribute("ChromeDebug", "https://translate.google.com/", "Google", null, Category="ChromeDebug", TestName="CheckWebsiteTitle with ChromeDebug and \"https://translate.google.com/\" ,\"Google\"")]
-        [NUnit.Framework.TestCaseAttribute("FirefoxDebug", "https://translate.google.com/", "Google", null, Category="FirefoxDebug", TestName="CheckWebsiteTitle with FirefoxDebug and \"https://translate.google.com/\" ,\"Google\"" +
+        [NUnit.Framework.TestCaseAttribute("ChromeDebug", "https://translate.google.com/", "Google", null, Category="ChromeDebug", TestName="CheckWebsiteTitle with ChromeDebug and \"https://translate_google_com/\" ,\"Google\"")]
+        [NUnit.Framework.TestCaseAttribute("FirefoxDebug", "https://translate.google.com/", "Google", null, Category="FirefoxDebug", TestName="CheckWebsiteTitle with FirefoxDebug and \"https://translate_google_com/\" ,\"Google\"" +
             "")]
         public virtual void CheckWebsiteTitle(string browser, string uRL, string @string, string[] exampleTags)
         {
-InitializeSeleniumBrowser(browser);
             string[] @__tags = new string[] {
                     "Browser:ChromeDebug",
                     "Browser:FirefoxDebug"};
@@ -96,12 +89,6 @@ InitializeSeleniumBrowser(browser);
             testRunner.Given(string.Format("I have opened {0}", uRL), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
             testRunner.Then(string.Format("the title should contain \'{0}\'", @string), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
             this.ScenarioCleanup();
-        }
-        
-        private void InitializeSeleniumBrowser(string browser)
-        {
-            try{
-driver = container.ResolveNamed<OpenQA.Selenium.IWebDriver>(browser);}catch(Autofac.Core.Registration.ComponentNotRegisteredException e){throw new Unickq.SpecFlow.Selenium.SpecFlowSeleniumException($"Unable to register {browser}. Please check the name of componens");} catch(Autofac.Core.DependencyResolutionException e){throw new Unickq.SpecFlow.Selenium.SpecFlowSeleniumException($"Unable to initalize {browser}. Please validate configuration parameters", e?.InnerException);} 
         }
     }
 }

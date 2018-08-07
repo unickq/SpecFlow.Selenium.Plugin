@@ -5,6 +5,7 @@ using Autofac;
 using Autofac.Configuration;
 using NUnit.Framework;
 using OpenQA.Selenium;
+using TechTalk.SpecFlow;
 
 namespace Unickq.SpecFlow.Selenium.Helpers
 {
@@ -54,7 +55,7 @@ namespace Unickq.SpecFlow.Selenium.Helpers
             }
             else
             {
-                Assert.Ignore("Unable to register browser. Please check the name of componens" +
+                Assert.Ignore("Unable to register browser. Please check @Browser tag" +
                               $"\n    Possible values are:\n      {string.Join(" ", configList)}\n");
                 throw new SpecFlowSeleniumException(null);
             }
@@ -88,6 +89,17 @@ namespace Unickq.SpecFlow.Selenium.Helpers
                 System.Threading.Thread.Sleep(50);
                 Driver.Quit();
                 Driver = null;
+            }
+        }
+
+        public void ClearScenarioContext(ScenarioContext testRunnerScenarioContext, string key)
+        {
+            if (testRunnerScenarioContext != null)
+            {
+                if (testRunnerScenarioContext.ContainsKey(key))
+                {
+                    testRunnerScenarioContext.Remove(key);
+                }
             }
         }
     }

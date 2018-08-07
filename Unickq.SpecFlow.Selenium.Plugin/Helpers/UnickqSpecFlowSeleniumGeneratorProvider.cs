@@ -71,6 +71,7 @@ namespace Unickq.SpecFlow.Selenium.Helpers
                     tagValues = new List<string>();
                     categoryTags[tag[0]] = tagValues;
                 }
+
                 tagValues.Add(tag[1]);
             }
 
@@ -119,14 +120,13 @@ namespace Unickq.SpecFlow.Selenium.Helpers
                     i = i + 1;
                 }
 
-                var methodName = "InitializeSelenium" + string.Join("", orderedTags);
-                var initializeSeleniumArgs = string.Join(",", orderedTags).ToLowerInvariant();
-                //Create the call to the initialization Method
-                testMethod.Statements.Insert(0,
-                    new CodeSnippetStatement(methodName + "(" + initializeSeleniumArgs + ");"));
-                List<string> nothing;
-                if (!_initializeMethodsToGenerate.TryGetValue(methodName, out nothing))
-                    _initializeMethodsToGenerate[methodName] = orderedTags.Select(s => s.ToLowerInvariant()).ToList();
+                foreach (var field in _fieldsToGenerate)
+                    if (!field.Equals("Browser", StringComparison.OrdinalIgnoreCase))
+                    {
+                        testMethod.Statements.Insert(4,
+                            GenerateCodeSnippetStatement(
+                                $"testRunner.ScenarioContext.Add(\"{field}\", {field.ToLower()});"));
+                    }
             }
         }
 
@@ -160,6 +160,7 @@ namespace Unickq.SpecFlow.Selenium.Helpers
                         val = new List<string>();
                         values[catName] = val;
                     }
+
                     val.Add((string) testMethod.UserData[userDataKey]);
                 }
 
@@ -177,6 +178,8 @@ namespace Unickq.SpecFlow.Selenium.Helpers
                     var argsString = string.Concat(args.Take(args.Count - 1).Select(arg =>
                         $"\"{((CodePrimitiveExpression) arg.Value).Value}\" ,"));
                     argsString = argsString.TrimEnd(' ', ',');
+                    //Fix 
+                    argsString = argsString.Replace('.', '_');
 
                     //Each combination is a different TestCase
                     var withTagArgs = combination.Select(s => new CodeAttributeArgument(new CodePrimitiveExpression(s)))
@@ -205,11 +208,9 @@ namespace Unickq.SpecFlow.Selenium.Helpers
         {
             _codeDomHelper.AddAttribute(generationContext.TestClass, TestFixtureAttr);
             _codeDomHelper.AddAttribute(generationContext.TestClass, DescriptionAttr, featureTitle);
-            generationContext.Namespace.Imports.Add(new CodeNamespaceImport("Autofac"));
-            generationContext.Namespace.Imports.Add(new CodeNamespaceImport("Autofac.Configuration"));
-            generationContext.TestClass.Members.Add(new CodeMemberField("OpenQA.Selenium.IWebDriver", "driver"));
-            generationContext.TestClass.Members.Add(new CodeMemberField("IContainer", "container"));
-            CreateInitializeSeleniumMethod(generationContext);
+            generationContext.Namespace.Imports.Add(new CodeNamespaceImport("Unickq.SpecFlow.Selenium.Helpers"));
+            generationContext.TestClass.Members.Add(new CodeMemberField("UnickqSpecFlowSeleniumGeneratorHelper",
+                "helper"));
         }
 
         public void SetTestClassCategories(TestClassGenerationContext generationContext,
@@ -220,12 +221,13 @@ namespace Unickq.SpecFlow.Selenium.Helpers
 
         public void SetTestClassCleanupMethod(TestClassGenerationContext generationContext)
         {
+            generationContext.TestClassCleanupMethod.Statements.Insert(0, GenerateCodeSnippetStatement("helper.FeatureTearDown();"));
             _codeDomHelper.AddAttribute(generationContext.TestClassCleanupMethod, TestFixtureTearDownAttr);
         }
 
         public void SetTestClassIgnore(TestClassGenerationContext generationContext)
         {
-            _codeDomHelper.AddAttribute(generationContext.TestClass, IgnoreAttr, "Test feature is ignored\n");
+            _codeDomHelper.AddAttribute(generationContext.TestClass, IgnoreAttr, "Test class is ignored\n");
         }
 
         public void SetTestClassParallelize(TestClassGenerationContext generationContext)
@@ -237,13 +239,7 @@ namespace Unickq.SpecFlow.Selenium.Helpers
             TestClassGenerationContext generationContext)
         {
             _codeDomHelper.AddAttribute(generationContext.TestClassInitializeMethod, TestFixtureSetupAttr);
-
-            generationContext.TestClassInitializeMethod.Statements.Add(
-                GenerateCodeSnippetStatement("var builder = new ContainerBuilder();"));
-            generationContext.TestClassInitializeMethod.Statements.Add(
-                GenerateCodeSnippetStatement("builder.RegisterModule(new ConfigurationSettingsReader());"));
-            generationContext.TestClassInitializeMethod.Statements.Add(
-                GenerateCodeSnippetStatement("container = builder.Build();"));
+    
         }
 
         public void SetTestCleanupMethod(TestClassGenerationContext generationContext)
@@ -254,6 +250,11 @@ namespace Unickq.SpecFlow.Selenium.Helpers
         public void SetTestInitializeMethod(TestClassGenerationContext generationContext)
         {
             _codeDomHelper.AddAttribute(generationContext.TestInitializeMethod, TestSetupAttr);
+            generationContext.TestClassInitializeMethod.Statements.Add(
+                GenerateCodeSnippetStatement("helper = new UnickqSpecFlowSeleniumGeneratorHelper();"));
+            generationContext.TestClassInitializeMethod.Statements.Add(
+                GenerateCodeSnippetStatement("helper.FeatureSetup();"));
+            generationContext.TestInitializeMethod.Statements.Add(GenerateCodeSnippetStatement("helper.SetUp();"));
         }
 
         public void SetTestMethod(TestClassGenerationContext generationContext,
@@ -284,68 +285,28 @@ namespace Unickq.SpecFlow.Selenium.Helpers
         public void FinalizeTestClass(TestClassGenerationContext generationContext)
         {
             generationContext.TestCleanupMethod.Statements.RemoveAt(0);
-            generationContext.TestCleanupMethod.Statements.Add(
-                GenerateCodeSnippetStatement(
-                    "try {" +
-                    "((Unickq.SpecFlow.Selenium.WebDriverGrid.PaidWebDriver) driver).UpdateTestResult();" +
-                    "} catch (System.Exception) {}"));
-            generationContext.TestCleanupMethod.Statements.Add(
-                GenerateCodeSnippetStatement(
-                    "try {" +
-                    "System.Threading.Thread.Sleep(50); " +
-                    "driver.Quit(); " +
-                    "} catch (System.Exception) {}"));
-            generationContext.TestCleanupMethod.Statements.Add(
-                GenerateCodeSnippetStatement("driver = null;"));
+            generationContext.TestCleanupMethod.Statements.Add(GenerateCodeSnippetStatement("helper.TearDown();"));
 
-            generationContext.TestCleanupMethod.Statements.Add(
-                GenerateCodeSnippetStatement(
-                    "try {" +
-                    $"testRunner.ScenarioContext.Remove(\"{Extensions.Driver}\");" +
-                    "} catch (System.NullReferenceException) {}"));
-//            generationContext.TestCleanupMethod.Statements.Add(
-//                GenerateCodeSnippetStatement(
-//                    "try {" +
-//                    "testRunner.ScenarioContext.Remove(\"Container\");" +
-//                    "} catch (System.NullReferenceException) {}"));
-          
             foreach (var field in _fieldsToGenerate)
                 if (!field.Equals("Browser", StringComparison.OrdinalIgnoreCase))
                 {
-                    generationContext.TestClass.Members.Add(
-                        new CodeMemberField("System.String", "_" + field.ToLowerInvariant()));
                     generationContext.TestCleanupMethod.Statements.Add(
-                        GenerateCodeSnippetStatement("testRunner.ScenarioContext.Remove(\"" + field + "\");"));
+                        GenerateCodeSnippetStatement($"helper.ClearScenarioContext(testRunner.ScenarioContext, \"{field}\");"));
                 }
 
             generationContext.TestCleanupMethod.Statements.Add(
                 GenerateCodeSnippetStatement("testRunner.OnScenarioEnd();"));
 
-            CreateInitializeSeleniumMethod(generationContext);
 
             if (!_scenarioSetupMethodsAdded)
             {
                 if (_hasBrowser)
                 {
                     generationContext.ScenarioInitializeMethod.Statements.Add(
-                        GenerateCodeSnippetStatement("if(driver != null)"));
-                    generationContext.ScenarioInitializeMethod.Statements.Add(
-                        GenerateCodeSnippetStatement($"  testRunner.ScenarioContext.Add(\"{Extensions.Driver}\", driver);"));
-//                    generationContext.ScenarioInitializeMethod.Statements.Add(
-//                        GenerateCodeSnippetStatement("if(container != null)"));
-//                    generationContext.ScenarioInitializeMethod.Statements.Add(
-//                        GenerateCodeSnippetStatement(
-//                            "  testRunner.ScenarioContext.Add(\"Container\", container);"));
+                        GenerateCodeSnippetStatement(
+                            $"testRunner.ScenarioContext.Add(\"{Extensions.Driver}\", helper.Driver);"));
                 }
-                foreach (var field in _fieldsToGenerate)
-                    if (!field.Equals("Browser", StringComparison.OrdinalIgnoreCase))
-                    {
-                        generationContext.ScenarioInitializeMethod.Statements.Add(
-                            GenerateCodeSnippetStatement("if(this._" + field.ToLowerInvariant() + " != null)"));
-                        generationContext.ScenarioInitializeMethod.Statements.Add(
-                            GenerateCodeSnippetStatement("  testRunner.ScenarioContext.Add(\"" + field + "\", this._" +
-                                                         field.ToLowerInvariant() + ");"));
-                    }
+
                 _scenarioSetupMethodsAdded = true;
             }
         }
@@ -374,34 +335,6 @@ namespace Unickq.SpecFlow.Selenium.Helpers
             {
                 var newList = new List<string>(current) {lists[depth][i]};
                 GeneratePermutations(lists, result, depth + 1, newList);
-            }
-        }
-
-        private void CreateInitializeSeleniumMethod(
-            TestClassGenerationContext generationContext)
-        {
-            foreach (var kvp in _initializeMethodsToGenerate)
-            {
-                var initializeSelenium = new CodeMemberMethod();
-                initializeSelenium.Name = kvp.Key;
-                foreach (var paramName in kvp.Value)
-                {
-                    initializeSelenium.Parameters.Add(
-                        new CodeParameterDeclarationExpression("System.String", paramName));
-                    if (paramName.Equals("browser", StringComparison.OrdinalIgnoreCase))
-                        initializeSelenium.Statements.Add(
-                            GenerateCodeSnippetStatement(
-                                "try{\n" + 
-                                $"driver = container.ResolveNamed<OpenQA.Selenium.IWebDriver>({paramName});" + "}" +
-                                "catch(Autofac.Core.Registration.ComponentNotRegisteredException e){throw new Unickq.SpecFlow.Selenium.SpecFlowSeleniumException($\"Unable to register {browser}. Please check the name of componens\");} " +
-                                "catch(Autofac.Core.DependencyResolutionException e){throw new Unickq.SpecFlow.Selenium.SpecFlowSeleniumException($\"Unable to initalize {browser}. Please validate configuration parameters\", e?.InnerException);} " +
-                                ""));
-                    else
-                        initializeSelenium.Statements.Add(
-                            GenerateCodeSnippetStatement($"this._{paramName} = {paramName};"));
-                }
-
-                generationContext.TestClass.Members.Add(initializeSelenium);
             }
         }
     }

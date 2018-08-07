@@ -23,7 +23,7 @@ namespace Unickq.SpecFlow.Selenium
             var projectSettings = container.Resolve<ProjectSettings>();
             var codeDomHelper = container.Resolve<CodeDomHelper>(projectSettings.ProjectPlatformSettings.Language);
             var generatorProvider = new UnickqSpecFlowSeleniumGeneratorProvider(codeDomHelper);
-            container.RegisterInstanceAs<IUnitTestGeneratorProvider>(generatorProvider, Extensions.Name);
+            container.RegisterInstanceAs<IUnitTestGeneratorProvider>(generatorProvider, Extensions.Name);         
         }
     }
 }
