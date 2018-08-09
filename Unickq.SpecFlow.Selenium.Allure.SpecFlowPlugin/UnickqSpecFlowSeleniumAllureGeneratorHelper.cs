@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Allure.Commons;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
@@ -17,7 +18,7 @@ namespace Unickq.SpecFlow.Selenium
         private readonly AllureLifecycle _allure = AllureLifecycle.Instance;
         public string RootContainerId { get; }
         public string TestContainerId { get; private set; }
-        public string TestResultId { get; } = TestContext.CurrentContext.Test.FullName;
+        public string TestResultId { get; private set; }
 
         public override void FeatureSetup()
         {
@@ -34,7 +35,8 @@ namespace Unickq.SpecFlow.Selenium
 
         public override void SetUp()
         {
-            TestContainerId = Guid.NewGuid() + "t";
+            TestResultId = Guid.NewGuid() + "_test";
+            TestContainerId = Guid.NewGuid() + "_tc";
             _allure.StartTestContainer(RootContainerId,
                 new TestResultContainer {uuid = TestContainerId});
             _allure.StartBeforeFixture(TestContainerId, Guid.NewGuid().ToString(),
@@ -51,16 +53,16 @@ namespace Unickq.SpecFlow.Selenium
             {
                 uuid = TestResultId,
                 name = TestContext.CurrentContext.Test.Name,
+                fullName = TestContext.CurrentContext.Test.FullName,
                 descriptionHtml = $"<pre><code>{TestRunner.FeatureContext.FeatureInfo.Description}</pre></code>",
                 labels = new List<Label>
                 {
                     Label.Thread(),
                     Label.Host(),
-                    Label.TestClass(TestContext.CurrentContext.Test.ClassName),
-                    Label.TestMethod(TestContext.CurrentContext.Test.MethodName),
-                    Label.Package(TestContext.CurrentContext.Test.ClassName)
+                    Label.TestMethod(TestContext.CurrentContext.Test.MethodName)
                 }
             };
+
 
             try
             {
@@ -89,7 +91,7 @@ namespace Unickq.SpecFlow.Selenium
                     result.stage = Stage.finished;
                     result.steps.Add(sr);
                 });
-                testResult.parameters = ParametersForBuild();
+                testResult.parameters.AddRange(ParametersForBuild());
                 _allure.StartTestCase(TestContainerId, testResult);
             }
         }
@@ -98,11 +100,30 @@ namespace Unickq.SpecFlow.Selenium
         {
             try
             {
+                var tags = PluginHelper.GetTags(TestRunner.FeatureContext.FeatureInfo,
+                    TestRunner.ScenarioContext.ScenarioInfo);
+
                 _allure.UpdateTestCase(x =>
                 {
-                    x.labels.Add(Label.Epic(TestRunner.FeatureContext.FeatureInfo.Title));
-                    x.labels.Add(Label.Feature(TestRunner.ScenarioContext.ScenarioInfo.Title));
                     x.labels.Add(Label.ParentSuite(BrowserName));
+                    x.parameters.Add(new Parameter
+                    {
+                        name = "Screen",
+                        value = string.Concat(Driver.Manage().Window.Size.Width, "x",
+                            Driver.Manage().Window.Size.Height)
+                    });
+                    var packageName = TestContext.CurrentContext.Test.ClassName;
+                    var className = packageName.Substring(packageName.LastIndexOf('.') + 1);
+                    x.labels.AddRange(new List<Label>
+                    {
+                        Label.Feature(TestRunner.FeatureContext.FeatureInfo.Title),
+                        Label.TestClass(className),
+                        Label.Package(packageName)
+                    }.Union(tags.Item1).ToList());
+
+                    x.labels.Add(Label.Suite(TestRunner.FeatureContext.FeatureInfo.Title.Trim()));
+                    x.labels.Add(Label.SubSuite(TestRunner.ScenarioContext.ScenarioInfo.Title));
+                    x.links = tags.Item2;
                 });
             }
             catch (Exception)
@@ -144,10 +165,10 @@ namespace Unickq.SpecFlow.Selenium
 
         public UnickqSpecFlowSeleniumAllureGeneratorHelper(ITestRunner testRunner) : base(testRunner)
         {
-            RootContainerId = Guid.NewGuid().ToString() + "f";
+            RootContainerId = Guid.NewGuid() + "_fc";
         }
 
-        public List<Parameter> ParametersForBuild()
+        private IEnumerable<Parameter> ParametersForBuild()
         {
             var list = new List<Parameter>();
             try
@@ -179,16 +200,10 @@ namespace Unickq.SpecFlow.Selenium
 
             var caps = ((OpenQA.Selenium.Remote.RemoteWebDriver) Driver).Capabilities;
 
-            if (caps.BrowserName != null && caps.Version != null)
-                list.Add(new Parameter
-                {
-                    name = "Browser",
-                    value = string.Concat(caps.BrowserName, " ", caps.Version)
-                });
             list.Add(new Parameter
             {
-                name = "Screen",
-                value = string.Concat(Driver.Manage().Window.Size.Width, "x", Driver.Manage().Window.Size.Height)
+                name = "Browser",
+                value = string.Concat(caps.GetCapability("browserName"), " ", caps.GetCapability("version"))
             });
 
             return list;

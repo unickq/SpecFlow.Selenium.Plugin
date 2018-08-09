@@ -27,97 +27,18 @@ namespace Unickq.SpecFlow.Selenium.Allure
                 config = specflowSection.ToObject<PluginConfiguration>();
             return config;
         }
-        internal static string GetFeatureContainerId(FeatureInfo featureInfo)
-        {
-            var id = (featureInfo != null)
-                ? featureInfo.GetHashCode().ToString()
-                : emptyFeatureInfo.GetHashCode().ToString();
-
-            return id;
-        }
-
-        internal static string NewId() => Guid.NewGuid().ToString("N");
-
-        internal static FixtureResult GetFixtureResult(HookBinding hook) => new FixtureResult
-        {
-            name = $"{hook.Method.Name} [{hook.HookOrder}]"
-        };
-
-        internal static TestResult StartTestCase(string containerId, FeatureContext featureContext,
-            ScenarioContext scenarioContext)
-        {
-            var featureInfo = featureContext?.FeatureInfo ?? emptyFeatureInfo;
-            var scenarioInfo = scenarioContext?.ScenarioInfo ?? emptyScenarioInfo;
-            var tags = GetTags(featureInfo, scenarioInfo);
-            var testResult = new TestResult
-            {
-                uuid = NewId(),
-                historyId = scenarioInfo.Title,
-                name = scenarioInfo.Title,
-                fullName = scenarioInfo.Title,
-                labels = new List<Label>
-                    {
-                        Label.Thread(),
-                        Label.Host(),
-                        Label.Feature(featureInfo.Title)
-                    }
-                    .Union(tags.Item1).ToList(),
-                links = tags.Item2
-            };
-
-            AllureLifecycle.Instance.StartTestCase(containerId, testResult);
-            scenarioContext?.Set(testResult);
-            featureContext?.Get<HashSet<TestResult>>().Add(testResult);
-
-            return testResult;
-        }
-
-        internal static TestResult GetCurrentTestCase(ScenarioContext context)
-        {
-            context.TryGetValue(out TestResult testresult);
-            return testresult;
-        }
-
-        internal static TestResultContainer StartTestContainer(FeatureContext featureContext,
-            ScenarioContext scenarioContext)
-        {
-            var containerId = GetFeatureContainerId(featureContext?.FeatureInfo);
-
-            var scenarioContainer = new TestResultContainer
-            {
-                uuid = NewId()
-            };
-            AllureLifecycle.Instance.StartTestContainer(containerId, scenarioContainer);
-            scenarioContext?.Set(scenarioContainer);
-            featureContext?.Get<HashSet<TestResultContainer>>().Add(scenarioContainer);
-
-            return scenarioContainer;
-        }
-
-        internal static TestResultContainer GetCurrentTestConainer(ScenarioContext context)
-        {
-            context.TryGetValue(out TestResultContainer testresultContainer);
-            return testresultContainer;
-        }
 
         internal static StatusDetails GetStatusDetails(Exception ex)
         {
             return new StatusDetails
             {
-                message = GetFullExceptionMessage(ex),
-                trace = ex.StackTrace
+                message = ex.GetType().Name,
+                trace = ex.Message
             };
 
         }
 
-        private static string GetFullExceptionMessage(Exception ex)
-        {
-            return ex.Message +
-            (!string.IsNullOrWhiteSpace(ex.InnerException?.Message) ?
-                $" -> {GetFullExceptionMessage(ex.InnerException)}" : string.Empty);
-        }
-
-        private static Tuple<List<Label>, List<Link>> GetTags(FeatureInfo featureInfo, ScenarioInfo scenarioInfo)
+        public static Tuple<List<Label>, List<Link>> GetTags(FeatureInfo featureInfo, ScenarioInfo scenarioInfo)
         {
             var result = Tuple.Create(new List<Label>(), new List<Link>());
 
@@ -194,6 +115,7 @@ namespace Unickq.SpecFlow.Selenium.Allure
                     result.Item1.Add(Label.Severity(level)); continue;
                 }
                 // tag
+                if(!tagValue.Contains("Browser"))
                 result.Item1.Add(Label.Tag(tagValue));
             }
             return result;

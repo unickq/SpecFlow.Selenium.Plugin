@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
 using System.Security;
 using System.Text;
@@ -35,11 +36,12 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
             {
                 wc.Credentials = new NetworkCredential(SecretUser, SecretKey);
                 var json = wc.DownloadString(uri);
-                if (string.IsNullOrEmpty(json))
+                if (!string.IsNullOrEmpty(json))
                 {
                     return JObject.Parse(json);
                 }
-                throw new SpecFlowSeleniumException($"{uri} has no data");
+                Debug.WriteLine($"{uri} has no data");
+                return null;
             }
         } 
 

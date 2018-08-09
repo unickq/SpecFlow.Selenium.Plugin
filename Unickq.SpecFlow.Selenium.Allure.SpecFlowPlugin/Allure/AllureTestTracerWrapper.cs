@@ -126,7 +126,7 @@ namespace Unickq.SpecFlow.Selenium.Allure
                 }
             }
 
-            Allure.StartStep(PluginHelper.NewId(), stepResult);
+            Allure.StartStep(Guid.NewGuid().ToString(), stepResult);
         }
 
         private static void FailScenario(Exception ex)
