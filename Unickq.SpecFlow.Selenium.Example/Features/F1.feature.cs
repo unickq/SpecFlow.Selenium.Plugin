@@ -13,7 +13,7 @@
 namespace Unickq.SpecFlow.Selenium.Example.Features
 {
     using TechTalk.SpecFlow;
-    using Unickq.SpecFlow.Selenium.Helpers;
+    using Unickq.SpecFlow.Selenium;
     
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "2.2.0.0")]

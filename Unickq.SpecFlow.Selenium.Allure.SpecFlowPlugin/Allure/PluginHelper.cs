@@ -105,7 +105,7 @@ namespace Unickq.SpecFlow.Selenium.Allure
             return new StatusDetails
             {
                 message = GetFullExceptionMessage(ex),
-                trace = ex.ToString()
+                trace = ex.StackTrace
             };
 
         }

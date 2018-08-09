@@ -16,24 +16,19 @@ namespace Unickq.SpecFlow.Selenium.Example.Steps
 
         [Given(@"I have opened (.*)")]
         public void GivenIHaveOpened(string url)
-        {          
+        {
             string language;
             ScenarioContext.TryGetValue("GoogleTranslate", out language);
             Browser.Navigate().GoToUrl(url + $"?hl={language}");
             var text = Browser.FindElement(By.Id("gt-appname")).Text;
             Console.WriteLine(text);
         }
+
         [Then(@"the title should contain '(.*)'")]
         public void ThenTheTitleShouldContain(string part)
         {
-            AllureLifecycle.Instance.WrapInStep(() =>
-            {
-                Thread.Sleep(2000);
-            }, "Sleep 2000");
-            AllureLifecycle.Instance.WrapInStep(() =>
-            {
-                StringAssert.Contains(part.ToLower(), Browser.Title.ToLower());
-            }, "Validation");
+            AllureLifecycle.Instance.WrapInStep(() => { Thread.Sleep(1000); }, "Sleep 1000");
+            AllureLifecycle.Instance.WrapInStep(() => { StringAssert.Contains(part.ToLower(), Browser.Title.ToLower()); }, "Validation");
         }
 
         public ExampleFeatureSteps(ScenarioContext scenarioContext)
@@ -45,16 +40,13 @@ namespace Unickq.SpecFlow.Selenium.Example.Steps
         [BeforeTestRun]
         public static void BeforeTestRun()
         {
-            AllureLifecycle.Instance.CleanupResultDirectory();     
+            AllureLifecycle.Instance.CleanupResultDirectory();
         }
 
         [BeforeScenario]
         public void BeforeScenario()
         {
-            AllureLifecycle.Instance.WrapInStep(() =>
-            {
-                Console.WriteLine("BeforeScenario");
-            }, "BeforeScenario");
+            AllureLifecycle.Instance.WrapInStep(() => { Console.WriteLine("BeforeScenario"); }, "BeforeScenario");
         }
     }
 }

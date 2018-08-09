@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Allure.Commons;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
@@ -50,7 +51,7 @@ namespace Unickq.SpecFlow.Selenium
             {
                 uuid = TestResultId,
                 name = TestContext.CurrentContext.Test.Name,
-                descriptionHtml = TestRunner.FeatureContext.FeatureInfo.Description,
+                descriptionHtml = $"<pre><code>{TestRunner.FeatureContext.FeatureInfo.Description}</pre></code>",
                 labels = new List<Label>
                 {
                     Label.Thread(),
@@ -149,35 +150,47 @@ namespace Unickq.SpecFlow.Selenium
         public List<Parameter> ParametersForBuild()
         {
             var list = new List<Parameter>();
-            if (Driver is BrowserStackWebDriver bs)
+            try
             {
-                var apiResponce =
-                    bs.ExecuteApiCall($"https://api.browserstack.com/automate/sessions/{bs.SessionId}.json");
-                list.Add(new Parameter
+                if (Driver is BrowserStackWebDriver bs)
                 {
-                    name = "OS",
-                    value = string.Concat(apiResponce.automation_session.os, " ",
-                        apiResponce.automation_session.os_version)
-                });
-                list.Add(new Parameter
-                {
-                    name = "Session",
-                    value = apiResponce.automation_session.public_url
-                });
+                    var apiResponce =
+                        bs.ExecuteApiCall($"https://api.browserstack.com/automate/sessions/{bs.SessionId}.json");
+                    if (apiResponce != null)
+                    {
+                        list.Add(new Parameter
+                        {
+                            name = "Session",
+                            value = apiResponce.automation_session.public_url
+                        });
+                        list.Add(new Parameter
+                        {
+                            name = "OS",
+                            value = string.Concat(apiResponce.automation_session.os, " ",
+                                apiResponce.automation_session.os_version)
+                        });
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
             }
 
             var caps = ((OpenQA.Selenium.Remote.RemoteWebDriver) Driver).Capabilities;
 
-            list.Add(new Parameter
-            {
-                name = "Browser",
-                value = string.Concat(caps.BrowserName, " ", caps.Version)
-            });
+            if (caps.BrowserName != null && caps.Version != null)
+                list.Add(new Parameter
+                {
+                    name = "Browser",
+                    value = string.Concat(caps.BrowserName, " ", caps.Version)
+                });
             list.Add(new Parameter
             {
                 name = "Screen",
                 value = string.Concat(Driver.Manage().Window.Size.Width, "x", Driver.Manage().Window.Size.Height)
             });
+
             return list;
         }
     }
