@@ -1,14 +1,13 @@
 ﻿using System;
 using OpenQA.Selenium;
 using TechTalk.SpecFlow;
-using Unickq.SpecFlow.Selenium.WebDriverGrid;
+using RemoteWebDriver = OpenQA.Selenium.Remote.RemoteWebDriver;
 
-namespace Unickq.SpecFlow.Selenium
+namespace Unickq.SpecFlow.Selenium.Helpers
 {
     public static class Extensions
     {
         internal const string Driver = "Driver";
-        internal const string Name = "Unickq.SpecFlow.Selenium";
 
         public static IWebDriver GetWebDriver(this ScenarioContext scenarioContext)
         {
@@ -31,13 +30,18 @@ namespace Unickq.SpecFlow.Selenium
         {
             if (driver == null) throw new ArgumentNullException(nameof(driver));
             var browserName = driver.GetType().Name;
-            var webDriver = driver as PaidWebDriver;
+            var webDriver = driver as RemoteWebDriver;
             if (webDriver != null)
             {
                 var caps = webDriver.Capabilities;
                 browserName = $"Remote {caps.BrowserName.ToUpperInvariant()} {caps.Version}";
             }
             return browserName;
+        }
+
+        public static long ToUnixTimeMilliseconds(this DateTimeOffset dateTimeOffset)
+        {
+            return (long)DateTimeOffset.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
         }
     }
 }

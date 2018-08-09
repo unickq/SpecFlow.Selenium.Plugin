@@ -41,6 +41,8 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
             SecretKey = SaucelabsKey;
         }
 
+        public override string Name => "SauceLabs";
+
         public override void UpdateTestResult()
         {
             var passed = TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Passed;

@@ -6,25 +6,25 @@ using TechTalk.SpecFlow.Generator;
 using TechTalk.SpecFlow.Generator.UnitTestProvider;
 using TechTalk.SpecFlow.Utils;
 
-namespace Unickq.SpecFlow.Selenium.Helpers
+namespace Unickq.SpecFlow.Selenium
 {
     public class UnickqSpecFlowSeleniumGeneratorProvider : IUnitTestGeneratorProvider
     {
-        private const string TestFixtureAttr = "NUnit.Framework.TestFixtureAttribute";
-        private const string TestFixtureSetupAttr = "NUnit.Framework.OneTimeSetUp";
-        private const string TestFixtureTearDownAttr = "NUnit.Framework.OneTimeTearDown";
+        protected const string TestFixtureAttr = "NUnit.Framework.TestFixtureAttribute";
+        protected const string TestFixtureSetupAttr = "NUnit.Framework.OneTimeSetUp";
+        protected const string TestFixtureTearDownAttr = "NUnit.Framework.OneTimeTearDown";
 
-        private const string TestSetupAttr = "NUnit.Framework.SetUpAttribute";
-        private const string TestTearDownAttr = "NUnit.Framework.TearDownAttribute";
+        protected const string TestSetupAttr = "NUnit.Framework.SetUpAttribute";
+        protected const string TestTearDownAttr = "NUnit.Framework.TearDownAttribute";
 
-        private const string TestAttr = "NUnit.Framework.TestAttribute";
-        private const string RowAttr = "NUnit.Framework.TestCaseAttribute";
-        private const string CategoryAttr = "NUnit.Framework.CategoryAttribute";
-        private const string IgnoreAttr = "NUnit.Framework.IgnoreAttribute";
-        private const string ParallelizableAttr = "NUnit.Framework.ParallelizableAttribute";
-        private const string DescriptionAttr = "NUnit.Framework.DescriptionAttribute";
+        protected const string TestAttr = "NUnit.Framework.TestAttribute";
+        protected const string RowAttr = "NUnit.Framework.TestCaseAttribute";
+        protected const string CategoryAttr = "NUnit.Framework.CategoryAttribute";
+        protected const string IgnoreAttr = "NUnit.Framework.IgnoreAttribute";
+        protected const string ParallelizableAttr = "NUnit.Framework.ParallelizableAttribute";
+        protected const string DescriptionAttr = "NUnit.Framework.DescriptionAttribute";
 
-        private readonly CodeDomHelper _codeDomHelper;
+        protected readonly CodeDomHelper _codeDomHelper;
 
         /// <summary>
         ///     List of unique field Names to Generate
@@ -203,7 +203,7 @@ namespace Unickq.SpecFlow.Selenium.Helpers
             }
         }
 
-        public void SetTestClass(TestClassGenerationContext generationContext,
+        public virtual void SetTestClass(TestClassGenerationContext generationContext,
             string featureTitle, string featureDescription)
         {
             _codeDomHelper.AddAttribute(generationContext.TestClass, TestFixtureAttr);
@@ -247,11 +247,11 @@ namespace Unickq.SpecFlow.Selenium.Helpers
             _codeDomHelper.AddAttribute(generationContext.TestCleanupMethod, TestTearDownAttr);
         }
 
-        public void SetTestInitializeMethod(TestClassGenerationContext generationContext)
+        public virtual void SetTestInitializeMethod(TestClassGenerationContext generationContext)
         {
             _codeDomHelper.AddAttribute(generationContext.TestInitializeMethod, TestSetupAttr);
             generationContext.TestClassInitializeMethod.Statements.Add(
-                GenerateCodeSnippetStatement("helper = new UnickqSpecFlowSeleniumGeneratorHelper();"));
+                GenerateCodeSnippetStatement("helper = new UnickqSpecFlowSeleniumGeneratorHelper(testRunner);"));
             generationContext.TestClassInitializeMethod.Statements.Add(
                 GenerateCodeSnippetStatement("helper.FeatureSetup();"));
             generationContext.TestInitializeMethod.Statements.Add(GenerateCodeSnippetStatement("helper.SetUp();"));
@@ -304,7 +304,7 @@ namespace Unickq.SpecFlow.Selenium.Helpers
                 {
                     generationContext.ScenarioInitializeMethod.Statements.Add(
                         GenerateCodeSnippetStatement(
-                            $"testRunner.ScenarioContext.Add(\"{Extensions.Driver}\", helper.Driver);"));
+                            $"testRunner.ScenarioContext.Add(\"{Helpers.Extensions.Driver}\", helper.Driver);"));
                 }
 
                 _scenarioSetupMethodsAdded = true;
@@ -316,7 +316,7 @@ namespace Unickq.SpecFlow.Selenium.Helpers
             return UnitTestGeneratorTraits.RowTests | UnitTestGeneratorTraits.ParallelExecution;
         }
 
-        private CodeSnippetStatement GenerateCodeSnippetStatement(string str)
+        protected CodeSnippetStatement GenerateCodeSnippetStatement(string str)
         {
             return new CodeSnippetStatement("            " + str);
         }

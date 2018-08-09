@@ -69,6 +69,8 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
             return capabilities;
         }
 
+        public override string Name => "CrossBrowserTesting";
+
         public override void UpdateTestResult()
         {
             var passed = TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Passed;

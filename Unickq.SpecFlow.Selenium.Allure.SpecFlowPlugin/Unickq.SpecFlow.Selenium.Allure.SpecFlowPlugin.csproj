@@ -1,0 +1,54 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net45</TargetFramework>
+    <PackageId>Unickq.SpecFlow.Selenium.Allure</PackageId>
+    <Version>1.2.3</Version>
+    <Authors>Nick Chursin</Authors>
+    <Description>Unickq.SpecFlow.Selenium with Allure support</Description>
+    <PackageProjectUrl>https://github.com/unickq/SpecFlow.Selenium.Plugin</PackageProjectUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/unickq/SpecFlow.Selenium.Plugin/master/logo.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/unickq/SpecFlow.Selenium.Plugin</RepositoryUrl>
+    <PackageTags>specflow selenium allure</PackageTags>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <AssemblyName>Unickq.SpecFlow.Selenium.Allure.SpecFlowPlugin</AssemblyName>
+    <RootNamespace>Unickq.SpecFlow.Selenium</RootNamespace>
+    <FileVersion>1.2.3.0</FileVersion>
+    <PackageLicenseUrl>https://github.com/unickq/SpecFlow.Selenium.Plugin/blob/master/LICENSE</PackageLicenseUrl>
+    <Copyright>Nick Chursin</Copyright>
+    <Company />
+    <PackageReleaseNotes>Ihner exception handling</PackageReleaseNotes>
+    <LangVersion>7</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'" />
+
+  <ItemGroup>
+    <PackageReference Include="Allure.Commons" Version="2.3.67.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="TechTalk.SpecFlow.Generator">
+      <HintPath>..\..\..\Users\unickq\.nuget\packages\specflow.customplugin\2.2.1\lib\net45\TechTalk.SpecFlow.Generator.dll</HintPath>
+    </Reference>
+    <Reference Include="TechTalk.SpecFlow.Utils">
+      <HintPath>..\..\..\Users\unickq\.nuget\packages\specflow.customplugin\2.2.1\lib\net45\TechTalk.SpecFlow.Utils.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="App.config.transform" Pack="true">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Unickq.SpecFlow.Selenium.Plugin\Unickq.SpecFlow.Selenium.SpecFlowPlugin.csproj" />
+  </ItemGroup>
+</Project>

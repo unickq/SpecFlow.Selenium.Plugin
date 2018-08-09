@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using OpenQA.Selenium.IE;
+using Unickq.SpecFlow.Selenium.Helpers;
 
 namespace Unickq.SpecFlow.Selenium.Local
 {

@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Net;
 using System.Security;
 using System.Text;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using Unickq.SpecFlow.Selenium.Helpers;
 
 namespace Unickq.SpecFlow.Selenium.WebDriverGrid
 {
     public abstract class PaidWebDriver : RemoteWebDriver
     {
+        public abstract string Name { get; }
         protected void Publish(string reqString)
         {
             var uri = Uri;
@@ -25,6 +28,20 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
             myHttpWebRequest.Credentials = myCredentialCache;
             myWebRequest.GetResponse().Close();
         }
+
+        public dynamic ExecuteApiCall(string uri)
+        {
+            using (var wc = new WebClient())
+            {
+                wc.Credentials = new NetworkCredential(SecretUser, SecretKey);
+                var json = wc.DownloadString(uri);
+                if (string.IsNullOrEmpty(json))
+                {
+                    return JObject.Parse(json);
+                }
+                throw new SpecFlowSeleniumException($"{uri} has no data");
+            }
+        } 
 
         public abstract void UpdateTestResult();
 

@@ -1,24 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Autofac;
 using Autofac.Configuration;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using TechTalk.SpecFlow;
+using Unickq.SpecFlow.Selenium.Helpers;
 
-namespace Unickq.SpecFlow.Selenium.Helpers
+namespace Unickq.SpecFlow.Selenium
 {
     public class UnickqSpecFlowSeleniumGeneratorHelper
     {
-        private readonly IContainer _container;
+        protected readonly IContainer Container;
+        protected readonly ITestRunner TestRunner;
+        protected string BrowserName;
         public IWebDriver Driver { get; private set; }
 
-        public UnickqSpecFlowSeleniumGeneratorHelper()
+        public UnickqSpecFlowSeleniumGeneratorHelper(ITestRunner testRunner)
         {
+            TestRunner = testRunner;
             var builder = new ContainerBuilder();
             builder.RegisterModule(new ConfigurationSettingsReader());
-            _container = builder.Build();
+            Container = builder.Build();
         }
 
         public virtual void FeatureSetup()
@@ -40,18 +43,18 @@ namespace Unickq.SpecFlow.Selenium.Helpers
                     list.Add(serviceDescription.Substring(0, serviceDescription.IndexOf(' ')));
                 }
             }
+
             return list;
         }
 
         public virtual void SetUp()
         {
-            string browserName;
             var categories = TestContext.CurrentContext.Test.Arguments.Select(args => args?.ToString()).ToList();
-            var configList = GetPossibleBrowsersFromConfig(_container);
+            var configList = GetPossibleBrowsersFromConfig(Container);
             var common = categories.Intersect(configList).ToList();
             if (common.Count == 1)
             {
-                browserName = common.First();
+                BrowserName = common.First();
             }
             else
             {
@@ -62,17 +65,17 @@ namespace Unickq.SpecFlow.Selenium.Helpers
 
             try
             {
-                Driver = _container.ResolveNamed<IWebDriver>(browserName);
+                Driver = Container.ResolveNamed<IWebDriver>(BrowserName);
             }
             catch (Autofac.Core.Registration.ComponentNotRegisteredException)
             {
                 throw new SpecFlowSeleniumException(
-                    $"Unable to register {browserName}. Please check the name of componens");
+                    $"Unable to register {BrowserName}. Please check the name of componens");
             }
             catch (Autofac.Core.DependencyResolutionException e)
             {
                 throw new SpecFlowSeleniumException(
-                    $"Unable to initialize {browserName}. Please validate configuration parameters", e?.InnerException);
+                    $"Unable to initialize {BrowserName}. Please validate configuration parameters", e?.InnerException);
             }
         }
 
@@ -83,13 +86,23 @@ namespace Unickq.SpecFlow.Selenium.Helpers
             {
                 if (Driver is WebDriverGrid.PaidWebDriver)
                 {
-                    ((WebDriverGrid.PaidWebDriver) Driver).UpdateTestResult();
+                    UpdateApi();
                 }
 
-                System.Threading.Thread.Sleep(50);
-                Driver.Quit();
-                Driver = null;
+                KillWebDriver();
             }
+        }
+
+        protected void KillWebDriver()
+        {
+            System.Threading.Thread.Sleep(50);
+            Driver.Quit();
+            Driver = null;
+        }
+
+        protected void UpdateApi()
+        {
+            ((WebDriverGrid.PaidWebDriver) Driver).UpdateTestResult();
         }
 
         public void ClearScenarioContext(ScenarioContext testRunnerScenarioContext, string key)

@@ -14,6 +14,7 @@ namespace Unickq.SpecFlow.Selenium.Example.Features
 {
     using TechTalk.SpecFlow;
     using Unickq.SpecFlow.Selenium.Helpers;
+    using Unickq.SpecFlow.Selenium;
     
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "2.2.0.0")]
@@ -32,9 +33,9 @@ namespace Unickq.SpecFlow.Selenium.Example.Features
         public virtual void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "f2", null, ProgrammingLanguage.CSharp, ((string[])(null)));
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "f2", "As Dasdsadsa\r\nsadas\r\nasd\r\nsad\r\nsa\r\ndas\r\nd\r\nas", ProgrammingLanguage.CSharp, ((string[])(null)));
             testRunner.OnFeatureStart(featureInfo);
-            helper = new UnickqSpecFlowSeleniumGeneratorHelper(testRunner);
+            helper = new UnickqSpecFlowSeleniumAllureGeneratorHelper(testRunner);
             helper.FeatureSetup();
         }
         
@@ -56,6 +57,7 @@ namespace Unickq.SpecFlow.Selenium.Example.Features
         public virtual void ScenarioTearDown()
         {
             helper.TearDown();
+            helper.ClearScenarioContext(testRunner.ScenarioContext, "author");
             testRunner.OnScenarioEnd();
         }
         
@@ -72,21 +74,42 @@ namespace Unickq.SpecFlow.Selenium.Example.Features
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Check website title")]
-        [NUnit.Framework.TestCaseAttribute("ChromeDebug", "https://translate.google.com/", "Google", null, Category="ChromeDebug", TestName="CheckWebsiteTitle with ChromeDebug and \"https://translate_google_com/\" ,\"Google\"")]
-        [NUnit.Framework.TestCaseAttribute("FirefoxDebug", "https://translate.google.com/", "Google", null, Category="FirefoxDebug", TestName="CheckWebsiteTitle with FirefoxDebug and \"https://translate_google_com/\" ,\"Google\"" +
-            "")]
-        public virtual void CheckWebsiteTitle(string browser, string uRL, string @string, string[] exampleTags)
+        [NUnit.Framework.TestCaseAttribute("ChromeDebug", "Nick", "Gwoogle", null, Category="ChromeDebug,Nick", TestName="CheckWebsiteTitle with ChromeDebug,Nick and \"Gwoogle\"")]
+        public virtual void CheckWebsiteTitle(string browser, string author, string @string, string[] exampleTags)
         {
             string[] @__tags = new string[] {
                     "Browser:ChromeDebug",
-                    "Browser:FirefoxDebug"};
+                    "author:Nick"};
             if ((exampleTags != null))
             {
                 @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
             }
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Check website title", @__tags);
             this.ScenarioSetup(scenarioInfo);
-            testRunner.Given(string.Format("I have opened {0}", uRL), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+            testRunner.ScenarioContext.Add("author", author);
+            testRunner.Given("I have opened https://translate.google.com/", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+            testRunner.Then(string.Format("the title should contain \'{0}\'", @string), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Check website title 2")]
+        [NUnit.Framework.TestCaseAttribute("ChromeDebug", "xxx", "Google", null, Category="ChromeDebug,xxx", TestName="CheckWebsiteTitle2 with ChromeDebug,xxx and \"Google\"")]
+        [NUnit.Framework.TestCaseAttribute("BrowserStack_Win10_Chrome", "xxx", "Google", null, Category="BrowserStack_Win10_Chrome,xxx", TestName="CheckWebsiteTitle2 with BrowserStack_Win10_Chrome,xxx and \"Google\"")]
+        public virtual void CheckWebsiteTitle2(string browser, string author, string @string, string[] exampleTags)
+        {
+            string[] @__tags = new string[] {
+                    "Browser:ChromeDebug",
+                    "Browser:BrowserStack_Win10_Chrome",
+                    "author:xxx"};
+            if ((exampleTags != null))
+            {
+                @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
+            }
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Check website title 2", @__tags);
+            this.ScenarioSetup(scenarioInfo);
+            testRunner.ScenarioContext.Add("author", author);
+            testRunner.Given("I have opened https://translate.google.com/", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
             testRunner.Then(string.Format("the title should contain \'{0}\'", @string), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
             this.ScenarioCleanup();
         }

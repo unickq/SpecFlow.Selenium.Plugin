@@ -34,7 +34,7 @@ namespace Unickq.SpecFlow.Selenium.Example.Features
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
             TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "F1", null, ProgrammingLanguage.CSharp, ((string[])(null)));
             testRunner.OnFeatureStart(featureInfo);
-            helper = new UnickqSpecFlowSeleniumGeneratorHelper();
+            helper = new UnickqSpecFlowSeleniumGeneratorHelper(testRunner);
             helper.FeatureSetup();
         }
         

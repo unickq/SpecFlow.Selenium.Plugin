@@ -6,11 +6,11 @@ using TechTalk.SpecFlow.Utils;
 using Unickq.SpecFlow.Selenium;
 using Unickq.SpecFlow.Selenium.Helpers;
 
-[assembly: GeneratorPlugin(typeof(GeneratorPlugin))]
+[assembly: GeneratorPlugin(typeof(UnickqSpecFlowSeleniumGeneratorPlugin))]
 
 namespace Unickq.SpecFlow.Selenium
 {
-    public class GeneratorPlugin : IGeneratorPlugin
+    public class UnickqSpecFlowSeleniumGeneratorPlugin : IGeneratorPlugin
     {
         public void Initialize(GeneratorPluginEvents generatorPluginEvents, GeneratorPluginParameters generatorPluginParameters)
         {
@@ -23,7 +23,7 @@ namespace Unickq.SpecFlow.Selenium
             var projectSettings = container.Resolve<ProjectSettings>();
             var codeDomHelper = container.Resolve<CodeDomHelper>(projectSettings.ProjectPlatformSettings.Language);
             var generatorProvider = new UnickqSpecFlowSeleniumGeneratorProvider(codeDomHelper);
-            container.RegisterInstanceAs<IUnitTestGeneratorProvider>(generatorProvider, Extensions.Name);         
+            container.RegisterInstanceAs<IUnitTestGeneratorProvider>(generatorProvider, "Unickq.SpecFlow.Selenium");         
         }
     }
 }

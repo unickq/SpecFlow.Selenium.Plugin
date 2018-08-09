@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Dynamic;
@@ -78,6 +77,8 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
 
             return capabilities;
         }
+
+        public override string Name => "BrowserStack";
 
         public override void UpdateTestResult()
         {

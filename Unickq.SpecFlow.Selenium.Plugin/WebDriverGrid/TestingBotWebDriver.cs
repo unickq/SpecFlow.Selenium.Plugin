@@ -68,6 +68,8 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
         }
 
 
+        public override string Name => "TestingBot";
+
         public override void UpdateTestResult()
         {
             var success = TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Passed;
