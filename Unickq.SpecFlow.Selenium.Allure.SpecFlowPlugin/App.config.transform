@@ -8,10 +8,10 @@
       <add key="BaseUrl" value="https://google.com" />
    </appSettings>
    <specFlow>
-      <unitTestProvider name="Unickq.SpecFlow.Selenium" />
+      <unitTestProvider name="Unickq.SpecFlow.Selenium.Allure" />
       <generator allowDebugGeneratedFiles="true" markFeaturesParallelizable="true" />
       <plugins>
-         <add name="Unickq.SpecFlow.Selenium" />
+         <add name="Unickq.SpecFlow.Selenium.Allure" />
       </plugins>
    </specFlow>
    <autofac>

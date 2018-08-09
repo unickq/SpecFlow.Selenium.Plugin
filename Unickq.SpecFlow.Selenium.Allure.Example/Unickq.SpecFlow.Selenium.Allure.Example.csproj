@@ -100,10 +100,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\..\Users\unickq\.nuget\packages\allure.commons\2.3.64.1\contentFiles\any\net45\allureConfig.json">
-      <Link>allureConfig.json</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
