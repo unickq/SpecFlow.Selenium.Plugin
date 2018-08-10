@@ -208,7 +208,7 @@ namespace Unickq.SpecFlow.Selenium
         {
             _codeDomHelper.AddAttribute(generationContext.TestClass, TestFixtureAttr);
             _codeDomHelper.AddAttribute(generationContext.TestClass, DescriptionAttr, featureTitle);
-            generationContext.Namespace.Imports.Add(new CodeNamespaceImport("Unickq.SpecFlow.Selenium.Helpers"));
+            generationContext.Namespace.Imports.Add(new CodeNamespaceImport("Unickq.SpecFlow.Selenium"));
             generationContext.TestClass.Members.Add(new CodeMemberField("UnickqSpecFlowSeleniumGeneratorHelper",
                 "helper"));
         }
