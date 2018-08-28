@@ -56,6 +56,7 @@ namespace Unickq.SpecFlow.Selenium.Example.Features
         public virtual void ScenarioTearDown()
         {
             helper.TearDown();
+            helper.ClearScenarioContext(testRunner.ScenarioContext, "Browsers");
             testRunner.OnScenarioEnd();
         }
         
@@ -77,11 +78,13 @@ namespace Unickq.SpecFlow.Selenium.Example.Features
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Check website title")]
-        [NUnit.Framework.TestCaseAttribute("ChromeDebug", "Gwoogle", null, Category="ChromeDebug", TestName="CheckWebsiteTitle with ChromeDebug and \"Gwoogle\"")]
-        public virtual void CheckWebsiteTitle(string browser, string @string, string[] exampleTags)
+        [NUnit.Framework.TestCaseAttribute("ChromeDebug", "A", "Gwoogle", null, Category="ChromeDebug,A", TestName="CheckWebsiteTitle with ChromeDebug,A and \"Gwoogle\"")]
+        public virtual void CheckWebsiteTitle(string browser, string browsers, string @string, string[] exampleTags)
         {
+            //@Browsers is not supported https://github.com/unickq/SpecFlow.Selenium.Plugin/issues/13
             string[] @__tags = new string[] {
-                    "Browser:ChromeDebug"};
+                    "Browser:ChromeDebug",
+                    "Browsers:A"};
             if ((exampleTags != null))
             {
                 @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));

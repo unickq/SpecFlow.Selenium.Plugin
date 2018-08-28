@@ -18,6 +18,7 @@ as
 #@Browser:BrowserStack_Win10_Chrome
 #@Browser:ChromeDebugs
 @Browser:ChromeDebug
+@Browsers:A
 Scenario Outline: Check website title
 	Given I have opened https://translate.google.com/ 
 	Then the title should contain '<string>'

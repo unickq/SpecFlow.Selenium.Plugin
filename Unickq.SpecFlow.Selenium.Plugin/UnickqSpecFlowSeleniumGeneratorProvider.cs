@@ -45,6 +45,7 @@ namespace Unickq.SpecFlow.Selenium
             _codeDomHelper = codeDomHelper;
         }
 
+
         public void SetTestMethodCategories(TestClassGenerationContext generationContext,
             CodeMemberMethod testMethod, IEnumerable<string> scenarioCategories)
         {
@@ -55,7 +56,6 @@ namespace Unickq.SpecFlow.Selenium
             var categoryTags = new Dictionary<string, List<string>>();
 
             var hasTags = false;
-
 
             foreach (var tag in categories.Where(cat => cat.Contains(":")).Select(cat => cat.Split(':')))
             {
@@ -120,12 +120,17 @@ namespace Unickq.SpecFlow.Selenium
                     i = i + 1;
                 }
 
+                //ToDo: Fix for 2.4 @Tag:Param
                 foreach (var field in _fieldsToGenerate)
                     if (!field.Equals("Browser", StringComparison.OrdinalIgnoreCase))
                     {
-                        testMethod.Statements.Insert(4,
+
+                        testMethod.Statements.Insert(0,
                             GenerateCodeSnippetStatement(
-                                $"testRunner.ScenarioContext.Add(\"{field}\", {field.ToLower()});"));
+                                $"//@{field} is not supported since 2.4 https://github.com/unickq/SpecFlow.Selenium.Plugin/issues/13"));
+//                        testMethod.Statements.Insert(0,
+//                            GenerateCodeSnippetStatement(
+//                                $"testRunner.ScenarioContext.Add(\"{field}\", {field.ToLower()});"));
                     }
             }
         }
