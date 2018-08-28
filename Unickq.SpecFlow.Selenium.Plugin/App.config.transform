@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 
 <configuration>
+
   <configSections>
     <section name="autofac" type="Autofac.Configuration.SectionHandler, Autofac.Configuration" />
     <section name="specFlow" type="TechTalk.SpecFlow.Configuration.ConfigurationSectionHandler, TechTalk.SpecFlow" />
@@ -11,10 +12,10 @@
   </appSettings>
 
   <specFlow>
-    <unitTestProvider name="Unickq.SpecFlow.Selenium.Allure" />
+    <unitTestProvider name="Unickq.SpecFlow.Selenium" />
     <generator allowDebugGeneratedFiles="true" markFeaturesParallelizable="true" />
     <plugins>
-      <add name="Unickq.SpecFlow.Selenium.Allure"/>
+      <add name="Unickq.SpecFlow.Selenium" />
     </plugins>
   </specFlow>
 
@@ -57,4 +58,5 @@
       </component>
     </components>
   </autofac>
+
 </configuration>

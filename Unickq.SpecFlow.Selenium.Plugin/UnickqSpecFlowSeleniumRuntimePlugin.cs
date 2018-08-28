@@ -1,7 +1,6 @@
 ﻿using TechTalk.SpecFlow.Plugins;
 using TechTalk.SpecFlow.UnitTestProvider;
 using Unickq.SpecFlow.Selenium;
-using Unickq.SpecFlow.Selenium.Helpers;
 
 [assembly: RuntimePlugin(typeof(UnickqSpecFlowSeleniumRuntimePlugin))]
 
@@ -14,10 +13,11 @@ namespace Unickq.SpecFlow.Selenium
             runtimePluginEvents.RegisterGlobalDependencies += RuntimePluginEvents_RegisterGlobalDependencies;
         }
 
-        private static void RuntimePluginEvents_RegisterGlobalDependencies(object sender, RegisterGlobalDependenciesEventArgs e)
+        private static void RuntimePluginEvents_RegisterGlobalDependencies(object sender,
+            RegisterGlobalDependenciesEventArgs e)
         {
-            var runtimeProvider = new NUnitRuntimeProvider();
-            e.ObjectContainer.RegisterInstanceAs<IUnitTestRuntimeProvider>(new NUnitRuntimeProvider(), "Unickq.SpecFlow.Selenium");
+            e.ObjectContainer.RegisterInstanceAs<IUnitTestRuntimeProvider>(new NUnitRuntimeProvider(),
+                "Unickq.SpecFlow.Selenium");
         }
     }
 }

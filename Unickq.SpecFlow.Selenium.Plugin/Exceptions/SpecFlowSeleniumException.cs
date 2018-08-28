@@ -1,7 +1,7 @@
 ﻿using System;
 using TechTalk.SpecFlow;
 
-namespace Unickq.SpecFlow.Selenium.Helpers
+namespace Unickq.SpecFlow.Selenium.Exceptions
 {
     public class SpecFlowSeleniumException : SpecFlowException
     {

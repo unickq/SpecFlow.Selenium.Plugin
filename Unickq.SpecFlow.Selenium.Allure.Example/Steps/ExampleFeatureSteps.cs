@@ -11,7 +11,7 @@ namespace Unickq.SpecFlow.Selenium.Example.Steps
     [Binding]
     public class ExampleFeatureSteps
     {
-        protected readonly ScenarioContext ScenarioContext;
+        private readonly ScenarioContext ScenarioContext;
         private IWebDriver Browser => ScenarioContext.Get<IWebDriver>("Driver");
 
         [Given(@"I have opened (.*)")]

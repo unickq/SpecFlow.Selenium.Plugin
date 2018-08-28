@@ -12,8 +12,6 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
         {
         }
 
-
-
         public RemoteWebDriver(string url, string browser, Dictionary<string, string> capabilities)
             : base(new Uri(url), GetCapabilities(browser, capabilities))
         {
@@ -34,6 +32,7 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
         private static DesiredCapabilities GetCapabilities(string browserName,
             Dictionary<string, string> additionalCapabilities = null)
         {
+
             var capabilities = new DesiredCapabilities(browserName, string.Empty, new Platform(PlatformType.Any));
             if (additionalCapabilities == null) return capabilities;
             foreach (var capability in additionalCapabilities)

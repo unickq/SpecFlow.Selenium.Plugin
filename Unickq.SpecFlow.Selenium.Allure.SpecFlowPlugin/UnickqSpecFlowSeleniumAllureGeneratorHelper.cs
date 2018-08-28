@@ -8,6 +8,7 @@ using NUnit.Framework.Interfaces;
 using OpenQA.Selenium;
 using TechTalk.SpecFlow;
 using Unickq.SpecFlow.Selenium.Allure;
+using Unickq.SpecFlow.Selenium.Exceptions;
 using Unickq.SpecFlow.Selenium.Helpers;
 using Unickq.SpecFlow.Selenium.WebDriverGrid;
 
@@ -42,14 +43,14 @@ namespace Unickq.SpecFlow.Selenium
             _allure.StartBeforeFixture(TestContainerId, Guid.NewGuid().ToString(),
                 new FixtureResult());
 
-            var sr = new StepResult
+            var step = new StepResult
             {
                 name = "Starting browser",
                 start = DateTimeOffset.Now.ToUnixTimeMilliseconds(),
                 status = Status.passed
             };
 
-            var testResult = new TestResult
+            var test = new TestResult
             {
                 uuid = TestResultId,
                 name = TestContext.CurrentContext.Test.Name,
@@ -63,80 +64,92 @@ namespace Unickq.SpecFlow.Selenium
                 }
             };
 
-
             try
             {
                 base.SetUp();
-                sr.name = $"Starting {BrowserName}";
+                step.name = $"Starting {BrowserName}";
+                step.stage = Stage.finished;
             }
-            catch (Exception e)
+            catch (SpecFlowSeleniumException e)
             {
-                sr.status = Status.broken;
-                sr.statusDetails.message = e.Message;
+                step.status = Status.failed;
+                step.statusDetails = PluginHelper.GetStatusDetails(e);
+                step.stage = Stage.interrupted;
 
-                _allure.UpdateFixture(f =>
-                {
-                    f.status = Status.failed;
-                    f.statusDetails = PluginHelper.GetStatusDetails(e);
-                });
+                test.status = Status.none;
+                test.statusDetails = PluginHelper.GetStatusDetails(e);
 
-                throw;
+                _allure.UpdateFixture(fixture => { fixture.status = Status.failed; });
+                Assert.Inconclusive(e.Message);
             }
             finally
             {
-                sr.stop = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-                sr.stage = Stage.finished;
+                test.parameters.AddRange(ParametersForBuild());
+                step.stop = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+
                 _allure.StopFixture(result =>
                 {
                     result.stage = Stage.finished;
-                    result.steps.Add(sr);
+                    result.steps.Add(step);
                 });
-                testResult.parameters.AddRange(ParametersForBuild());
-                _allure.StartTestCase(TestContainerId, testResult);
+                _allure.StartTestCase(TestContainerId, test);
             }
         }
 
         public override void TearDown()
         {
-            try
+            _allure.UpdateTestCase(test =>
             {
-                var tags = PluginHelper.GetTags(TestRunner.FeatureContext.FeatureInfo,
-                    TestRunner.ScenarioContext.ScenarioInfo);
+                var packageName = TestContext.CurrentContext.Test.ClassName;
+                var className = packageName.Substring(packageName.LastIndexOf('.') + 1);
 
-                _allure.UpdateTestCase(x =>
+                test.labels.AddRange(new List<Label>
                 {
-                    x.labels.Add(Label.ParentSuite(BrowserName));
-                    x.parameters.Add(new Parameter
+                    Label.Suite(TestRunner.FeatureContext?.FeatureInfo.Title.Trim()),
+                    Label.Feature(TestRunner.FeatureContext?.FeatureInfo.Title),
+                    Label.TestClass(className),
+                    Label.Package(packageName)
+                });
+
+                if (Driver != null)
+                {
+                    test.labels.Add(Label.ParentSuite(BrowserName));
+                    test.parameters.Add(new Parameter
                     {
                         name = "Screen",
                         value = string.Concat(Driver.Manage().Window.Size.Width, "x",
                             Driver.Manage().Window.Size.Height)
                     });
-                    var packageName = TestContext.CurrentContext.Test.ClassName;
-                    var className = packageName.Substring(packageName.LastIndexOf('.') + 1);
-                    x.labels.AddRange(new List<Label>
-                    {
-                        Label.Feature(TestRunner.FeatureContext.FeatureInfo.Title),
-                        Label.TestClass(className),
-                        Label.Package(packageName)
-                    }.Union(tags.Item1).ToList());
+                }
+                else
+                {
+                    test.labels.Add(Label.ParentSuite(test.statusDetails.message));
+                }
 
-                    x.labels.Add(Label.Suite(TestRunner.FeatureContext.FeatureInfo.Title.Trim()));
-                    x.labels.Add(Label.SubSuite(TestRunner.ScenarioContext.ScenarioInfo.Title));
-                    x.links = tags.Item2;
-                });
-            }
-            catch (Exception)
-            {
-                _allure.UpdateTestCase(x => { x.labels.Add(Label.Feature("Not run")); });
-            }
+                if (TestRunner.ScenarioContext != null)
+                {
+                    var tags = PluginHelper.GetTags(TestRunner.FeatureContext?.FeatureInfo,
+                        TestRunner.ScenarioContext?.ScenarioInfo);
+                    test.labels.Add(Label.SubSuite(TestRunner.ScenarioContext?.ScenarioInfo.Title));
+                    test.labels.AddRange(tags.Item1);
+                    test.links = tags.Item2;
+                }
+            });
+
 
             if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Passed)
             {
                 if (Driver != null)
                 {
-                    var screen = ((ITakesScreenshot) Driver).GetScreenshot();
-                    _allure.AddAttachment("Screenshot", "image/png", screen.AsByteArray);
+                    try
+                    {
+                        var screen = ((ITakesScreenshot) Driver).GetScreenshot();
+                        _allure.AddAttachment("ScreenShot", "image/png", screen.AsByteArray);
+                    }
+                    catch (Exception e)
+                    {
+                        _allure.UpdateTestCase(test => test.parameters.Add(new Parameter {name = "ScreenShotError", value = e.Message}));
+                    }    
                 }
             }
             else
@@ -155,10 +168,8 @@ namespace Unickq.SpecFlow.Selenium
                 _allure.WrapInStep(KillWebDriver, $"Killing {BrowserName}");
             }
 
-            _allure.StopFixture(result => { result.stage = Stage.finished; });
-
-            _allure.UpdateTestContainer(TestContainerId,
-                x => x.stop = DateTimeOffset.Now.ToUnixTimeMilliseconds());
+            _allure.StopFixture(fixture => { fixture.stage = Stage.finished; });
+            _allure.UpdateTestContainer(TestContainerId, testContainer => testContainer.stop = DateTimeOffset.Now.ToUnixTimeMilliseconds());
             _allure.StopTestContainer(TestContainerId);
             _allure.WriteTestContainer(TestContainerId);
         }
@@ -173,39 +184,44 @@ namespace Unickq.SpecFlow.Selenium
             var list = new List<Parameter>();
             try
             {
-                if (Driver is BrowserStackWebDriver bs)
+                if (Driver != null)
                 {
-                    var apiResponce =
-                        bs.ExecuteApiCall($"https://api.browserstack.com/automate/sessions/{bs.SessionId}.json");
-                    if (apiResponce != null)
+                    if (Driver is BrowserStackWebDriver bs)
                     {
-                        list.Add(new Parameter
+                        var apiResponse =
+                            bs.ExecuteApiCall($"https://api.browserstack.com/automate/sessions/{bs.SessionId}.json");
+                        if (apiResponse != null)
                         {
-                            name = "Session",
-                            value = apiResponce.automation_session.public_url
-                        });
-                        list.Add(new Parameter
-                        {
-                            name = "OS",
-                            value = string.Concat(apiResponce.automation_session.os, " ",
-                                apiResponce.automation_session.os_version)
-                        });
+                            list.Add(new Parameter
+                            {
+                                name = "Session",
+                                value = apiResponse.automation_session.public_url
+                            });
+                            list.Add(new Parameter
+                            {
+                                name = "OS",
+                                value = string.Concat(apiResponse.automation_session.os, " ",
+                                    apiResponse.automation_session.os_version)
+                            });
+                        }
                     }
+
+                    var caps = ((OpenQA.Selenium.Remote.RemoteWebDriver) Driver).Capabilities;
+                    list.Add(new Parameter
+                    {
+                        name = "Browser",
+                        value = string.Concat(caps.GetCapability("browserName"), " ", caps.GetCapability("version"))
+                    });
                 }
             }
             catch (Exception e)
             {
-                Debug.WriteLine(e.Message);
+                list.Add(new Parameter
+                {
+                    name = e.GetType().Name,
+                    value = e.Message
+                });
             }
-
-            var caps = ((OpenQA.Selenium.Remote.RemoteWebDriver) Driver).Capabilities;
-
-            list.Add(new Parameter
-            {
-                name = "Browser",
-                value = string.Concat(caps.GetCapability("browserName"), " ", caps.GetCapability("version"))
-            });
-
             return list;
         }
     }

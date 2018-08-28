@@ -221,7 +221,8 @@ namespace Unickq.SpecFlow.Selenium
 
         public void SetTestClassCleanupMethod(TestClassGenerationContext generationContext)
         {
-            generationContext.TestClassCleanupMethod.Statements.Insert(0, GenerateCodeSnippetStatement("helper.FeatureTearDown();"));
+            generationContext.TestClassCleanupMethod.Statements.Insert(0,
+                GenerateCodeSnippetStatement("helper.FeatureTearDown();"));
             _codeDomHelper.AddAttribute(generationContext.TestClassCleanupMethod, TestFixtureTearDownAttr);
         }
 
@@ -239,7 +240,6 @@ namespace Unickq.SpecFlow.Selenium
             TestClassGenerationContext generationContext)
         {
             _codeDomHelper.AddAttribute(generationContext.TestClassInitializeMethod, TestFixtureSetupAttr);
-    
         }
 
         public void SetTestCleanupMethod(TestClassGenerationContext generationContext)
@@ -291,7 +291,8 @@ namespace Unickq.SpecFlow.Selenium
                 if (!field.Equals("Browser", StringComparison.OrdinalIgnoreCase))
                 {
                     generationContext.TestCleanupMethod.Statements.Add(
-                        GenerateCodeSnippetStatement($"helper.ClearScenarioContext(testRunner.ScenarioContext, \"{field}\");"));
+                        GenerateCodeSnippetStatement(
+                            $"helper.ClearScenarioContext(testRunner.ScenarioContext, \"{field}\");"));
                 }
 
             generationContext.TestCleanupMethod.Statements.Add(

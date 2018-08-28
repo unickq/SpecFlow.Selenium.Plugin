@@ -12,7 +12,7 @@ namespace Unickq.SpecFlow.Selenium.Allure
 {
     public static class PluginHelper
     {
-        static ScenarioInfo emptyScenarioInfo = new ScenarioInfo(string.Empty);
+//        static ScenarioInfo emptyScenarioInfo = new ScenarioInfo().;
 
         static FeatureInfo emptyFeatureInfo = new FeatureInfo(
             CultureInfo.CurrentCulture, string.Empty, string.Empty);

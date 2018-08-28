@@ -5,6 +5,7 @@ using Autofac.Configuration;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using TechTalk.SpecFlow;
+using Unickq.SpecFlow.Selenium.Exceptions;
 using Unickq.SpecFlow.Selenium.Helpers;
 
 namespace Unickq.SpecFlow.Selenium
@@ -58,9 +59,8 @@ namespace Unickq.SpecFlow.Selenium
             }
             else
             {
-                Assert.Ignore("Unable to register browser. Please check @Browser tag" +
-                              $"\n    Possible values are:\n      {string.Join(" ", configList)}\n");
-                throw new SpecFlowSeleniumException(null);
+                throw new UnableToInitializeBrowserException("Unable to register browser. Please check @Browser tag" +
+                                                    $"\n    Possible values are:\n      {string.Join(" ", configList)}\n");
             }
 
             try
@@ -70,12 +70,12 @@ namespace Unickq.SpecFlow.Selenium
             catch (Autofac.Core.Registration.ComponentNotRegisteredException)
             {
                 throw new SpecFlowSeleniumException(
-                    $"Unable to register {BrowserName}. Please check the name of componens");
+                    $"Unable to register {BrowserName}.");
             }
             catch (Autofac.Core.DependencyResolutionException e)
             {
-                throw new SpecFlowSeleniumException(
-                    $"Unable to initialize {BrowserName}. Please validate configuration parameters", e?.InnerException);
+                throw new BrowserConfigurationException(
+                    $"Unable to initialize {BrowserName}. Please validate configuration parameters\n{e.InnerException?.Message}");
             }
         }
 

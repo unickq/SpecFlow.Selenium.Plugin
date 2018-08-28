@@ -1,6 +1,6 @@
 ﻿Feature: F1
 
-@GoogleTranslate:DE
+#@GoogleTranslate:DE
 #@Lang:UA
 #@Browser:ChromeDebug
 @Browser:BrowserStack_Win10_Chrome

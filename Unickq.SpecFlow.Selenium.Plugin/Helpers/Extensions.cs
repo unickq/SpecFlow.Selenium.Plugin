@@ -34,7 +34,7 @@ namespace Unickq.SpecFlow.Selenium.Helpers
             if (webDriver != null)
             {
                 var caps = webDriver.Capabilities;
-                browserName = $"Remote {caps.BrowserName.ToUpperInvariant()} {caps.Version}";
+                browserName = $"Remote {caps.GetCapability("browserName")} {caps.GetCapability("version")}";
             }
             return browserName;
         }
