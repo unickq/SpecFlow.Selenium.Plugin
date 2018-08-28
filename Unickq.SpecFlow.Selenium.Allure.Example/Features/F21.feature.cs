@@ -14,6 +14,7 @@ namespace Unickq.SpecFlow.Selenium.Example.Features
 {
     using TechTalk.SpecFlow;
     using Unickq.SpecFlow.Selenium;
+    using System.Collections.Concurrent;
     
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "2.4.0.0")]
@@ -27,6 +28,8 @@ namespace Unickq.SpecFlow.Selenium.Example.Features
         private TechTalk.SpecFlow.ITestRunner testRunner;
         
         private UnickqSpecFlowSeleniumGeneratorHelper helper;
+        
+        private ConcurrentDictionary<string, string> tagsDict;
         
         [NUnit.Framework.OneTimeSetUp()]
         public virtual void FeatureSetup()
@@ -49,6 +52,7 @@ namespace Unickq.SpecFlow.Selenium.Example.Features
         [NUnit.Framework.SetUpAttribute()]
         public virtual void TestInitialize()
         {
+            tagsDict = new ConcurrentDictionary<string, string>();
             helper.SetUp();
         }
         
@@ -56,7 +60,7 @@ namespace Unickq.SpecFlow.Selenium.Example.Features
         public virtual void ScenarioTearDown()
         {
             helper.TearDown();
-            helper.ClearScenarioContext(testRunner.ScenarioContext, "Browsers");
+            helper.ClearScenarioContext(testRunner.ScenarioContext, "GoogleTranslate");
             testRunner.OnScenarioEnd();
         }
         
@@ -64,6 +68,7 @@ namespace Unickq.SpecFlow.Selenium.Example.Features
         {
             testRunner.OnScenarioInitialize(scenarioInfo);
             testRunner.ScenarioContext.Add("Driver", helper.Driver);
+            foreach (var tag in tagsDict) testRunner.ScenarioContext.Add(tag.Key, tag.Value);
         }
         
         public virtual void ScenarioStart()
@@ -76,15 +81,15 @@ namespace Unickq.SpecFlow.Selenium.Example.Features
             testRunner.CollectScenarioErrors();
         }
         
-        [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("Check website title")]
-        [NUnit.Framework.TestCaseAttribute("ChromeDebug", "A", "Gwoogle", null, Category="ChromeDebug,A", TestName="CheckWebsiteTitle with ChromeDebug,A and \"Gwoogle\"")]
-        public virtual void CheckWebsiteTitle(string browser, string browsers, string @string, string[] exampleTags)
+        [NUnit.Framework.TestCaseAttribute("ChromeDebug", "DE", "Gwoogle", null, Category="ChromeDebug,DE", TestName="CheckWebsiteTitle with ChromeDebug,DE and \"Gwoogle\"")]
+        [NUnit.Framework.TestCaseAttribute("ChromeDebug", "UA", "Gwoogle", null, Category="ChromeDebug,UA", TestName="CheckWebsiteTitle with ChromeDebug,UA and \"Gwoogle\"")]
+        public virtual void CheckWebsiteTitle(string browser, string googletranslate, string @string, string[] exampleTags)
         {
-            //@Browsers is not supported https://github.com/unickq/SpecFlow.Selenium.Plugin/issues/13
+            tagsDict.TryAdd("GoogleTranslate", googletranslate);
             string[] @__tags = new string[] {
                     "Browser:ChromeDebug",
-                    "Browsers:A"};
+                    "GoogleTranslate:DE",
+                    "GoogleTranslate:UA"};
             if ((exampleTags != null))
             {
                 @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));

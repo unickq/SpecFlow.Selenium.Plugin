@@ -86,6 +86,11 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="Features\F1.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>F1.feature</DependentUpon>
+    </Compile>
     <Compile Include="Features\F21.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

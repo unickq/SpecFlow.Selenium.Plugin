@@ -14,6 +14,7 @@ namespace Unickq.SpecFlow.Selenium.Example.Features
 {
     using TechTalk.SpecFlow;
     using Unickq.SpecFlow.Selenium;
+    using System.Collections.Concurrent;
     
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "2.4.0.0")]
@@ -27,6 +28,8 @@ namespace Unickq.SpecFlow.Selenium.Example.Features
         private TechTalk.SpecFlow.ITestRunner testRunner;
         
         private UnickqSpecFlowSeleniumGeneratorHelper helper;
+        
+        private System.Collections.Concurrent.ConcurrentDictionary<string, string> tagsDict;
         
         [NUnit.Framework.OneTimeSetUp()]
         public virtual void FeatureSetup()
@@ -49,6 +52,7 @@ namespace Unickq.SpecFlow.Selenium.Example.Features
         [NUnit.Framework.SetUpAttribute()]
         public virtual void TestInitialize()
         {
+            tagsDict = new ConcurrentDictionary<string, string>();
             helper.SetUp();
         }
         
@@ -63,6 +67,7 @@ namespace Unickq.SpecFlow.Selenium.Example.Features
         {
             testRunner.OnScenarioInitialize(scenarioInfo);
             testRunner.ScenarioContext.Add("Driver", helper.Driver);
+            foreach (var tag in tagsDict) testRunner.ScenarioContext.Add(tag.Key, tag.Value);
         }
         
         public virtual void ScenarioStart()
@@ -75,8 +80,6 @@ namespace Unickq.SpecFlow.Selenium.Example.Features
             testRunner.CollectScenarioErrors();
         }
         
-        [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("Check website title")]
         [NUnit.Framework.TestCaseAttribute("BrowserStack_Win10_Chrome", "https://translate.google.com/", "Google", null, Category="BrowserStack_Win10_Chrome", TestName="CheckWebsiteTitle with BrowserStack_Win10_Chrome and \"https://translate_google_co" +
             "m/\" ,\"Google\"")]
         [NUnit.Framework.TestCaseAttribute("BrowserStack_Win10_Firefox", "https://translate.google.com/", "Google", null, Category="BrowserStack_Win10_Firefox", TestName="CheckWebsiteTitle with BrowserStack_Win10_Firefox and \"https://translate_google_c" +

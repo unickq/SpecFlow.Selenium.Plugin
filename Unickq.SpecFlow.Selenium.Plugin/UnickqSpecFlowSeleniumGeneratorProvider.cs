@@ -24,25 +24,19 @@ namespace Unickq.SpecFlow.Selenium
         protected const string ParallelizableAttr = "NUnit.Framework.ParallelizableAttribute";
         protected const string DescriptionAttr = "NUnit.Framework.DescriptionAttribute";
 
-        protected readonly CodeDomHelper _codeDomHelper;
+        protected readonly CodeDomHelper CodeDomHelper;
 
         /// <summary>
         ///     List of unique field Names to Generate
         /// </summary>
         private readonly HashSet<string> _fieldsToGenerate = new HashSet<string>();
 
-        /// <summary>
-        ///     Initialization Methods to Generate. MethodName => List of Argument Names
-        /// </summary>
-        private readonly Dictionary<string, List<string>> _initializeMethodsToGenerate =
-            new Dictionary<string, List<string>>();
-
         private bool _hasBrowser;
         private bool _scenarioSetupMethodsAdded;
 
         public UnickqSpecFlowSeleniumGeneratorProvider(CodeDomHelper codeDomHelper)
         {
-            _codeDomHelper = codeDomHelper;
+            CodeDomHelper = codeDomHelper;
         }
 
 
@@ -50,7 +44,7 @@ namespace Unickq.SpecFlow.Selenium
             CodeMemberMethod testMethod, IEnumerable<string> scenarioCategories)
         {
             var categories = scenarioCategories as IList<string> ?? scenarioCategories.ToList();
-            _codeDomHelper.AddAttributeForEachValue(testMethod, CategoryAttr,
+            CodeDomHelper.AddAttributeForEachValue(testMethod, CategoryAttr,
                 categories.Where(cat => !cat.StartsWith("Browser:") && !cat.Contains(":")));
 
             var categoryTags = new Dictionary<string, List<string>>();
@@ -101,7 +95,7 @@ namespace Unickq.SpecFlow.Selenium
                             })
                             .ToArray();
 
-                    _codeDomHelper.AddAttribute(testMethod, RowAttr, withTagArgs);
+                    CodeDomHelper.AddAttribute(testMethod, RowAttr, withTagArgs);
                 }
 
                 var i = 0;
@@ -126,8 +120,8 @@ namespace Unickq.SpecFlow.Selenium
                     {
 
                         testMethod.Statements.Insert(0,
-                            GenerateCodeSnippetStatement(
-                                $"//@{field} is not supported since 2.4 https://github.com/unickq/SpecFlow.Selenium.Plugin/issues/13"));
+                            GenerateCodeSnippetStatement($"tagsDict.TryAdd(\"{field}\", {field.ToLower()});"));
+//        private ConcurrentDictionary<string, string> tagsDict = new ConcurrentDictionary<string, string>();
 //                        testMethod.Statements.Insert(0,
 //                            GenerateCodeSnippetStatement(
 //                                $"testRunner.ScenarioContext.Add(\"{field}\", {field.ToLower()});"));
@@ -199,86 +193,88 @@ namespace Unickq.SpecFlow.Selenium
                         })
                         .ToArray();
 
-                    _codeDomHelper.AddAttribute(testMethod, RowAttr, withTagArgs);
+                    CodeDomHelper.AddAttribute(testMethod, RowAttr, withTagArgs);
                 }
             }
             else
             {
-                _codeDomHelper.AddAttribute(testMethod, RowAttr, args.ToArray());
+                CodeDomHelper.AddAttribute(testMethod, RowAttr, args.ToArray());
             }
         }
 
         public virtual void SetTestClass(TestClassGenerationContext generationContext,
             string featureTitle, string featureDescription)
         {
-            _codeDomHelper.AddAttribute(generationContext.TestClass, TestFixtureAttr);
-            _codeDomHelper.AddAttribute(generationContext.TestClass, DescriptionAttr, featureTitle);
+            CodeDomHelper.AddAttribute(generationContext.TestClass, TestFixtureAttr);
+            CodeDomHelper.AddAttribute(generationContext.TestClass, DescriptionAttr, featureTitle);
             generationContext.Namespace.Imports.Add(new CodeNamespaceImport("Unickq.SpecFlow.Selenium"));
-            generationContext.TestClass.Members.Add(new CodeMemberField("UnickqSpecFlowSeleniumGeneratorHelper",
-                "helper"));
+            generationContext.Namespace.Imports.Add(new CodeNamespaceImport("System.Collections.Concurrent"));
+            generationContext.TestClass.Members.Add(new CodeMemberField("UnickqSpecFlowSeleniumGeneratorHelper", "helper"));
+            generationContext.TestClass.Members.Add(new CodeMemberField("ConcurrentDictionary<string, string>", "tagsDict"));
         }
 
         public void SetTestClassCategories(TestClassGenerationContext generationContext,
             IEnumerable<string> featureCategories)
         {
-            _codeDomHelper.AddAttributeForEachValue(generationContext.TestClass, CategoryAttr, featureCategories);
+            CodeDomHelper.AddAttributeForEachValue(generationContext.TestClass, CategoryAttr, featureCategories);
         }
 
         public void SetTestClassCleanupMethod(TestClassGenerationContext generationContext)
         {
             generationContext.TestClassCleanupMethod.Statements.Insert(0,
                 GenerateCodeSnippetStatement("helper.FeatureTearDown();"));
-            _codeDomHelper.AddAttribute(generationContext.TestClassCleanupMethod, TestFixtureTearDownAttr);
+            CodeDomHelper.AddAttribute(generationContext.TestClassCleanupMethod, TestFixtureTearDownAttr);
         }
 
         public void SetTestClassIgnore(TestClassGenerationContext generationContext)
         {
-            _codeDomHelper.AddAttribute(generationContext.TestClass, IgnoreAttr, "Test class is ignored\n");
+            CodeDomHelper.AddAttribute(generationContext.TestClass, IgnoreAttr, "Test class is ignored\n");
         }
 
         public void SetTestClassParallelize(TestClassGenerationContext generationContext)
         {
-            _codeDomHelper.AddAttribute(generationContext.TestClass, ParallelizableAttr);
+            CodeDomHelper.AddAttribute(generationContext.TestClass, ParallelizableAttr);
         }
 
         public void SetTestClassInitializeMethod(
             TestClassGenerationContext generationContext)
         {
-            _codeDomHelper.AddAttribute(generationContext.TestClassInitializeMethod, TestFixtureSetupAttr);
+            CodeDomHelper.AddAttribute(generationContext.TestClassInitializeMethod, TestFixtureSetupAttr);
+            generationContext.TestInitializeMethod.Statements.Add(GenerateCodeSnippetStatement("tagsDict = new ConcurrentDictionary<string, string>();"));
         }
 
         public void SetTestCleanupMethod(TestClassGenerationContext generationContext)
         {
-            _codeDomHelper.AddAttribute(generationContext.TestCleanupMethod, TestTearDownAttr);
+            CodeDomHelper.AddAttribute(generationContext.TestCleanupMethod, TestTearDownAttr);
         }
 
         public virtual void SetTestInitializeMethod(TestClassGenerationContext generationContext)
         {
-            _codeDomHelper.AddAttribute(generationContext.TestInitializeMethod, TestSetupAttr);
+            CodeDomHelper.AddAttribute(generationContext.TestInitializeMethod, TestSetupAttr);
             generationContext.TestClassInitializeMethod.Statements.Add(
                 GenerateCodeSnippetStatement("helper = new UnickqSpecFlowSeleniumGeneratorHelper(testRunner);"));
             generationContext.TestClassInitializeMethod.Statements.Add(
                 GenerateCodeSnippetStatement("helper.FeatureSetup();"));
+           
             generationContext.TestInitializeMethod.Statements.Add(GenerateCodeSnippetStatement("helper.SetUp();"));
         }
 
         public void SetTestMethod(TestClassGenerationContext generationContext,
             CodeMemberMethod testMethod, string scenarioTitle)
         {
-            _codeDomHelper.AddAttribute(testMethod, TestAttr);
-            _codeDomHelper.AddAttribute(testMethod, DescriptionAttr, scenarioTitle);
+            CodeDomHelper.AddAttribute(testMethod, TestAttr);
+            CodeDomHelper.AddAttribute(testMethod, DescriptionAttr, scenarioTitle);
         }
 
         public void SetTestMethodIgnore(TestClassGenerationContext generationContext,
             CodeMemberMethod testMethod)
         {
-            _codeDomHelper.AddAttribute(testMethod, IgnoreAttr, "Test scenario is ignored");
+            CodeDomHelper.AddAttribute(testMethod, IgnoreAttr, "Test scenario is ignored");
         }
 
         public void SetRowTest(TestClassGenerationContext generationContext,
             CodeMemberMethod testMethod, string scenarioTitle)
         {
-            SetTestMethod(generationContext, testMethod, scenarioTitle);
         }
 
         public void SetTestMethodAsRow(TestClassGenerationContext generationContext,
@@ -312,6 +308,8 @@ namespace Unickq.SpecFlow.Selenium
                         GenerateCodeSnippetStatement(
                             $"testRunner.ScenarioContext.Add(\"{Helpers.Extensions.Driver}\", helper.Driver);"));
                 }
+                generationContext.ScenarioInitializeMethod.Statements.Add(
+                    GenerateCodeSnippetStatement("foreach (var tag in tagsDict) testRunner.ScenarioContext.Add(tag.Key, tag.Value);"));
 
                 _scenarioSetupMethodsAdded = true;
             }

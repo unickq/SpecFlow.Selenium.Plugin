@@ -8,7 +8,7 @@ namespace Unickq.SpecFlow.Selenium
     {
         public override void SetTestInitializeMethod(TestClassGenerationContext generationContext)
         {
-            _codeDomHelper.AddAttribute(generationContext.TestInitializeMethod, TestSetupAttr);
+            CodeDomHelper.AddAttribute(generationContext.TestInitializeMethod, TestSetupAttr);
             generationContext.Namespace.Imports.Add(new CodeNamespaceImport("Unickq.SpecFlow.Selenium"));
 
             generationContext.TestClassInitializeMethod.Statements.Add(

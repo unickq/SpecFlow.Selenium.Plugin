@@ -18,25 +18,11 @@ as
 #@Browser:BrowserStack_Win10_Chrome
 #@Browser:ChromeDebugs
 @Browser:ChromeDebug
-@Browsers:A
+@GoogleTranslate:DE
+@GoogleTranslate:UA
 Scenario Outline: Check website title
 	Given I have opened https://translate.google.com/ 
 	Then the title should contain '<string>'
-Examples: 
-						| string |
-						| Gwoogle |
-
-#
-#Scenario: Check website plain
-#	Given I have opened https://translate.google.com/ 
-#	Then the title should contain 'google'
-#
-#@Browser:ChromeDebug
-#@Browser:BrowserStack_Win10_Chrome
-##@author:xxx
-#Scenario Outline: Check website title 2
-#	Given I have opened https://translate.google.com/ 
-#	Then the title should contain '<string>'
-#Examples: 
-#						| string |
-#| Google |
+	Examples: 
+	| string  |
+	| Gwoogle |
