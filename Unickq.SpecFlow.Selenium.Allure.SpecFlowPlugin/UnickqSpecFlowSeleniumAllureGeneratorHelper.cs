@@ -114,12 +114,19 @@ namespace Unickq.SpecFlow.Selenium
                 if (Driver != null)
                 {
                     test.labels.Add(Label.ParentSuite(BrowserName));
-                    test.parameters.Add(new Parameter
+                    try
                     {
-                        name = "Screen",
-                        value = string.Concat(Driver.Manage().Window.Size.Width, "x",
-                            Driver.Manage().Window.Size.Height)
-                    });
+                        test.parameters.Add(new Parameter
+                        {
+                            name = "Screen",
+                            value = string.Concat(Driver.Manage().Window.Size.Width, "x",
+                                Driver.Manage().Window.Size.Height)
+                        });
+                    }
+                    catch (Exception)
+                    {
+                        //
+                    }                  
                 }
                 else
                 {
