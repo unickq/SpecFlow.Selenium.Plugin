@@ -13,21 +13,27 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
     public class CrossBrowserTestingWebDriver : PaidWebDriver
     {
         private const string ApiUrl = "http://hub.crossbrowsertesting.com:80/wd/hub";
-        protected override Uri Uri => new Uri("https://crossbrowsertesting.com/api/v3/selenium");
 
         private static readonly string CbtUser = ConfigurationManager.AppSettings["cbt.user"];
         private static readonly string CbtKey = ConfigurationManager.AppSettings["cbt.key"];
 
-        private static readonly string Name = ConfigurationManager.AppSettings["cbt.name"];
-        private static readonly string Resolution = ConfigurationManager.AppSettings["cbt.screen_resolution"];
-        private static string Build = ConfigurationManager.AppSettings["cbt.build"];
-        private static readonly string Browser = ConfigurationManager.AppSettings["cbt.browser_api_name"];
-        private static readonly string Os = ConfigurationManager.AppSettings["cbt.os_api_name"];
-        private static readonly string RecordVideo = ConfigurationManager.AppSettings["cbt.record_video"];
-
         public CrossBrowserTestingWebDriver(string browser, Dictionary<string, string> capabilities)
             : base(ApiUrl, browser, Auth(CbtUser, CbtKey, capabilities))
-        { 
+        {
+            SecretUser = CbtUser;
+            SecretKey = CbtKey;
+        }
+
+        public CrossBrowserTestingWebDriver(string cbtUser, string cbtKey, Dictionary<string, string> capabilities)
+            : base(ApiUrl, Auth(cbtUser, cbtKey, capabilities))
+        {
+            SecretUser = cbtUser;
+            SecretKey = cbtKey;
+        }
+
+        public CrossBrowserTestingWebDriver(Dictionary<string, string> capabilities)
+            : base(ApiUrl, Auth(CbtUser, CbtKey, capabilities))
+        {
             SecretUser = CbtUser;
             SecretKey = CbtKey;
         }
@@ -40,6 +46,10 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
             SecretKey = CbtKey;
         }
 
+        protected override Uri Uri => new Uri("https://crossbrowsertesting.com/api/v3/selenium");
+
+        public override string Name => "CrossBrowserTesting";
+
         private static Dictionary<string, string> Auth(string cbtUser, string cbtKey,
             Dictionary<string, string> capabilities)
         {
@@ -48,18 +58,16 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
             capabilities.Add("username", cbtUser);
             capabilities.Add("password", cbtKey);
 
-            capabilities.Add("name",
-                !string.IsNullOrEmpty(Name)
-                    ? Name
-                    : FixedTestName);
+            foreach (var key in ConfigurationManager.AppSettings.AllKeys)
+                if (key.StartsWith("cbt.", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    var capabilityName = key.Replace("cbt.", string.Empty);
+                    var capabilityValue = ConfigurationManager.AppSettings[key];
+                    capabilities.Add(capabilityName, NameTransform(capabilityValue));
+                }
 
-            Build = BuildTransform(Build);
-
-            if (!string.IsNullOrEmpty(Resolution)) capabilities.Add("screen_resolution", Resolution);
-            if (!string.IsNullOrEmpty(Build)) capabilities.Add("build", Build);
-            if (!string.IsNullOrEmpty(Browser)) capabilities.Add("browser_api_name", Browser);
-            if (!string.IsNullOrEmpty(Os)) capabilities.Add("os_api_name", Os);
-            if (!string.IsNullOrEmpty(RecordVideo)) capabilities.Add("record_video", RecordVideo);
+            if (!capabilities.ContainsKey("name"))
+                capabilities.Add("name", FixedTestName);
             return capabilities;
         }
 
@@ -70,15 +78,16 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
             if (passed) result = "pass";
             var cbtApi = new CbtApi(Uri.AbsoluteUri, CbtUser, CbtKey);
             cbtApi.SetScore(SessionId.ToString(), result);
-            cbtApi.SetDescription(SessionId.ToString(), cbtApi.TakeSnapshot(SessionId.ToString()), TestContext.CurrentContext.Result.Message);
+            cbtApi.SetDescription(SessionId.ToString(), cbtApi.TakeSnapshot(SessionId.ToString()),
+                TestContext.CurrentContext.Result.Message);
         }
     }
 
     public class CbtApi
     {
-        private readonly string _cbtUser;
-        private readonly string _cbtKey;
         private readonly string _cbtApiUrl;
+        private readonly string _cbtKey;
+        private readonly string _cbtUser;
 
         public CbtApi(string cbtApiUrl, string cbtUser, string cbtKey)
         {
@@ -97,6 +106,7 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
             request.UserAgent = "HttpWebRequest";
             return request;
         }
+
         public string TakeSnapshot(string sessionId)
         {
             var request = GetCommonRequest(_cbtApiUrl + "/" + sessionId + "/snapshots", "POST");
@@ -123,6 +133,7 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
             stream.Close();
             request.GetResponse().Close();
         }
+
         public void SetScore(string sessionId, string score)
         {
             var encoding = new ASCIIEncoding();

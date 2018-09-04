@@ -29,15 +29,15 @@ namespace Unickq.SpecFlow.Selenium.Example.Features
         
         private UnickqSpecFlowSeleniumGeneratorHelper helper;
         
-        private System.Collections.Concurrent.ConcurrentDictionary<string, string> tagsDict;
+        private ConcurrentDictionary<string, string> tagsDict;
         
         [NUnit.Framework.OneTimeSetUp()]
         public virtual void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "f2", null, ProgrammingLanguage.CSharp, ((string[])(null)));
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "f2", "As Dasdsadsa\r\nsadas\r\nasd\r\nsad\r\nsa\r\ndas\r\nd\r\nas", ProgrammingLanguage.CSharp, ((string[])(null)));
             testRunner.OnFeatureStart(featureInfo);
-            helper = new UnickqSpecFlowSeleniumGeneratorHelper(testRunner);
+            helper = new UnickqSpecFlowSeleniumAllureGeneratorHelper(testRunner);
             helper.FeatureSetup();
         }
         
@@ -60,6 +60,7 @@ namespace Unickq.SpecFlow.Selenium.Example.Features
         public virtual void ScenarioTearDown()
         {
             helper.TearDown();
+            helper.ClearScenarioContext(testRunner.ScenarioContext, "GoogleTranslate");
             testRunner.OnScenarioEnd();
         }
         
@@ -80,14 +81,15 @@ namespace Unickq.SpecFlow.Selenium.Example.Features
             testRunner.CollectScenarioErrors();
         }
         
-        [NUnit.Framework.TestCaseAttribute("ChromeDebug", "https://translate.google.com/", "Google", null, Category="ChromeDebug", TestName="CheckWebsiteTitle with ChromeDebug and \"https://translate_google_com/\" ,\"Google\"")]
-        [NUnit.Framework.TestCaseAttribute("FirefoxDebug", "https://translate.google.com/", "Google", null, Category="FirefoxDebug", TestName="CheckWebsiteTitle with FirefoxDebug and \"https://translate_google_com/\" ,\"Google\"" +
-            "")]
-        public virtual void CheckWebsiteTitle(string browser, string uRL, string @string, string[] exampleTags)
+        [NUnit.Framework.TestCaseAttribute("ChromeDebug", "DE", "Gwoogle", null, Category="ChromeDebug,DE", TestName="CheckWebsiteTitle with ChromeDebug,DE and \"Gwoogle\"")]
+        [NUnit.Framework.TestCaseAttribute("ChromeDebug", "UA", "Gwoogle", null, Category="ChromeDebug,UA", TestName="CheckWebsiteTitle with ChromeDebug,UA and \"Gwoogle\"")]
+        public virtual void CheckWebsiteTitle(string browser, string googletranslate, string @string, string[] exampleTags)
         {
+            tagsDict.TryAdd("GoogleTranslate", googletranslate);
             string[] @__tags = new string[] {
                     "Browser:ChromeDebug",
-                    "Browser:FirefoxDebug"};
+                    "GoogleTranslate:DE",
+                    "GoogleTranslate:UA"};
             if ((exampleTags != null))
             {
                 @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
@@ -95,7 +97,7 @@ namespace Unickq.SpecFlow.Selenium.Example.Features
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Check website title", null, @__tags);
             this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-            testRunner.Given(string.Format("I have opened {0}", uRL), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+            testRunner.Given("I have opened https://translate.google.com/", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
             testRunner.Then(string.Format("the title should contain \'{0}\'", @string), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
             this.ScenarioCleanup();
         }

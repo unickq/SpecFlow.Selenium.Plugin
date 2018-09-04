@@ -20,9 +20,9 @@ namespace Unickq.SpecFlow.Selenium.Example.Features
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "2.4.0.0")]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [NUnit.Framework.TestFixtureAttribute()]
-    [NUnit.Framework.DescriptionAttribute("f2")]
+    [NUnit.Framework.DescriptionAttribute("F1")]
     [NUnit.Framework.ParallelizableAttribute()]
-    public partial class F2Feature
+    public partial class F1Feature
     {
         
         private TechTalk.SpecFlow.ITestRunner testRunner;
@@ -35,9 +35,9 @@ namespace Unickq.SpecFlow.Selenium.Example.Features
         public virtual void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "f2", null, ProgrammingLanguage.CSharp, ((string[])(null)));
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "F1", null, ProgrammingLanguage.CSharp, ((string[])(null)));
             testRunner.OnFeatureStart(featureInfo);
-            helper = new UnickqSpecFlowSeleniumGeneratorHelper(testRunner);
+            helper = new UnickqSpecFlowSeleniumAllureGeneratorHelper(testRunner);
             helper.FeatureSetup();
         }
         
@@ -60,6 +60,8 @@ namespace Unickq.SpecFlow.Selenium.Example.Features
         public virtual void ScenarioTearDown()
         {
             helper.TearDown();
+            helper.ClearScenarioContext(testRunner.ScenarioContext, "GoogleTranslate");
+            helper.ClearScenarioContext(testRunner.ScenarioContext, "Authoer");
             testRunner.OnScenarioEnd();
         }
         
@@ -80,14 +82,21 @@ namespace Unickq.SpecFlow.Selenium.Example.Features
             testRunner.CollectScenarioErrors();
         }
         
-        [NUnit.Framework.TestCaseAttribute("ChromeDebug", "https://translate.google.com/", "Google", null, Category="ChromeDebug", TestName="CheckWebsiteTitle with ChromeDebug and \"https://translate_google_com/\" ,\"Google\"")]
-        [NUnit.Framework.TestCaseAttribute("FirefoxDebug", "https://translate.google.com/", "Google", null, Category="FirefoxDebug", TestName="CheckWebsiteTitle with FirefoxDebug and \"https://translate_google_com/\" ,\"Google\"" +
-            "")]
-        public virtual void CheckWebsiteTitle(string browser, string uRL, string @string, string[] exampleTags)
+        [NUnit.Framework.CategoryAttribute("")]
+        [NUnit.Framework.TestCaseAttribute("BrowserStack_Win10_Chrome", "UK", "QWE", "https://translate.google.com/", "Google", null, Category="BrowserStack_Win10_Chrome,UK,QWE", TestName="CheckWebsiteTitle with BrowserStack_Win10_Chrome,UK,QWE and \"https://translate_go" +
+            "ogle_com/\" ,\"Google\"")]
+        [NUnit.Framework.TestCaseAttribute("ChromeDebug", "UK", "QWE", "https://translate.google.com/", "Google", null, Category="ChromeDebug,UK,QWE", TestName="CheckWebsiteTitle with ChromeDebug,UK,QWE and \"https://translate_google_com/\" ,\"G" +
+            "oogle\"")]
+        public virtual void CheckWebsiteTitle(string browser, string googletranslate, string authoer, string uRL, string @string, string[] exampleTags)
         {
+            tagsDict.TryAdd("Authoer", authoer);
+            tagsDict.TryAdd("GoogleTranslate", googletranslate);
             string[] @__tags = new string[] {
+                    "Browser:BrowserStack_Win10_Chrome",
+                    "",
                     "Browser:ChromeDebug",
-                    "Browser:FirefoxDebug"};
+                    "GoogleTranslate:UK",
+                    "Authoer:QWE"};
             if ((exampleTags != null))
             {
                 @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));

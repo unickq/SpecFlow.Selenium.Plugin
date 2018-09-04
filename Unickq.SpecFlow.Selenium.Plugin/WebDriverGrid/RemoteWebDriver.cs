@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 
 namespace Unickq.SpecFlow.Selenium.WebDriverGrid
@@ -17,23 +17,26 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
         {
         }
 
+        public RemoteWebDriver(string url, Dictionary<string, string> capabilities) : base(new Uri(url),
+            GetCapabilities(capabilities))
+        {
+        }
+
+        private static DesiredCapabilities GetCapabilities(Dictionary<string, string> additionalCapabilities)
+        {
+            var capabilities = new DesiredCapabilities();
+            foreach (var capability in additionalCapabilities)
+                capabilities.SetCapability(capability.Key, capability.Value);
+            return capabilities;
+        }
+
         private static DesiredCapabilities GetCapabilities(string browserName,
             Dictionary<string, string> additionalCapabilities = null)
         {
-
-            var capabilityCreationMethod = typeof(DesiredCapabilities).GetMethod(browserName,
-                BindingFlags.Public | BindingFlags.Static);
-            if (capabilityCreationMethod == null)
-                throw new NotSupportedException($"Can't find DesiredCapabilities with name {browserName}");
-
-            var capabilities = capabilityCreationMethod.Invoke(null, null) as DesiredCapabilities;
-            if (capabilities == null)
-                throw new NotSupportedException($"Can't find DesiredCapabilities with name {browserName}");
-
+            var capabilities = new DesiredCapabilities(browserName, string.Empty, new Platform(PlatformType.Any));
             if (additionalCapabilities == null) return capabilities;
             foreach (var capability in additionalCapabilities)
                 capabilities.SetCapability(capability.Key, capability.Value);
-
             return capabilities;
         }
     }

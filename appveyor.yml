@@ -1,36 +1,40 @@
-﻿version: 1.2.0.{build}
+﻿version: 1.3.0.{build}
 
 environment:
-  packageVersion: 1.2.0
-  
+  nugetVersion: 1.3.0
+
 init:
-- ps: $env:buildVersion = "$env:packageVersion.$env:appveyor_build_number"
-- ps: if(!$env:appveyor_repo_tag_name){ $env:nugetVersion = $env:packageVersion+ "-beta-" + $env:appveyor_build_number } else { $env:nugetVersion = $env:appveyor_repo_tag_name}
-- ps: Update-AppveyorBuild -Version $env:buildVersion
-    
+  - ps: Update-AppveyorBuild -Version $env:nugetVersion
+
+dotnet_csproj:
+  patch: true
+  file: '**\*.csproj'
+  version: '{version}'
+  package_version: $(nugetVersion)
+  assembly_version: '{version}'
+  file_version: '{version}'
+  informational_version: '{version}'
+
 image: Visual Studio 2017
 configuration: Release
 platform: Any CPU
 
-dotnet_csproj:
-  patch: true
-  file: '**\Unickq.SpecFlow.Selenium.SpecFlowPlugin.csproj'
-  version: '{version}'
-  package_version: $(nugetVersion)
-  assembly_version: $(buildVersion)
-  file_version: $(buildVersion)
-  informational_version: $(nugetVersion)
-  
 before_build:
 - nuget restore
 
 build:
   verbosity: minimal
 
-test:
-  assemblies:
-    only:
-    - Unickq.SpecFlow.Selenium.Example.dll   
+test: off
 
 artifacts:
 - path: '**\Unickq.SpecFlow.Selenium*.nupkg'
+
+for:
+-
+  branches:
+      only:
+        - develop
+  version: 1.4.0.{build}
+  environment:
+    nugetVersion: 1.4.0-alfa$(APPVEYOR_BUILD_NUMBER)

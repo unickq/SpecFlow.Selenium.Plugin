@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using OpenQA.Selenium.Safari;
+using Unickq.SpecFlow.Selenium.Helpers;
 
 namespace Unickq.SpecFlow.Selenium.Local
 {
@@ -14,7 +15,6 @@ namespace Unickq.SpecFlow.Selenium.Local
         {
             var options = new SafariOptions();
             foreach (var cap in capabilities)
-            {
                 if (cap.Key.StartsWith("Capability", StringComparison.OrdinalIgnoreCase))
                 {
                     var args = Extensions.ParseWithDelimiter(cap.Value.ToString());
@@ -24,7 +24,7 @@ namespace Unickq.SpecFlow.Selenium.Local
                 {
                     options.AcceptInsecureCertificates = true;
                 }
-            }
+
             return options;
         }
     }

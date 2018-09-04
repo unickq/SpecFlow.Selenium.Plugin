@@ -16,6 +16,7 @@ SpecFlow plugin for WebDriver instances generation. Write your tests easily
 - Ability to run features in [parralel](https://github.com/techtalk/SpecFlow/wiki/Parallel-Execution) with [NUnit3](https://github.com/nunit/docs/wiki/Parallelizable-Attribute)
 - Support of [BrowserStack](browserstack.com/), [SauceLabs](https://saucelabs.com/), [TestingBot](https://testingbot.com), [CrossBrowserTesting](https://crossbrowsertesting.com/) with required RestApi methods and keys.
 - Scenario annotation with ***Key:Value*** syntax
+- Custom WebDriver configuration
 
 [![N|Solid](https://raw.githubusercontent.com/unickq/SpecFlow.Selenium.Plugin/master/Example.png)]()
 

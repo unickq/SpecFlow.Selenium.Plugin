@@ -12,9 +12,10 @@
   </appSettings>
 
   <specFlow>
-    <unitTestProvider name="Unickq.SpecFlow.Selenium" />
+    <unitTestProvider name="Unickq.SpecFlow.Selenium.Allure" />
     <generator allowDebugGeneratedFiles="true" markFeaturesParallelizable="true" />
     <plugins>
+      <add name="Unickq.SpecFlow.Selenium.Allure" />
       <add name="Unickq.SpecFlow.Selenium" />
     </plugins>
   </specFlow>

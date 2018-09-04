@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{950A9182-CC76-4EB6-BC06-0E483F3FA6C8}</ProjectGuid>
+    <ProjectGuid>{85F6ABA6-DC28-4D14-BF4C-5BC11011558A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Unickq.SpecFlow.Selenium.Example</RootNamespace>
@@ -40,12 +40,23 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Allure.Commons, Version=2.3.67.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Allure.Commons.2.3.67.1\lib\net45\Allure.Commons.dll</HintPath>
+    </Reference>
     <Reference Include="Autofac, Version=3.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <HintPath>..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
+      <HintPath>..\packages\Autofac.3.5.0\lib\net40\Autofac.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Autofac.Configuration, Version=3.3.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <HintPath>..\packages\Autofac.Configuration.3.3.0\lib\net40\Autofac.Configuration.dll</HintPath>
-      <Private>True</Private>
+    </Reference>
+    <Reference Include="CsvHelper, Version=7.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
+      <HintPath>..\packages\CsvHelper.7.1.1\lib\net45\CsvHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="MimeTypesMap, Version=1.0.3.0, Culture=neutral, PublicKeyToken=1b320cc08ad5aa89, processorArchitecture=MSIL">
+      <HintPath>..\packages\MimeTypesMap.1.0.3\lib\net45\MimeTypesMap.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -80,7 +91,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>F1.feature</DependentUpon>
     </Compile>
-    <Compile Include="Features\F2.feature.cs">
+    <Compile Include="Features\F21.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>F2.feature</DependentUpon>
@@ -89,6 +100,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="allureConfig.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
@@ -98,11 +112,15 @@
     </None>
     <None Include="Features\F2.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>F2.feature.cs</LastGenOutput>
+      <LastGenOutput>F21.feature.cs</LastGenOutput>
     </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Unickq.SpecFlow.Selenium.Allure.SpecFlowPlugin\Unickq.SpecFlow.Selenium.Allure.SpecFlowPlugin.csproj">
+      <Project>{c6a40160-2c4f-4d9c-8963-c4595ee8acd2}</Project>
+      <Name>Unickq.SpecFlow.Selenium.Allure.SpecFlowPlugin</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Unickq.SpecFlow.Selenium.Plugin\Unickq.SpecFlow.Selenium.SpecFlowPlugin.csproj">
       <Project>{8b277e9f-1fdb-4d30-944b-a8c17308f62b}</Project>
       <Name>Unickq.SpecFlow.Selenium.SpecFlowPlugin</Name>
@@ -132,9 +150,9 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
+    <Error Condition="!Exists('..\packages\NUnit.3.10.1\build\NUnit.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NUnit.3.10.1\build\NUnit.props'))" />
     <Error Condition="!Exists('..\packages\Selenium.Firefox.WebDriver.0.21.0\build\Selenium.Firefox.WebDriver.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Selenium.Firefox.WebDriver.0.21.0\build\Selenium.Firefox.WebDriver.targets'))" />
     <Error Condition="!Exists('..\packages\Selenium.WebDriver.ChromeDriver.2.41.0\build\Selenium.WebDriver.ChromeDriver.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Selenium.WebDriver.ChromeDriver.2.41.0\build\Selenium.WebDriver.ChromeDriver.targets'))" />
-    <Error Condition="!Exists('..\packages\NUnit.3.10.1\build\NUnit.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NUnit.3.10.1\build\NUnit.props'))" />
     <Error Condition="!Exists('..\packages\SpecFlow.2.4.0\build\SpecFlow.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SpecFlow.2.4.0\build\SpecFlow.targets'))" />
   </Target>
   <Import Project="..\packages\Selenium.Firefox.WebDriver.0.21.0\build\Selenium.Firefox.WebDriver.targets" Condition="Exists('..\packages\Selenium.Firefox.WebDriver.0.21.0\build\Selenium.Firefox.WebDriver.targets')" />
