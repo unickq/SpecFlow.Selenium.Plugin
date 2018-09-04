@@ -6,6 +6,10 @@ namespace Unickq.SpecFlow.Selenium
 {
     public class UnickqSpecFlowSeleniumAllureGeneratorProvider : UnickqSpecFlowSeleniumGeneratorProvider
     {
+        public UnickqSpecFlowSeleniumAllureGeneratorProvider(CodeDomHelper codeDomHelper) : base(codeDomHelper)
+        {
+        }
+
         public override void SetTestInitializeMethod(TestClassGenerationContext generationContext)
         {
             CodeDomHelper.AddAttribute(generationContext.TestInitializeMethod, TestSetupAttr);
@@ -16,10 +20,6 @@ namespace Unickq.SpecFlow.Selenium
             generationContext.TestClassInitializeMethod.Statements.Add(
                 GenerateCodeSnippetStatement("helper.FeatureSetup();"));
             generationContext.TestInitializeMethod.Statements.Add(GenerateCodeSnippetStatement("helper.SetUp();"));
-        }
-
-        public UnickqSpecFlowSeleniumAllureGeneratorProvider(CodeDomHelper codeDomHelper) : base(codeDomHelper)
-        {
         }
     }
 }

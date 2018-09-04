@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using Allure.Commons;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
@@ -11,12 +9,19 @@ using Unickq.SpecFlow.Selenium.Allure;
 using Unickq.SpecFlow.Selenium.Exceptions;
 using Unickq.SpecFlow.Selenium.Helpers;
 using Unickq.SpecFlow.Selenium.WebDriverGrid;
+using RemoteWebDriver = OpenQA.Selenium.Remote.RemoteWebDriver;
 
 namespace Unickq.SpecFlow.Selenium
 {
     public class UnickqSpecFlowSeleniumAllureGeneratorHelper : UnickqSpecFlowSeleniumGeneratorHelper
     {
         private readonly AllureLifecycle _allure = AllureLifecycle.Instance;
+
+        public UnickqSpecFlowSeleniumAllureGeneratorHelper(ITestRunner testRunner) : base(testRunner)
+        {
+            RootContainerId = Guid.NewGuid() + "_fc";
+        }
+
         public string RootContainerId { get; }
         public string TestContainerId { get; private set; }
         public string TestResultId { get; private set; }
@@ -126,7 +131,7 @@ namespace Unickq.SpecFlow.Selenium
                     catch (Exception)
                     {
                         //
-                    }                  
+                    }
                 }
                 else
                 {
@@ -147,7 +152,6 @@ namespace Unickq.SpecFlow.Selenium
             if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Passed)
             {
                 if (Driver != null)
-                {
                     try
                     {
                         var screen = ((ITakesScreenshot) Driver).GetScreenshot();
@@ -155,9 +159,9 @@ namespace Unickq.SpecFlow.Selenium
                     }
                     catch (Exception e)
                     {
-                        _allure.UpdateTestCase(test => test.parameters.Add(new Parameter {name = "ScreenShotError", value = e.Message}));
-                    }    
-                }
+                        _allure.UpdateTestCase(test =>
+                            test.parameters.Add(new Parameter {name = "ScreenShotError", value = e.Message}));
+                    }
             }
             else
             {
@@ -176,14 +180,10 @@ namespace Unickq.SpecFlow.Selenium
             }
 
             _allure.StopFixture(fixture => { fixture.stage = Stage.finished; });
-            _allure.UpdateTestContainer(TestContainerId, testContainer => testContainer.stop = DateTimeOffset.Now.ToUnixTimeMilliseconds());
+            _allure.UpdateTestContainer(TestContainerId,
+                testContainer => testContainer.stop = DateTimeOffset.Now.ToUnixTimeMilliseconds());
             _allure.StopTestContainer(TestContainerId);
             _allure.WriteTestContainer(TestContainerId);
-        }
-
-        public UnickqSpecFlowSeleniumAllureGeneratorHelper(ITestRunner testRunner) : base(testRunner)
-        {
-            RootContainerId = Guid.NewGuid() + "_fc";
         }
 
         private IEnumerable<Parameter> ParametersForBuild()
@@ -213,7 +213,7 @@ namespace Unickq.SpecFlow.Selenium
                         }
                     }
 
-                    var caps = ((OpenQA.Selenium.Remote.RemoteWebDriver) Driver).Capabilities;
+                    var caps = ((RemoteWebDriver) Driver).Capabilities;
                     list.Add(new Parameter
                     {
                         name = "Browser",
@@ -229,6 +229,7 @@ namespace Unickq.SpecFlow.Selenium
                     value = e.Message
                 });
             }
+
             return list;
         }
     }

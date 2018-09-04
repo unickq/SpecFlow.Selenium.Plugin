@@ -11,7 +11,6 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
     public class BrowserStackWebDriver : PaidWebDriver
     {
         private const string ApiUrl = "http://hub-cloud.browserstack.com/wd/hub/";
-        protected override Uri Uri => new Uri($"https://www.browserstack.com/automate/sessions/{SessionId}.json");
 
         private static readonly string BrowserstackUser = ConfigurationManager.AppSettings["browserstack.user"];
         private static readonly string BrowserstackKey = ConfigurationManager.AppSettings["browserstack.key"];
@@ -23,7 +22,8 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
             SecretKey = BrowserstackKey;
         }
 
-        public BrowserStackWebDriver(string browserstackUser, string browserstackKey, Dictionary<string, string> capabilities)
+        public BrowserStackWebDriver(string browserstackUser, string browserstackKey,
+            Dictionary<string, string> capabilities)
             : base(ApiUrl, Auth(browserstackUser, browserstackKey, capabilities))
         {
             SecretUser = browserstackUser;
@@ -45,6 +45,10 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
             SecretKey = browserstackKey;
         }
 
+        protected override Uri Uri => new Uri($"https://www.browserstack.com/automate/sessions/{SessionId}.json");
+
+        public override string Name => "BrowserStack";
+
         private static Dictionary<string, string> Auth(string browserstackUser, string browserstackKey,
             Dictionary<string, string> capabilities)
         {
@@ -61,7 +65,6 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
                 "acceptSslCerts"
             };
             foreach (var key in ConfigurationManager.AppSettings.AllKeys)
-            {
                 if (key.StartsWith("browserstack.", StringComparison.InvariantCultureIgnoreCase))
                 {
                     var capabilityName = key.Replace("browserstack.", string.Empty);
@@ -71,23 +74,18 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
                     if (!capabilities.ContainsKey(capabilityName))
                         capabilities.Add(capabilityName, NameTransform(capabilityValue));
                 }
-            }
+
             if (!capabilities.ContainsKey("name"))
                 capabilities.Add("name", FixedTestName);
 
             return capabilities;
         }
 
-        public override string Name => "BrowserStack";
-
         public override void UpdateTestResult()
         {
             var testResult = TestContext.CurrentContext.Result;
             var resultStr = "failed";
-            if (testResult.Outcome.Status == TestStatus.Passed)
-            {
-                resultStr = "passed";
-            }
+            if (testResult.Outcome.Status == TestStatus.Passed) resultStr = "passed";
 
             dynamic statusObj = new ExpandoObject();
             statusObj.status = resultStr;

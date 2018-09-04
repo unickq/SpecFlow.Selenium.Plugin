@@ -5,6 +5,7 @@ using System.Linq;
 using TechTalk.SpecFlow.Generator;
 using TechTalk.SpecFlow.Generator.UnitTestProvider;
 using TechTalk.SpecFlow.Utils;
+using Unickq.SpecFlow.Selenium.Helpers;
 
 namespace Unickq.SpecFlow.Selenium
 {
@@ -24,12 +25,12 @@ namespace Unickq.SpecFlow.Selenium
         protected const string ParallelizableAttr = "NUnit.Framework.ParallelizableAttribute";
         protected const string DescriptionAttr = "NUnit.Framework.DescriptionAttribute";
 
-        protected readonly CodeDomHelper CodeDomHelper;
-
         /// <summary>
         ///     List of unique field Names to Generate
         /// </summary>
         private readonly HashSet<string> _fieldsToGenerate = new HashSet<string>();
+
+        protected readonly CodeDomHelper CodeDomHelper;
 
         private bool _hasBrowser;
         private bool _scenarioSetupMethodsAdded;
@@ -117,15 +118,8 @@ namespace Unickq.SpecFlow.Selenium
                 //ToDo: Fix for 2.4 @Tag:Param
                 foreach (var field in _fieldsToGenerate)
                     if (!field.Equals("Browser", StringComparison.OrdinalIgnoreCase))
-                    {
-
                         testMethod.Statements.Insert(0,
                             GenerateCodeSnippetStatement($"tagsDict.TryAdd(\"{field}\", {field.ToLower()});"));
-//        private ConcurrentDictionary<string, string> tagsDict = new ConcurrentDictionary<string, string>();
-//                        testMethod.Statements.Insert(0,
-//                            GenerateCodeSnippetStatement(
-//                                $"testRunner.ScenarioContext.Add(\"{field}\", {field.ToLower()});"));
-                    }
             }
         }
 
@@ -209,8 +203,10 @@ namespace Unickq.SpecFlow.Selenium
             CodeDomHelper.AddAttribute(generationContext.TestClass, DescriptionAttr, featureTitle);
             generationContext.Namespace.Imports.Add(new CodeNamespaceImport("Unickq.SpecFlow.Selenium"));
             generationContext.Namespace.Imports.Add(new CodeNamespaceImport("System.Collections.Concurrent"));
-            generationContext.TestClass.Members.Add(new CodeMemberField("UnickqSpecFlowSeleniumGeneratorHelper", "helper"));
-            generationContext.TestClass.Members.Add(new CodeMemberField("ConcurrentDictionary<string, string>", "tagsDict"));
+            generationContext.TestClass.Members.Add(new CodeMemberField("UnickqSpecFlowSeleniumGeneratorHelper",
+                "helper"));
+            generationContext.TestClass.Members.Add(new CodeMemberField("ConcurrentDictionary<string, string>",
+                "tagsDict"));
         }
 
         public void SetTestClassCategories(TestClassGenerationContext generationContext,
@@ -240,7 +236,8 @@ namespace Unickq.SpecFlow.Selenium
             TestClassGenerationContext generationContext)
         {
             CodeDomHelper.AddAttribute(generationContext.TestClassInitializeMethod, TestFixtureSetupAttr);
-            generationContext.TestInitializeMethod.Statements.Add(GenerateCodeSnippetStatement("tagsDict = new ConcurrentDictionary<string, string>();"));
+            generationContext.TestInitializeMethod.Statements.Add(
+                GenerateCodeSnippetStatement("tagsDict = new ConcurrentDictionary<string, string>();"));
         }
 
         public void SetTestCleanupMethod(TestClassGenerationContext generationContext)
@@ -255,7 +252,7 @@ namespace Unickq.SpecFlow.Selenium
                 GenerateCodeSnippetStatement("helper = new UnickqSpecFlowSeleniumGeneratorHelper(testRunner);"));
             generationContext.TestClassInitializeMethod.Statements.Add(
                 GenerateCodeSnippetStatement("helper.FeatureSetup();"));
-           
+
             generationContext.TestInitializeMethod.Statements.Add(GenerateCodeSnippetStatement("helper.SetUp();"));
         }
 
@@ -290,11 +287,9 @@ namespace Unickq.SpecFlow.Selenium
 
             foreach (var field in _fieldsToGenerate)
                 if (!field.Equals("Browser", StringComparison.OrdinalIgnoreCase))
-                {
                     generationContext.TestCleanupMethod.Statements.Add(
                         GenerateCodeSnippetStatement(
                             $"helper.ClearScenarioContext(testRunner.ScenarioContext, \"{field}\");"));
-                }
 
             generationContext.TestCleanupMethod.Statements.Add(
                 GenerateCodeSnippetStatement("testRunner.OnScenarioEnd();"));
@@ -303,13 +298,13 @@ namespace Unickq.SpecFlow.Selenium
             if (!_scenarioSetupMethodsAdded)
             {
                 if (_hasBrowser)
-                {
                     generationContext.ScenarioInitializeMethod.Statements.Add(
                         GenerateCodeSnippetStatement(
-                            $"testRunner.ScenarioContext.Add(\"{Helpers.Extensions.Driver}\", helper.Driver);"));
-                }
+                            $"testRunner.ScenarioContext.Add(\"{Extensions.Driver}\", helper.Driver);"));
+
                 generationContext.ScenarioInitializeMethod.Statements.Add(
-                    GenerateCodeSnippetStatement("foreach (var tag in tagsDict) testRunner.ScenarioContext.Add(tag.Key, tag.Value);"));
+                    GenerateCodeSnippetStatement(
+                        "foreach (var tag in tagsDict) testRunner.ScenarioContext.Add(tag.Key, tag.Value);"));
 
                 _scenarioSetupMethodsAdded = true;
             }

@@ -12,7 +12,6 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
     public class TestingBotWebDriver : PaidWebDriver
     {
         private const string ApiUrl = "http://hub.testingbot.com/wd/hub/";
-        protected override Uri Uri => new Uri($"https://api.testingbot.com/v1/tests/{SessionId}");
 
         private static readonly string TestingBotKey = ConfigurationManager.AppSettings["testingbot.key"];
         private static readonly string TestingBotSecret = ConfigurationManager.AppSettings["testingbot.secret"];
@@ -23,6 +22,7 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
             SecretUser = key;
             SecretKey = secret;
         }
+
         public TestingBotWebDriver(string browser, Dictionary<string, string> capabilities)
             : base(ApiUrl, browser, Auth(TestingBotKey, TestingBotSecret, capabilities))
         {
@@ -44,7 +44,13 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
             SecretKey = TestingBotSecret;
         }
 
-        private static Dictionary<string, string> Auth(string key, string secret, Dictionary<string, string> capabilities)
+        protected override Uri Uri => new Uri($"https://api.testingbot.com/v1/tests/{SessionId}");
+
+
+        public override string Name => "TestingBot";
+
+        private static Dictionary<string, string> Auth(string key, string secret,
+            Dictionary<string, string> capabilities)
         {
             if (key == null) throw new Exception("testingbot.key can't be found");
             if (secret == null) throw new Exception("testingbot.secret can't be found");
@@ -52,14 +58,12 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
             capabilities.Add("secret", secret);
 
             foreach (var configKey in ConfigurationManager.AppSettings.AllKeys)
-            {
                 if (configKey.StartsWith("testingbot.", StringComparison.InvariantCultureIgnoreCase))
                 {
                     var capabilityName = configKey.Replace("testingbot.", string.Empty);
                     var capabilityValue = ConfigurationManager.AppSettings[configKey];
                     capabilities.Add(capabilityName, NameTransform(capabilityValue));
                 }
-            }
 
             if (!capabilities.ContainsKey("name"))
                 capabilities.Add("name", FixedTestName);
@@ -67,13 +71,10 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
             return capabilities;
         }
 
-
-        public override string Name => "TestingBot";
-
         public override void UpdateTestResult()
         {
             var success = TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Passed;
-            var request = (HttpWebRequest)WebRequest.Create(Uri);
+            var request = (HttpWebRequest) WebRequest.Create(Uri);
             request.ContentType = "application/x-www-form-urlencoded";
             request.Method = "PUT";
             var usernamePassword = SecretUser + ":" + SecretKey;
@@ -94,6 +95,7 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
                     "test[success]=" + (success ? "1" : "0") +
                     "&test[status_message]=" + TestContext.CurrentContext.Result.Message);
             }
+
             var response = request.GetResponse();
             response.Close();
         }

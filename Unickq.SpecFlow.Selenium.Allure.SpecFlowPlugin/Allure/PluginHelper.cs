@@ -6,7 +6,6 @@ using System.Text.RegularExpressions;
 using Allure.Commons;
 using Newtonsoft.Json.Linq;
 using TechTalk.SpecFlow;
-using TechTalk.SpecFlow.Bindings;
 
 namespace Unickq.SpecFlow.Selenium.Allure
 {
@@ -14,10 +13,11 @@ namespace Unickq.SpecFlow.Selenium.Allure
     {
 //        static ScenarioInfo emptyScenarioInfo = new ScenarioInfo().;
 
-        static FeatureInfo emptyFeatureInfo = new FeatureInfo(
+        private static FeatureInfo emptyFeatureInfo = new FeatureInfo(
             CultureInfo.CurrentCulture, string.Empty, string.Empty);
 
-        public static PluginConfiguration PluginConfiguration = GetConfiguration(AllureLifecycle.Instance.JsonConfiguration);
+        public static PluginConfiguration PluginConfiguration =
+            GetConfiguration(AllureLifecycle.Instance.JsonConfiguration);
 
         private static PluginConfiguration GetConfiguration(string allureConfiguration)
         {
@@ -35,7 +35,6 @@ namespace Unickq.SpecFlow.Selenium.Allure
                 message = ex.GetType().Name,
                 trace = ex.Message
             };
-
         }
 
         public static Tuple<List<Label>, List<Link>> GetTags(FeatureInfo featureInfo, ScenarioInfo scenarioInfo)
@@ -52,72 +51,100 @@ namespace Unickq.SpecFlow.Selenium.Allure
                 // link
                 if (TryUpdateValueByMatch(PluginConfiguration.links.link, ref tagValue))
                 {
-                    result.Item2.Add(new Link() { name = tagValue, url = tagValue }); continue;
+                    result.Item2.Add(new Link {name = tagValue, url = tagValue});
+                    continue;
                 }
+
                 // issue
                 if (TryUpdateValueByMatch(PluginConfiguration.links.issue, ref tagValue))
                 {
-                    result.Item2.Add(Link.Issue(tagValue, tagValue)); continue;
+                    result.Item2.Add(Link.Issue(tagValue, tagValue));
+                    continue;
                 }
+
                 // tms
                 if (TryUpdateValueByMatch(PluginConfiguration.links.tms, ref tagValue))
                 {
-                    result.Item2.Add(Link.Tms(tagValue, tagValue)); continue;
+                    result.Item2.Add(Link.Tms(tagValue, tagValue));
+                    continue;
                 }
+
                 // parent suite
                 if (TryUpdateValueByMatch(PluginConfiguration.grouping.suites.parentSuite, ref tagValue))
                 {
-                    result.Item1.Add(Label.ParentSuite(tagValue)); continue;
+                    result.Item1.Add(Label.ParentSuite(tagValue));
+                    continue;
                 }
+
                 // suite
                 if (TryUpdateValueByMatch(PluginConfiguration.grouping.suites.suite, ref tagValue))
                 {
-                    result.Item1.Add(Label.Suite(tagValue)); continue;
+                    result.Item1.Add(Label.Suite(tagValue));
+                    continue;
                 }
+
                 // sub suite
                 if (TryUpdateValueByMatch(PluginConfiguration.grouping.suites.subSuite, ref tagValue))
                 {
-                    result.Item1.Add(Label.SubSuite(tagValue)); continue;
+                    result.Item1.Add(Label.SubSuite(tagValue));
+                    continue;
                 }
+
                 // epic
                 if (TryUpdateValueByMatch(PluginConfiguration.grouping.behaviors.epic, ref tagValue))
                 {
-                    result.Item1.Add(Label.Epic(tagValue)); continue;
+                    result.Item1.Add(Label.Epic(tagValue));
+                    continue;
                 }
+
                 // story
                 if (TryUpdateValueByMatch(PluginConfiguration.grouping.behaviors.story, ref tagValue))
                 {
-                    result.Item1.Add(Label.Story(tagValue)); continue;
+                    result.Item1.Add(Label.Story(tagValue));
+                    continue;
                 }
+
                 // package
                 if (TryUpdateValueByMatch(PluginConfiguration.grouping.packages.package, ref tagValue))
                 {
-                    result.Item1.Add(Label.Package(tagValue)); continue;
+                    result.Item1.Add(Label.Package(tagValue));
+                    continue;
                 }
+
                 // test class
                 if (TryUpdateValueByMatch(PluginConfiguration.grouping.packages.testClass, ref tagValue))
                 {
-                    result.Item1.Add(Label.TestClass(tagValue)); continue;
+                    result.Item1.Add(Label.TestClass(tagValue));
+                    continue;
                 }
+
                 // test method
                 if (TryUpdateValueByMatch(PluginConfiguration.grouping.packages.testMethod, ref tagValue))
                 {
-                    result.Item1.Add(Label.TestMethod(tagValue)); continue;
+                    result.Item1.Add(Label.TestMethod(tagValue));
+                    continue;
                 }
+
                 // owner
                 if (TryUpdateValueByMatch(PluginConfiguration.labels.owner, ref tagValue))
                 {
-                    result.Item1.Add(Label.Owner(tagValue)); continue;
+                    result.Item1.Add(Label.Owner(tagValue));
+                    continue;
                 }
+
                 // severity
-                if (TryUpdateValueByMatch(PluginConfiguration.labels.severity, ref tagValue) && Enum.TryParse(tagValue, out SeverityLevel level))
+                if (TryUpdateValueByMatch(PluginConfiguration.labels.severity, ref tagValue) &&
+                    Enum.TryParse(tagValue, out SeverityLevel level))
                 {
-                    result.Item1.Add(Label.Severity(level)); continue;
+                    result.Item1.Add(Label.Severity(level));
+                    continue;
                 }
+
                 // tag
-                if(!tagValue.Contains("Browser"))
-                result.Item1.Add(Label.Tag(tagValue));
+                if (!tagValue.Contains("Browser"))
+                    result.Item1.Add(Label.Tag(tagValue));
             }
+
             return result;
         }
 
@@ -129,7 +156,8 @@ namespace Unickq.SpecFlow.Selenium.Allure
             Regex regex = null;
             try
             {
-                regex = new Regex(expression, RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase);
+                regex = new Regex(expression,
+                    RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.IgnoreCase);
             }
             catch (Exception)
             {
@@ -149,15 +177,16 @@ namespace Unickq.SpecFlow.Selenium.Allure
 
                 return true;
             }
-            else
-                return false;
+
+            return false;
         }
+
         public static void WrapInStep(this AllureLifecycle allureInstance, Action action, string stepName = "")
         {
             var id = Guid.NewGuid().ToString();
-            var stepResult = new StepResult { name = stepName };
+            var stepResult = new StepResult {name = stepName};
             try
-            {      
+            {
                 allureInstance.StartStep(id, stepResult);
                 action.Invoke();
                 allureInstance.StopStep(step => stepResult.status = Status.passed);

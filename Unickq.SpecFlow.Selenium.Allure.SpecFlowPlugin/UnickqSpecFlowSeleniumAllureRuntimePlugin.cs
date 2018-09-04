@@ -12,8 +12,11 @@ namespace Unickq.SpecFlow.Selenium
     {
         public void Initialize(RuntimePluginEvents runtimePluginEvents, RuntimePluginParameters runtimePluginParameters)
         {
-            runtimePluginEvents.RegisterGlobalDependencies += (sender, args) => args.ObjectContainer.RegisterInstanceAs<IUnitTestRuntimeProvider>(new NUnitRuntimeProvider(), "Unickq.SpecFlow.Selenium.Allure");
-            runtimePluginEvents.CustomizeTestThreadDependencies += (sender, args) => args.ObjectContainer.RegisterTypeAs<AllureTestTracerWrapper, ITestTracer>();
+            runtimePluginEvents.RegisterGlobalDependencies += (sender, args) =>
+                args.ObjectContainer.RegisterInstanceAs<IUnitTestRuntimeProvider>(new NUnitRuntimeProvider(),
+                    "Unickq.SpecFlow.Selenium.Allure");
+            runtimePluginEvents.CustomizeTestThreadDependencies += (sender, args) =>
+                args.ObjectContainer.RegisterTypeAs<AllureTestTracerWrapper, ITestTracer>();
         }
     }
 }

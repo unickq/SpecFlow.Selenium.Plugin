@@ -11,7 +11,8 @@ namespace Unickq.SpecFlow.Selenium
 {
     public class UnickqSpecFlowSeleniumAllureGeneratorPlugin : IGeneratorPlugin
     {
-        public void Initialize(GeneratorPluginEvents generatorPluginEvents, GeneratorPluginParameters generatorPluginParameters)
+        public void Initialize(GeneratorPluginEvents generatorPluginEvents,
+            GeneratorPluginParameters generatorPluginParameters)
         {
             generatorPluginEvents.RegisterDependencies += GeneratorPluginEvents_RegisterDependencies;
         }
@@ -22,7 +23,8 @@ namespace Unickq.SpecFlow.Selenium
             var projectSettings = container.Resolve<ProjectSettings>();
             var codeDomHelper = container.Resolve<CodeDomHelper>(projectSettings.ProjectPlatformSettings.Language);
             var generatorProvider = new UnickqSpecFlowSeleniumAllureGeneratorProvider(codeDomHelper);
-            container.RegisterInstanceAs<IUnitTestGeneratorProvider>(generatorProvider, "Unickq.SpecFlow.Selenium.Allure");
+            container.RegisterInstanceAs<IUnitTestGeneratorProvider>(generatorProvider,
+                "Unickq.SpecFlow.Selenium.Allure");
         }
     }
 }

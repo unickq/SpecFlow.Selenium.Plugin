@@ -85,7 +85,7 @@ namespace Unickq.SpecFlow.Selenium.Allure
                     ".txt");
 
             var table = stepInstance.TableArgument;
-            bool isTableProcessed = (table == null);
+            var isTableProcessed = table == null;
 
             // parse table as step params
             if (table != null)
@@ -103,10 +103,8 @@ namespace Unickq.SpecFlow.Selenium.Allure
                             Regex.IsMatch(header[1], PluginConfiguration.stepArguments.paramValueRegex);
                         if (paramNameMatch && paramValueMatch)
                         {
-                            for (int i = 0; i < table.RowCount; i++)
-                            {
+                            for (var i = 0; i < table.RowCount; i++)
                                 parameters.Add(new Parameter {name = table.Rows[i][0], value = table.Rows[i][1]});
-                            }
 
                             isTableProcessed = true;
                         }
@@ -114,10 +112,8 @@ namespace Unickq.SpecFlow.Selenium.Allure
                     // add step params for 1 row table
                     else if (table.RowCount == 1)
                     {
-                        for (int i = 0; i < table.Header.Count; i++)
-                        {
+                        for (var i = 0; i < table.Header.Count; i++)
                             parameters.Add(new Parameter {name = header[i], value = table.Rows[0][i]});
-                        }
 
                         isTableProcessed = true;
                     }

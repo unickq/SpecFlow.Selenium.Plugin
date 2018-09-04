@@ -1,12 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Autofac;
 using Autofac.Configuration;
+using Autofac.Core;
+using Autofac.Core.Registration;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using TechTalk.SpecFlow;
 using Unickq.SpecFlow.Selenium.Exceptions;
-using Unickq.SpecFlow.Selenium.Helpers;
+using Unickq.SpecFlow.Selenium.WebDriverGrid;
 
 namespace Unickq.SpecFlow.Selenium
 {
@@ -15,7 +18,6 @@ namespace Unickq.SpecFlow.Selenium
         protected readonly IContainer Container;
         protected readonly ITestRunner TestRunner;
         protected string BrowserName;
-        public IWebDriver Driver { get; private set; }
 
         public UnickqSpecFlowSeleniumGeneratorHelper(ITestRunner testRunner)
         {
@@ -24,6 +26,8 @@ namespace Unickq.SpecFlow.Selenium
             builder.RegisterModule(new ConfigurationSettingsReader());
             Container = builder.Build();
         }
+
+        public IWebDriver Driver { get; private set; }
 
         public virtual void FeatureSetup()
         {
@@ -37,13 +41,11 @@ namespace Unickq.SpecFlow.Selenium
         {
             var list = new List<string>();
             foreach (var registration in container.ComponentRegistry.Registrations)
-            {
                 if (registration.Services.Count() == 1)
                 {
                     var serviceDescription = registration.Services.First().Description;
                     list.Add(serviceDescription.Substring(0, serviceDescription.IndexOf(' ')));
                 }
-            }
 
             return list;
         }
@@ -54,25 +56,21 @@ namespace Unickq.SpecFlow.Selenium
             var configList = GetPossibleBrowsersFromConfig(Container);
             var common = categories.Intersect(configList).ToList();
             if (common.Count == 1)
-            {
                 BrowserName = common.First();
-            }
             else
-            {
                 throw new UnableToInitializeBrowserException("Unable to register browser. Please check @Browser tag" +
-                                                    $"\n    Possible values are:\n      {string.Join(" ", configList)}\n");
-            }
+                                                             $"\n    Possible values are:\n      {string.Join(" ", configList)}\n");
 
             try
             {
                 Driver = Container.ResolveNamed<IWebDriver>(BrowserName);
             }
-            catch (Autofac.Core.Registration.ComponentNotRegisteredException)
+            catch (ComponentNotRegisteredException)
             {
                 throw new SpecFlowSeleniumException(
                     $"Unable to register {BrowserName}.");
             }
-            catch (Autofac.Core.DependencyResolutionException e)
+            catch (DependencyResolutionException e)
             {
                 throw new BrowserConfigurationException(
                     $"Unable to initialize {BrowserName}. Please validate configuration parameters\n{e.InnerException?.Message}");
@@ -84,10 +82,7 @@ namespace Unickq.SpecFlow.Selenium
         {
             if (Driver != null)
             {
-                if (Driver is WebDriverGrid.PaidWebDriver)
-                {
-                    UpdateApi();
-                }
+                if (Driver is PaidWebDriver) UpdateApi();
 
                 KillWebDriver();
             }
@@ -95,25 +90,21 @@ namespace Unickq.SpecFlow.Selenium
 
         protected void KillWebDriver()
         {
-            System.Threading.Thread.Sleep(50);
+            Thread.Sleep(50);
             Driver.Quit();
             Driver = null;
         }
 
         protected void UpdateApi()
         {
-            ((WebDriverGrid.PaidWebDriver) Driver).UpdateTestResult();
+            ((PaidWebDriver) Driver).UpdateTestResult();
         }
 
         public void ClearScenarioContext(ScenarioContext testRunnerScenarioContext, string key)
         {
             if (testRunnerScenarioContext != null)
-            {
                 if (testRunnerScenarioContext.ContainsKey(key))
-                {
                     testRunnerScenarioContext.Remove(key);
-                }
-            }
         }
     }
 }

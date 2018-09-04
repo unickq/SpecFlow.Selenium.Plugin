@@ -20,7 +20,8 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
             SecretKey = SaucelabsKey;
         }
 
-        public SauceLabsWebDriver(string browser, string userName, string accessKey, Dictionary<string, string> capabilities)
+        public SauceLabsWebDriver(string browser, string userName, string accessKey,
+            Dictionary<string, string> capabilities)
             : base(ApiUrl, browser, Auth(userName, accessKey, capabilities))
         {
             SecretUser = userName;
@@ -43,13 +44,16 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
 
         public override string Name => "SauceLabs";
 
+        protected override Uri Uri => new Uri($"https://saucelabs.com/rest/v1/{SecretUser}/jobs/{SessionId}");
+
         public override void UpdateTestResult()
         {
             var passed = TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Passed;
-            Publish("{\"passed\":"+ passed.ToString().ToLower() + "}");                 
+            Publish("{\"passed\":" + passed.ToString().ToLower() + "}");
         }
 
-        private static Dictionary<string, string> Auth(string userName, string accessKey, Dictionary<string, string> capabilities)
+        private static Dictionary<string, string> Auth(string userName, string accessKey,
+            Dictionary<string, string> capabilities)
         {
             if (userName == null) throw new Exception("saucelabs.username can't be found");
             if (accessKey == null) throw new Exception("saucelabs.accessKey can't be found");
@@ -57,21 +61,17 @@ namespace Unickq.SpecFlow.Selenium.WebDriverGrid
             capabilities.Add("accessKey", accessKey);
 
             foreach (var key in ConfigurationManager.AppSettings.AllKeys)
-            {
                 if (key.StartsWith("saucelabs.", StringComparison.InvariantCultureIgnoreCase))
                 {
                     var capabilityName = key.Replace("saucelabs.", string.Empty);
                     var capabilityValue = ConfigurationManager.AppSettings[key];
                     capabilities.Add(capabilityName, NameTransform(capabilityValue));
                 }
-            }
 
             if (!capabilities.ContainsKey("name"))
                 capabilities.Add("name", FixedTestName);
 
             return capabilities;
         }
-
-        protected override Uri Uri => new Uri($"https://saucelabs.com/rest/v1/{SecretUser}/jobs/{SessionId}");
     }
 }
